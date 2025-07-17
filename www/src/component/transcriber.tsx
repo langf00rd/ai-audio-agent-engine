@@ -2,10 +2,13 @@
 
 import { Button } from "@/components/ui/button";
 import { useWebSocket } from "@/hooks/use-web-socket";
+import { useParams } from "next/navigation";
 import { useRef, useState } from "react";
 
 export default function Transcriber() {
   const [transcript, setTranscript] = useState("");
+  const [aiResponse, setAIResponse] = useState("");
+  const params = useParams();
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const { webSocketRef, connected } = useWebSocket({
     url: "ws://localhost:8000/ws",
@@ -38,13 +41,13 @@ export default function Transcriber() {
   };
 
   async function handleGetAIResponse() {
-    const res = await fetch("http://localhost:8000/agents", {
-      method: "GET",
+    const response = await fetch("http://localhost:8000/ai", {
+      method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ transcript }),
+      body: JSON.stringify({ prompt: transcript, agent: params.id }),
     });
-    const data = await res.json();
-    console.log("data", data);
+    const result = await response.json();
+    setAIResponse(result.data);
   }
 
   return (
@@ -59,6 +62,8 @@ export default function Transcriber() {
       </button>
       <p>{transcript || "..."}</p>
       <Button onClick={handleGetAIResponse}>ask ai</Button>
+      <p>from ai:</p>
+      <p>{aiResponse}</p>
     </div>
   );
 }
