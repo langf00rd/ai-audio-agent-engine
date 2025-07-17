@@ -13,6 +13,7 @@ export async function aiChatService(payload) {
     const prompt = `
       YOUR ROLE INFORMATION: ${JSON.stringify(agent)}
       WITH THAT IN MIND, RESPOND TO THIS: ${payload.prompt}
+      BE BRIEF AND CONCISE
     `;
     const { text } = await generateText({
       model: chatModel,

@@ -23,19 +23,16 @@ export default function Transcriber() {
 
   const startRecording = async () => {
     if (!connected) return alert("socket not connected");
-
     const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
     const mediaRecorder = new MediaRecorder(stream, {
       mimeType: "audio/webm;codecs=opus",
     });
-
     mediaRecorderRef.current = mediaRecorder;
     mediaRecorder.ondataavailable = (e) => {
       if (webSocketRef.current?.readyState === WebSocket.OPEN) {
         webSocketRef.current.send(e.data);
       }
     };
-
     mediaRecorder.start(250);
     console.log("[recorder] Started");
   };
@@ -48,6 +45,17 @@ export default function Transcriber() {
     });
     const result = await response.json();
     setAIResponse(result.data);
+    readOut(result.data);
+  }
+
+  function readOut(text: string) {
+    const utterance = new SpeechSynthesisUtterance(text);
+    utterance.lang = "en-US";
+    utterance.rate = 1;
+    utterance.onend = () => {
+      console.log("✅ tts finished speaking");
+    };
+    speechSynthesis.speak(utterance);
   }
 
   return (
