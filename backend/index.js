@@ -1,23 +1,25 @@
-import express from "express";
-import http from "http";
-import { WebSocketServer } from "ws";
 import { AssemblyAI } from "assemblyai";
-import recorder from "node-record-lpcm16";
-import { Readable } from "stream";
 import dotenv from "dotenv";
+import express from "express";
+import ffmpegPath from "ffmpeg-static";
+import ffmpeg from "fluent-ffmpeg";
+import http from "http";
+import { PassThrough, Readable } from "stream";
+import { WebSocketServer } from "ws";
+
+ffmpeg.setFfmpegPath(ffmpegPath);
 
 dotenv.config({ path: ".env" });
 
 const PORT = 8000;
 const app = express();
 const server = http.createServer(app);
-
 const wss = new WebSocketServer({ server, path: "/ws" });
 
-const client = new AssemblyAI({ apiKey: process.env.ASSEMBLY_AI_API_KEY });
-
 wss.on("connection", async (ws) => {
-  console.log("client connected, creating streaming session");
+  console.log("client connected");
+
+  const client = new AssemblyAI({ apiKey: process.env.ASSEMBLY_AI_API_KEY });
 
   const transcriber = client.streaming.transcriber({
     sampleRate: 16_000,
@@ -25,50 +27,48 @@ wss.on("connection", async (ws) => {
   });
 
   transcriber.on("open", ({ id }) => {
-    console.log(`transcriber session ID: ${id}`);
+    console.log(`session opened -> ${id}`);
   });
 
   transcriber.on("error", (error) => {
-    console.error("transcriber error:", error);
+    console.error("Error:", error);
   });
 
   transcriber.on("close", (code, reason) =>
-    console.log("transcriber session closed:", code, reason),
+    console.log("Session closed:", code, reason),
   );
 
   transcriber.on("turn", (turn) => {
     if (!turn.transcript) return;
-    ws.send(JSON.stringify({ data: turn.transcript }));
+    ws.send(JSON.stringify({ transcript: turn.transcript }));
   });
 
-  try {
-    console.log("connecting to streaming transcript service");
+  await transcriber.connect();
 
-    await transcriber.connect();
+  const inputStream = new PassThrough();
 
-    console.log("starting recording");
+  const ffmpegProcess = ffmpeg()
+    .input(inputStream)
+    .inputFormat("webm")
+    .audioFrequency(16000)
+    .audioChannels(1)
+    .audioCodec("pcm_s16le")
+    .format("s16le")
+    .on("error", (err) => console.error("FFmpeg error:", err))
+    .pipe();
 
-    const recording = recorder.record({
-      channels: 1,
-      sampleRate: 16_000,
-      audioType: "wav",
-    });
+  Readable.toWeb(ffmpegProcess).pipeTo(transcriber.stream());
 
-    Readable.toWeb(recording.stream()).pipeTo(transcriber.stream());
+  ws.on("message", (data) => {
+    inputStream.write(data);
+  });
 
-    process.on("SIGINT", async function () {
-      console.log("stopping recording");
-      console.log("closing streaming transcript connection");
-      await transcriber.close();
-      process.exit();
-    });
-  } catch (error) {
-    console.error(error);
-  }
+  ws.on("close", async () => {
+    inputStream.end();
+    await transcriber.close();
+  });
 });
 
-app.get("/", (_, res) => {
-  res.send("assembly ai audio streaming server");
-});
+app.get("/", (req, res) => res.send(`server running`));
 
-server.listen(PORT, () => console.log(`listening on port ${PORT}`));
+server.listen(PORT, () => console.log(`listening on http://localhost:${PORT}`));

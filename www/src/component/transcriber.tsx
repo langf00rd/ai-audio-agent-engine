@@ -15,22 +15,24 @@ export default function Transcriber() {
       wsRef.current = ws;
 
       ws.onopen = () => {
-        console.log("[web socket] connected");
+        setSocketOpen(true);
+        console.count("[web socket] connected");
       };
 
       ws.onmessage = (event) => {
+        console.log("[web socket] message", event);
         const data = JSON.parse(event.data);
-        console.log("[web socket] message", data.data);
-        if (data.data) setTranscript(data.data);
+        if (data.transcript) setTranscript(data.transcript);
       };
 
       ws.onclose = () => {
         setSocketOpen(false);
-        console.log("[WebSocket] Disconnected");
+        console.log("[web socket] disconnected");
       };
 
       ws.onerror = (err) => {
-        console.error("[WebSocket] Error", err);
+        console.error("[web socket] error", err);
+        setSocketOpen(false);
         ws.close();
       };
     } catch (err) {
@@ -51,24 +53,23 @@ export default function Transcriber() {
 
     const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
     const mediaRecorder = new MediaRecorder(stream, {
-      mimeType: "audio/webm;codecs=opus", // Browser-compatible fallback
+      mimeType: "audio/webm;codecs=opus",
     });
-    mediaRecorderRef.current = mediaRecorder;
 
+    mediaRecorderRef.current = mediaRecorder;
     mediaRecorder.ondataavailable = (e) => {
       if (wsRef.current?.readyState === WebSocket.OPEN) {
         wsRef.current.send(e.data);
       }
     };
 
-    mediaRecorder.start(250); // 250ms chunk size
-    console.log("[Recorder] Started");
+    mediaRecorder.start(250);
+    console.log("[recorder] Started");
   };
 
   return (
     <div className="p-6 max-w-xl mx-auto">
       <h2 className="text-xl font-bold mb-2">🎙️ Live Transcriber</h2>
-
       <button
         onClick={startRecording}
         disabled={!socketOpen}
@@ -76,7 +77,6 @@ export default function Transcriber() {
       >
         Start Talking
       </button>
-
       <div className="bg-gray-100 text-gray-800 p-4 rounded h-60 overflow-y-auto whitespace-pre-line font-mono text-sm">
         {transcript || "Waiting for speech..."}
       </div>
