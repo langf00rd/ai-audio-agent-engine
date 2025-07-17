@@ -1,0 +1,18 @@
+{
+  "name": "ai-sales-agent-engine",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "install": "pnpm run install:all",
+    "install:all": "pnpm --prefix backend install && pnpm --prefix www install",
+    "dev": "concurrently \"pnpm run dev:backend\" \"pnpm run dev:www\"",
+    "dev:backend": "pnpm --prefix backend run dev",
+    "dev:www": "pnpm --prefix www run dev"
+  },
+  "author": "langf00rd",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "concurrently": "^9.2.0"
+  }
+}
