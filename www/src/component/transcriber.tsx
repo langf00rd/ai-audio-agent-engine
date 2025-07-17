@@ -1,55 +1,25 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { Button } from "@/components/ui/button";
+import { useWebSocket } from "@/hooks/use-web-socket";
+import { useRef, useState } from "react";
 
 export default function Transcriber() {
   const [transcript, setTranscript] = useState("");
-  const [socketOpen, setSocketOpen] = useState(false);
-  const wsRef = useRef<WebSocket | null>(null);
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
-
-  const connectWebSocket = () => {
-    try {
-      const ws = new WebSocket("ws://localhost:8000/ws");
-
-      wsRef.current = ws;
-
-      ws.onopen = () => {
-        setSocketOpen(true);
-        console.count("[web socket] connected");
-      };
-
-      ws.onmessage = (event) => {
-        console.log("[web socket] message", event);
-        const data = JSON.parse(event.data);
-        if (data.transcript) setTranscript(data.transcript);
-      };
-
-      ws.onclose = () => {
-        setSocketOpen(false);
-        console.log("[web socket] disconnected");
-      };
-
-      ws.onerror = (err) => {
-        console.error("[web socket] error", err);
-        setSocketOpen(false);
-        ws.close();
-      };
-    } catch (err) {
-      alert(err);
-    }
-  };
-
-  useEffect(() => {
-    connectWebSocket();
-    return () => {
-      wsRef.current?.close();
+  const { webSocketRef, connected } = useWebSocket({
+    url: "ws://localhost:8000/ws",
+    onMessage: (evt) => {
+      const data = JSON.parse(evt.data);
+      if (data.transcript) setTranscript(data.transcript);
+    },
+    onConnectionClose: () => {
       mediaRecorderRef.current?.stop();
-    };
-  }, []);
+    },
+  });
 
   const startRecording = async () => {
-    if (!socketOpen) return;
+    if (!connected) return alert("socket not connected");
 
     const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
     const mediaRecorder = new MediaRecorder(stream, {
@@ -58,8 +28,8 @@ export default function Transcriber() {
 
     mediaRecorderRef.current = mediaRecorder;
     mediaRecorder.ondataavailable = (e) => {
-      if (wsRef.current?.readyState === WebSocket.OPEN) {
-        wsRef.current.send(e.data);
+      if (webSocketRef.current?.readyState === WebSocket.OPEN) {
+        webSocketRef.current.send(e.data);
       }
     };
 
@@ -67,19 +37,28 @@ export default function Transcriber() {
     console.log("[recorder] Started");
   };
 
+  async function handleGetAIResponse() {
+    const res = await fetch("http://localhost:8000/agents", {
+      method: "GET",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ transcript }),
+    });
+    const data = await res.json();
+    console.log("data", data);
+  }
+
   return (
     <div className="p-6 max-w-xl mx-auto">
       <h2 className="text-xl font-bold mb-2">🎙️ Live Transcriber</h2>
       <button
         onClick={startRecording}
-        disabled={!socketOpen}
+        disabled={!connected}
         className="bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded mb-4"
       >
-        Start Talking
+        start talking
       </button>
-      <div className="bg-gray-100 text-gray-800 p-4 rounded h-60 overflow-y-auto whitespace-pre-line font-mono text-sm">
-        {transcript || "Waiting for speech..."}
-      </div>
+      <p>{transcript || "..."}</p>
+      <Button onClick={handleGetAIResponse}>ask ai</Button>
     </div>
   );
 }

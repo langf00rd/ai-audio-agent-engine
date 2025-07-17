@@ -1,9 +1,9 @@
 import { AssemblyAI } from "assemblyai";
-import ffmpegPath from "ffmpeg-static";
+// import ffmpegPath from "ffmpeg-static";
 import ffmpeg from "fluent-ffmpeg";
 import { PassThrough, Readable } from "stream";
 
-ffmpeg.setFfmpegPath(ffmpegPath);
+// ffmpeg.setFfmpegPath(ffmpegPath);
 
 export async function handleWebSocketConnection(ws) {
   const client = new AssemblyAI({ apiKey: process.env.ASSEMBLY_AI_API_KEY });
