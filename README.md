@@ -6,6 +6,14 @@ this project is a monorepo that uses `pnpm` as a global package manager
 
 `/backend` => nodejs, express application
 
+## requirements
+
+you need to have `sox` installed on your machine. you can do that like so:
+
+```bash
+brew install sox
+```
+
 ## install packages concurrently
 
 ```bash
