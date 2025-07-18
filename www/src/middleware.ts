@@ -5,9 +5,12 @@ import { COOKIE_KEYS, ROUTES } from "./lib/constants";
 
 export async function middleware(request: NextRequest) {
   if (request.url !== process.env.NEXT_PUBLIC_SITE_URL) {
+    const fromPath = new URL(request.url).pathname;
     const authCookie = (await cookies()).get(COOKIE_KEYS.token)?.value;
     if (!authCookie) {
-      return NextResponse.redirect(new URL(ROUTES.auth.signIn, request.url));
+      return NextResponse.redirect(
+        new URL(ROUTES.auth.signIn + `?redirect=` + fromPath, request.url),
+      );
     }
   }
   return NextResponse.next();
