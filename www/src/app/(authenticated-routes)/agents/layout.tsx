@@ -1,4 +1,4 @@
-import BackButton from "@/component/buttons/back";
+import BackButton from "@/components/buttons/back";
 
 export default function RootLayout({
   children,
