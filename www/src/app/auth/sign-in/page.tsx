@@ -45,7 +45,7 @@ export default function SignUpPage() {
           <Input required type="password" name="password" />
         </fieldset>
         <Button disabled={isLoading}>
-          {isLoading ? "Loading..." : "Sign up"}
+          {isLoading ? "Loading..." : "Sign in"}
         </Button>
       </form>
     </>
