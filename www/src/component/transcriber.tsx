@@ -6,10 +6,14 @@ import { useParams } from "next/navigation";
 import { useRef, useState } from "react";
 
 export default function Transcriber() {
-  const [transcript, setTranscript] = useState("");
-  const [aiResponse, setAIResponse] = useState("");
   const params = useParams();
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
+
+  const [transcript, setTranscript] = useState("");
+  const [aiResponse, setAIResponse] = useState("");
+  const [isListening, setIsListening] = useState(false);
+  const [isLoadingAIResponse, setIsLoadingAIResponse] = useState(false);
+
   const { webSocketRef, connected } = useWebSocket({
     url: "ws://localhost:8000/ws",
     onMessage: (evt) => {
@@ -35,17 +39,36 @@ export default function Transcriber() {
     };
     mediaRecorder.start(250);
     console.log("[recorder] Started");
+    setIsListening(true);
+  };
+
+  const stopRecording = () => {
+    if (
+      mediaRecorderRef.current &&
+      mediaRecorderRef.current.state !== "inactive"
+    ) {
+      mediaRecorderRef.current.stop();
+      console.log("[recorder] Stopped");
+      setIsListening(false);
+    }
   };
 
   async function handleGetAIResponse() {
-    const response = await fetch("http://localhost:8000/ai", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ prompt: transcript, agent: params.id }),
-    });
-    const result = await response.json();
-    setAIResponse(result.data);
-    readOut(result.data);
+    try {
+      setIsLoadingAIResponse(true);
+      const response = await fetch("http://localhost:8000/ai", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ prompt: transcript, agent: params.id }),
+      });
+      const result = await response.json();
+      setAIResponse(result.data);
+      readOut(result.data);
+    } catch (err) {
+      alert(err);
+    } finally {
+      setIsLoadingAIResponse(false);
+    }
   }
 
   function readOut(text: string) {
@@ -58,20 +81,28 @@ export default function Transcriber() {
     speechSynthesis.speak(utterance);
   }
 
+  if (!connected) return <p>Not connected</p>;
+
   return (
-    <div className="p-6 max-w-xl mx-auto">
-      <h2 className="text-xl font-bold mb-2">🎙️ Live Transcriber</h2>
-      <button
-        onClick={startRecording}
-        disabled={!connected}
-        className="bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded mb-4"
-      >
-        start talking
-      </button>
-      <p>{transcript || "..."}</p>
-      <Button onClick={handleGetAIResponse}>ask ai</Button>
-      <p>from ai:</p>
-      <p>{aiResponse}</p>
+    <div className="space-y-10">
+      <div className="space-x-4">
+        <Button
+          onClick={isListening ? stopRecording : startRecording}
+          variant={isListening ? "destructive" : "default"}
+        >
+          {!isListening ? "Start talking" : "Stop listening"}
+        </Button>
+        <Button onClick={handleGetAIResponse} disabled={isLoadingAIResponse}>
+          {isLoadingAIResponse ? "Agent is thinking..." : "Ask Agent"}
+        </Button>
+      </div>
+      <p className="italic">{transcript || "No transcript"}</p>
+      {aiResponse && (
+        <div className="space-y-1">
+          <div className="size-4 bg-black animate-pulse" />
+          <p>{aiResponse}</p>
+        </div>
+      )}
     </div>
   );
 }

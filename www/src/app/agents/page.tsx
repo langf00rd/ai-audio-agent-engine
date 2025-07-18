@@ -1,20 +1,8 @@
 "use client";
 
+import { Agent } from "@/lib/types";
 import Link from "next/link";
 import { useEffect, useState } from "react";
-
-type Agent = {
-  id: number;
-  name: string;
-  description: string;
-  intro_script: string;
-  audience: {
-    industry: string;
-    location: string;
-    income_level: string;
-  };
-  objections_and_responses: Record<string, string>;
-};
 
 export default function AgentsPage() {
   const [agents, setAgents] = useState<Agent[]>([]);
@@ -33,48 +21,38 @@ export default function AgentsPage() {
       });
   }, []);
 
-  if (loading) return <p className="text-center p-10">Loading agents...</p>;
+  if (loading) return <p className="text-center p-10">loading agents...</p>;
 
   return (
     <div className="max-w-4xl mx-auto p-10 space-y-6">
-      <h1 className="text-2xl font-semibold">Sales AI Agents</h1>
+      <h1 className="text-2xl font-semibold">Your agents</h1>
       {agents.length === 0 && <p>No agents found.</p>}
-      {agents.map((agent) => (
-        <Link
-          href={`/agents/${agent.id}`}
-          key={agent.id}
-          className="border block rounded-xl p-4 shadow-sm space-y-2"
-        >
-          <h2 className="text-lg font-bold">{agent.name}</h2>
-          <p>{agent.description}</p>
-          <p className="italic text-sm text-gray-500">{agent.intro_script}</p>
-
-          <div className="text-sm">
-            <p>
-              <strong>Industry:</strong> {agent.audience.industry}
-            </p>
-            <p>
-              <strong>Location:</strong> {agent.audience.location}
-            </p>
-            <p>
-              <strong>Income Level:</strong> {agent.audience.income_level}
-            </p>
-          </div>
-
-          <div className="text-sm mt-2">
-            <strong>Objection Responses:</strong>
-            <ul className="list-disc list-inside">
-              {Object.entries(agent.objections_and_responses).map(
-                ([key, value]) => (
-                  <li key={key}>
-                    <strong>{key}:</strong> {value}
-                  </li>
-                ),
-              )}
-            </ul>
-          </div>
-        </Link>
-      ))}
+      <ul className="gap-4 grid grid-cols-2">
+        {agents.map((agent) => (
+          <li
+            key={agent.id}
+            className="border border-neutral-200 hover:bg-neutral-100 p-6"
+          >
+            <Link href={`/agents/${agent.id}`} className="space-y-2 capitalize">
+              <h2 className="text-xl font-semibold">{agent.name}</h2>
+              <p className="">{agent.description}</p>
+              <div className="text-neutral-600">
+                <h3 className="font-medium mb-1">Audience:</h3>
+                <ul className="list-disc list-inside space-y-1">
+                  {Object.entries(agent.audience).map(([key, value]) => (
+                    <li key={key}>
+                      <span className="font-medium">
+                        {key.replaceAll("_", " ")}:
+                      </span>{" "}
+                      {value}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </Link>
+          </li>
+        ))}
+      </ul>
     </div>
   );
 }
