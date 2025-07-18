@@ -1,20 +1,20 @@
+import bodyParser from "body-parser";
+import cors from "cors";
 import dotenv from "dotenv";
 import express from "express";
-import bodyParser from "body-parser";
 import http from "http";
 import { WebSocketServer } from "ws";
-import { handleWebSocketConnection } from "./utils/ws.js";
 import {
   createAgent,
   getAgentByID,
   getAgents,
 } from "./controller/agent.controller.js";
-import cors from "cors";
 import { aiChat } from "./controller/ai.controller.js";
 import {
   signInController,
   signUpController,
 } from "./controller/auth.controller.js";
+import { handleWebSocketConnection } from "./utils/ws.js";
 
 const PORT = 8000;
 const app = express();

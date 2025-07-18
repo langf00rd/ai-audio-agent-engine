@@ -1,6 +1,6 @@
-import { hash, compare } from "bcrypt";
-import { pool } from "../config/pg.js";
+import { compare, hash } from "bcrypt";
 import jwt from "jsonwebtoken";
+import { pool } from "../config/pg.js";
 
 export async function signUpService(payload) {
   // console.log("signUpService_payload", payload);
