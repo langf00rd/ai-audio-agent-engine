@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { ROUTES } from "@/lib/constants";
+import { API_BASE_URL, ROUTES } from "@/lib/constants";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
@@ -64,7 +64,7 @@ export default function CreateAgentPage() {
     e.preventDefault();
     try {
       setIsLoading(true);
-      await fetch("http://localhost:8000/agents", {
+      await fetch(`${API_BASE_URL}/agents`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(form),

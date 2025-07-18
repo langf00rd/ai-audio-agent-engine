@@ -1,5 +1,6 @@
 "use client";
 
+import { API_BASE_URL } from "@/lib/constants";
 import { Agent } from "@/lib/types";
 import Link from "next/link";
 import { useEffect, useState } from "react";
@@ -9,7 +10,7 @@ export default function AgentsPage() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch("http://localhost:8000/agents")
+    fetch(`${API_BASE_URL}/agents`)
       .then((res) => res.json())
       .then((data) => {
         setAgents(data.data);

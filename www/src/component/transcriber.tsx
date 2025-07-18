@@ -3,13 +3,11 @@
 import { Button } from "@/components/ui/button";
 import { useWebSocket } from "@/hooks/use-web-socket";
 import { API_BASE_URL } from "@/lib/constants";
-import { speak } from "@/lib/services/tts";
-import { useParams, useSearchParams } from "next/navigation";
+import { useParams } from "next/navigation";
 import { useRef, useState } from "react";
 
-export default function AgentPlayPage() {
+export default function Transcriber() {
   const params = useParams();
-  const searchParams = useSearchParams();
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
 
   const [transcript, setTranscript] = useState("");
@@ -57,7 +55,6 @@ export default function AgentPlayPage() {
   };
 
   async function handleGetAIResponse() {
-    stopRecording();
     try {
       setIsLoadingAIResponse(true);
       const response = await fetch(`${API_BASE_URL}/ai`, {
@@ -67,7 +64,7 @@ export default function AgentPlayPage() {
       });
       const result = await response.json();
       setAIResponse(result.data);
-      await speak(result.data);
+      readOut(result.data);
     } catch (err) {
       alert(err);
     } finally {
@@ -75,13 +72,20 @@ export default function AgentPlayPage() {
     }
   }
 
+  function readOut(text: string) {
+    const utterance = new SpeechSynthesisUtterance(text);
+    utterance.lang = "en-US";
+    utterance.rate = 1;
+    utterance.onend = () => {
+      console.log("✅ tts finished speaking");
+    };
+    speechSynthesis.speak(utterance);
+  }
+
   if (!connected) return <p>Not connected</p>;
 
   return (
     <div className="space-y-10">
-      <h1 className="text-2xl font-semibold capitalize">
-        {isListening ? "Speaking" : "Speak"} To {searchParams.get("agent_name")}
-      </h1>
       <div className="space-x-4">
         <Button
           onClick={isListening ? stopRecording : startRecording}
