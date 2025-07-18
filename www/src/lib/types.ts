@@ -15,3 +15,10 @@ export interface APIResponse<T> {
   data: T;
   error: Error;
 }
+
+export interface User {
+  id: string;
+  created_at: Date;
+  email: string;
+  token: string;
+}

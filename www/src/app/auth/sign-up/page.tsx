@@ -3,20 +3,29 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { signUp } from "@/lib/services/auth";
-import { FormEvent } from "react";
+import { COOKIE_KEYS, ROUTES } from "@/lib/constants";
+import { signIn, signUp } from "@/lib/services/auth";
+import Cookie from "js-cookie";
+import { FormEvent, useState } from "react";
 
 export default function SignUpPage() {
+  const [isLoading, setIsLoading] = useState(false);
+
   async function handleSubmit(evt: FormEvent) {
     evt.preventDefault();
     const formData = new FormData(evt.target as HTMLFormElement);
     const email = String(formData.get("email"));
     const password = String(formData.get("password"));
     try {
-      const response = await signUp(email, password);
-      console.log("response", response);
+      setIsLoading(true);
+      await signUp(email, password);
+      const response = await signIn(email, password);
+      Cookie.set(COOKIE_KEYS.token, response.data.token);
+      window.location.href = ROUTES.agent.index;
     } catch (err) {
       alert(err);
+    } finally {
+      setIsLoading(false);
     }
   }
   return (
@@ -36,7 +45,9 @@ export default function SignUpPage() {
           <Label>Password</Label>
           <Input required type="password" name="password" />
         </fieldset>
-        <Button>Sign up</Button>
+        <Button disabled={isLoading}>
+          {isLoading ? "Loading..." : "Sign up"}
+        </Button>
       </form>
     </>
   );

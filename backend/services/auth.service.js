@@ -1,11 +1,12 @@
-import { hash } from "bcrypt";
+import { hash, compare } from "bcrypt";
 import { pool } from "../config/pg.js";
+import jwt from "jsonwebtoken";
 
 export async function signUpService(payload) {
+  // console.log("signUpService_payload", payload);
   try {
-    const { data, error, status } = await getUserByEmailService(payload.email);
+    const { data } = await getUserByEmailService(payload.email);
     if (data) return { status: 400, error: "a user with email already exists" };
-
     const hashedPassword = await hash(payload.password, 10);
     const result = await pool.query(
       "INSERT INTO users (email, password) VALUES ($1, $2) RETURNING id, email",
@@ -22,7 +23,35 @@ export async function signUpService(payload) {
   }
 }
 
-export async function signInService(payload) {}
+export async function signInService(payload) {
+  try {
+    const { data, status } = await getUserByEmailService(payload.email);
+    if (!data) return { error: "wrong credentials", status: 401 };
+    const isMatch = await compare(payload.password, data.password);
+    if (!isMatch) {
+      return {
+        error: "wrong credentials",
+        status: 401,
+      };
+    }
+    const token = jwt.sign({ userId: data.id }, process.env.JWT_SECRET, {
+      expiresIn: "7d",
+    });
+    delete data.password; // remove hashed password from response
+    return {
+      data: {
+        ...data,
+        token,
+      },
+      status,
+    };
+  } catch (err) {
+    return {
+      error: err.message,
+      status: 500,
+    };
+  }
+}
 
 async function getUserByEmailService(email) {
   try {

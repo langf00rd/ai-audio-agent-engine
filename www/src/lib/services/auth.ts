@@ -1,14 +1,24 @@
 import { API_BASE_URL } from "../constants";
-import { Agent, APIResponse } from "../types";
+import { APIResponse, User } from "../types";
 
 export async function signUp(email: string, password: string) {
   const response = await fetch(`${API_BASE_URL}/auth/sign-up`, {
     method: "POST",
+    headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ email, password }),
   });
   const result = await response.json();
   if (result.error) throw new Error(result.error);
-  return result as APIResponse<Agent>;
+  return result as APIResponse<User>;
 }
 
-export async function signIn(email: string, password: string) {}
+export async function signIn(email: string, password: string) {
+  const response = await fetch(`${API_BASE_URL}/auth/sign-in`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ email, password }),
+  });
+  const result = await response.json();
+  if (result.error) throw new Error(result.error);
+  return result as APIResponse<User>;
+}
