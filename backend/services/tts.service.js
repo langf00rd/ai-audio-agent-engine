@@ -6,7 +6,7 @@ export async function ttsService(text, res) {
     const command = new SynthesizeSpeechCommand({
       OutputFormat: "mp3",
       Text: text,
-      VoiceId: "Joanna",
+      VoiceId: "Matthew",
       Engine: "neural",
     });
     const { AudioStream } = await polly.send(command);
