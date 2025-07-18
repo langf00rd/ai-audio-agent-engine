@@ -20,11 +20,11 @@ export async function handleWebSocketConnection(ws) {
   });
 
   transcriber.on("error", (error) => {
-    console.error("error:", error);
+    console.error("transcriber error:", error);
   });
 
   transcriber.on("close", (code, reason) =>
-    console.log("session closed -> ", code, reason),
+    console.log("transcriber session closed -> ", code, reason),
   );
 
   transcriber.on("turn", (turn) => {

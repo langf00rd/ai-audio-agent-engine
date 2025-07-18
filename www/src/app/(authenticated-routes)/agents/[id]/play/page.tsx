@@ -2,6 +2,7 @@
 
 import { Button } from "@/components/ui/button";
 import { useWebSocket } from "@/hooks/use-web-socket";
+import { speak } from "@/lib/services/tts";
 import { useParams, useSearchParams } from "next/navigation";
 import { useRef, useState } from "react";
 
@@ -65,22 +66,12 @@ export default function AgentPlayPage() {
       });
       const result = await response.json();
       setAIResponse(result.data);
-      readOut(result.data);
+      await speak(result.data);
     } catch (err) {
       alert(err);
     } finally {
       setIsLoadingAIResponse(false);
     }
-  }
-
-  function readOut(text: string) {
-    const utterance = new SpeechSynthesisUtterance(text);
-    utterance.lang = "en-US";
-    utterance.rate = 1;
-    utterance.onend = () => {
-      console.log("✅ tts finished speaking");
-    };
-    speechSynthesis.speak(utterance);
   }
 
   if (!connected) return <p>Not connected</p>;

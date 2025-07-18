@@ -14,6 +14,7 @@ import {
   signInController,
   signUpController,
 } from "./controller/auth.controller.js";
+import { ttsController } from "./controller/tts.controller.js";
 import { handleWebSocketConnection } from "./utils/ws.js";
 
 const PORT = 8000;
@@ -43,5 +44,6 @@ app.get("/agents/:id", getAgentByID);
 app.post("/ai", aiChat);
 app.post("/auth/sign-up", signUpController);
 app.post("/auth/sign-in", signInController);
+app.post("/utils/tts", ttsController);
 
 server.listen(PORT, () => console.log(`listening on http://localhost:${PORT}`));
