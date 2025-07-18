@@ -32,7 +32,7 @@ app.use(
 );
 
 wss.on("connection", async (ws) => {
-  console.log("client connected");
+  console.log("web socket client connected");
   handleWebSocketConnection(ws);
 });
 
