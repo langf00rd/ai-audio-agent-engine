@@ -1,9 +1,9 @@
 import { Pool } from "pg";
 
 export const pool = new Pool({
-  user: "postgres.bkvfrorxsupseraofliw",
-  password: "e5IYQqjaKZfUaYLX",
-  host: "aws-0-eu-north-1.pooler.supabase.com",
-  port: 6543,
-  database: "postgres",
+  user: process.env.DB_USER,
+  password: process.env.DB_PASSWORD,
+  host: process.env.DB_HOST,
+  port: process.env.DB_PORT,
+  database: process.env.DB_NAME,
 });

@@ -11,6 +11,7 @@ import {
 } from "./controller/agent.controller.js";
 import cors from "cors";
 import { aiChat } from "./controller/ai.controller.js";
+import { signUpController } from "./controller/auth.controller.js";
 
 const PORT = 8000;
 const app = express();
@@ -37,5 +38,6 @@ app.post("/agents", createAgent);
 app.get("/agents", getAgents);
 app.get("/agents/:id", getAgentByID);
 app.post("/ai", aiChat);
+app.post("/auth/sign-up", signUpController);
 
 server.listen(PORT, () => console.log(`listening on http://localhost:${PORT}`));

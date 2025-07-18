@@ -10,3 +10,8 @@ export type Agent = {
   };
   objections_and_responses: Record<string, string>;
 };
+
+export interface APIResponse<T> {
+  data: T;
+  error: Error;
+}

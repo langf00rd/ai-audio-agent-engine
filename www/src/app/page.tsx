@@ -19,7 +19,7 @@ export default function Home() {
         </p>
         <div className="space-x-2">
           <Link href={ROUTES.agent.create}>
-            <Button size="lg">Get started</Button>
+            <Button size="lg">Create An Agent</Button>
           </Link>
           <Link href={ROUTES.agent.index}>
             <Button size="lg">See Agents List</Button>
