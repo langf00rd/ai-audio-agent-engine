@@ -55,6 +55,7 @@ export default function AgentPlayPage() {
   };
 
   async function handleGetAIResponse() {
+    stopRecording();
     try {
       setIsLoadingAIResponse(true);
       const response = await fetch("http://localhost:8000/ai", {
