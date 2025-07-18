@@ -32,7 +32,7 @@ wss.on("connection", async (ws) => {
   handleWebSocketConnection(ws);
 });
 
-app.get("/", (res) => res.send(`server running`));
+app.get("/", (_, res) => res.send(`server running`));
 app.post("/agents", createAgent);
 app.get("/agents", getAgents);
 app.get("/agents/:id", getAgentByID);
