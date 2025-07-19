@@ -1,9 +1,16 @@
 "use client";
 
+import { AgentAnalyticsChart } from "@/components/charts/agent";
 import { Button } from "@/components/ui/button";
 import { ROUTES } from "@/lib/constants";
 import { fetchAgentAnalytics, fetchAgentById } from "@/lib/services/agent";
-import { AgentAnalytics, AgentConfig } from "@/lib/types";
+import {
+  AgentAnalytics,
+  AgentAnalyticsChartDuration,
+  AgentAnalyticsMetadata,
+  AgentConfig,
+  Analytics,
+} from "@/lib/types";
 import { Settings } from "lucide-react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
@@ -11,9 +18,14 @@ import { useEffect, useState } from "react";
 
 export default function AgentInfo() {
   const params = useParams();
+  const [chartDayFilter, setChartDayFilter] =
+    useState<AgentAnalyticsChartDuration>(AgentAnalyticsChartDuration.DAY);
   const [agent, setAgent] = useState<AgentConfig | null>(null);
   const [loading, setLoading] = useState(true);
   const [analytics, setAnalytics] = useState<AgentAnalytics | null>(null);
+  const [analyticsRaw, setAnalyticsRaw] = useState<
+    Analytics<AgentAnalyticsMetadata>[] | null
+  >(null);
 
   useEffect(() => {
     async function handleFetchAgent() {
@@ -31,6 +43,7 @@ export default function AgentInfo() {
       try {
         setLoading(true);
         const { data } = await fetchAgentAnalytics(String(params.id));
+        setAnalyticsRaw(data);
         const totalInvocations = data.length;
         const days = data.map((d) =>
           new Date(d.created_at).toLocaleString("en-US", { weekday: "long" }),
@@ -64,37 +77,56 @@ export default function AgentInfo() {
   if (!loading && !agent) return <p>No agent found</p>;
 
   return (
-    <main className="space-y-4">
-      <h1 className="text-2xl font-semibold capitalize">
-        Speak to {agent?.name || "..."}
-      </h1>
-      <div className="space-x-2">
-        <Link href={`${ROUTES.agent.index}/${params.id}/configure`}>
-          <Button variant="secondary">
-            Configure Agent
-            <Settings />
-          </Button>
-        </Link>
-        <Link
-          href={`${ROUTES.agent.index}/${params.id}/play?agent_name=${agent?.name}`}
-        >
-          <Button>Use Agent</Button>
-        </Link>
+    <main className="space-y-10">
+      <div className="space-y-4">
+        <h1 className="text-2xl font-semibold capitalize">
+          Speak to {agent?.name || "..."}
+        </h1>
+        <div className="space-x-2">
+          <Link href={`${ROUTES.agent.index}/${params.id}/configure`}>
+            <Button variant="secondary">
+              Configure Agent
+              <Settings />
+            </Button>
+          </Link>
+          <Link
+            href={`${ROUTES.agent.index}/${params.id}/play?agent_name=${agent?.name}`}
+          >
+            <Button>Use Agent</Button>
+          </Link>
+        </div>
       </div>
       <ul className="grid grid-cols-2 gap-2">
-        <li className="border p-4">
-          <h3 className="text-neutral-600">Total Invokations</h3>
+        <li className="bg-neutral-50 rounded-md p-4">
+          <h3 className="text-neutral-600">Total Calls</h3>
           <p className="text-2xl font-semibold">
             {analytics?.totalInvocations || "--"}
           </p>
         </li>
-        <li className="border p-4">
+        <li className="bg-neutral-50 rounded-md p-4">
           <h3 className="text-neutral-600">Highest traffic day</h3>
           <p className="text-2xl font-semibold">
             {analytics?.mostCommonDay || "--"}
           </p>
         </li>
       </ul>
+      <div>
+        <div className="space-x-1 float-right">
+          {Object.values(AgentAnalyticsChartDuration).map((a) => (
+            <Button
+              key={a}
+              size="sm"
+              onClick={() => setChartDayFilter(a)}
+              variant={chartDayFilter === a ? "default" : "outline"}
+            >
+              {a}
+            </Button>
+          ))}
+        </div>
+        {analyticsRaw && (
+          <AgentAnalyticsChart groupBy={chartDayFilter} data={analyticsRaw} />
+        )}
+      </div>
     </main>
   );
 }

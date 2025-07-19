@@ -76,3 +76,8 @@ export interface KV {
   key: string;
   value: string;
 }
+
+export enum AgentAnalyticsChartDuration {
+  DAY = "day",
+  MONTH = "month",
+}

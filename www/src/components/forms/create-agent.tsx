@@ -259,7 +259,7 @@ export default function CreateAgentForm(props: {
   }, [props.data]);
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6">
+    <form onSubmit={handleSubmit} className="space-y-5">
       {/* agent core info */}
       <fieldset>
         <Label>Name</Label>
@@ -299,7 +299,9 @@ export default function CreateAgentForm(props: {
       </fieldset>
       {/* support contact */}
       <div>
-        <Label className="text-xl mb-2">Support Contact</Label>
+        <Label className="text-[16px] font-semibold mt-10 mb-2">
+          Support Contact
+        </Label>
         {supportContact.map((item, i) => (
           <div key={i} className="flex gap-2 mb-2">
             <Input
@@ -350,7 +352,9 @@ export default function CreateAgentForm(props: {
       </div>
       {/* custom interactions */}
       <div>
-        <Label className="text-xl mb-2">Custom Interactions</Label>
+        <Label className="text-[16px] font-semibold mt-10 mb-2">
+          Custom Interactions
+        </Label>
         {customInteractions.map((item, i) => (
           <div key={i} className="flex gap-2 mb-2">
             <Input
@@ -403,9 +407,9 @@ export default function CreateAgentForm(props: {
       </div>
       {/* services */}
       <div>
-        <Label className="text-xl mb-2">Services</Label>
+        <Label className="text-[16px] font-semibold mt-10 mb-2">Services</Label>
         {services.map((service, i) => (
-          <div key={i} className="border p-4 space-y-2 mb-4 rounded">
+          <div key={i} className="space-y-2 mb-4 rounded">
             <Input
               required
               placeholder="Service Name"
@@ -484,9 +488,9 @@ export default function CreateAgentForm(props: {
       </div>
       {/* faqs */}
       <div>
-        <Label className="text-xl mb-2">FAQs</Label>
+        <Label className="text-[16px] font-semibold mt-10 mb-2">FAQs</Label>
         {faqs.map((faq, i) => (
-          <div key={i} className="space-y-2 mb-4 border p-4 rounded">
+          <div key={i} className="space-y-2 mb-4 rounded">
             <Input
               required
               placeholder="FAQ Question"
@@ -527,7 +531,7 @@ export default function CreateAgentForm(props: {
           ? "Creating..."
           : props.data
             ? "Save changes"
-            : '"Create Agent"'}
+            : "Create agent"}
       </Button>
     </form>
   );

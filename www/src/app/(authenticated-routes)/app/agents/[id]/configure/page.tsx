@@ -16,6 +16,7 @@ import { fetchAgentById } from "@/lib/services/agent";
 import { AgentConfig } from "@/lib/types";
 import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
+import { toast } from "sonner";
 
 const tabs = ["General", "Knowledge base"];
 
@@ -53,7 +54,7 @@ export default function ConfigureAgent() {
           {loading && "loading..."}
           {agent && (
             <CreateAgentForm
-              onSubmitSuccess={() => alert("agent updated successfully")}
+              onSubmitSuccess={() => toast("agent updated successfully")}
               data={{ ...agent, id: Number(params.id) }}
             />
           )}
