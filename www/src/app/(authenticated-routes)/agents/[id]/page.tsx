@@ -3,7 +3,7 @@
 import { Button } from "@/components/ui/button";
 import { ROUTES } from "@/lib/constants";
 import { fetchAgentAnalytics, fetchAgentById } from "@/lib/services/agent";
-import { Agent, AgentAnalytics } from "@/lib/types";
+import { AgentAnalytics, AgentConfig } from "@/lib/types";
 import { Settings } from "lucide-react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
@@ -11,55 +11,50 @@ import { useEffect, useState } from "react";
 
 export default function AgentInfo() {
   const params = useParams();
-  const [agent, setAgent] = useState<Agent | null>(null);
+  const [agent, setAgent] = useState<AgentConfig | null>(null);
   const [loading, setLoading] = useState(true);
   const [analytics, setAnalytics] = useState<AgentAnalytics | null>(null);
 
-  async function handleFetchAgent() {
-    try {
-      setLoading(true);
-      const { data } = await fetchAgentById(String(params.id));
-      setAgent(data);
-    } catch (err) {
-      alert(err);
-    } finally {
-      setLoading(false);
-    }
-  }
-
-  async function handleFetchAgentAnalytics() {
-    try {
-      setLoading(true);
-      const { data } = await fetchAgentAnalytics(String(params.id));
-      const totalInvocations = data.length;
-      const uniqueSessions = new Set(
-        data.map((d) => d.metadata.session_id).filter(Boolean),
-      ).size;
-      const days = data.map((d) =>
-        new Date(d.created_at).toLocaleString("en-US", { weekday: "long" }),
-      );
-      const dayCounts = days.reduce(
-        (acc, day) => {
-          acc[day] = (acc[day] || 0) + 1;
-          return acc;
-        },
-        {} as Record<string, number>,
-      );
-      const mostCommonDay = Object.entries(dayCounts).reduce(
-        (max, curr) => {
-          return curr[1] > max[1] ? curr : max;
-        },
-        ["", 0],
-      )[0];
-      setAnalytics({ totalInvocations, uniqueSessions, mostCommonDay });
-    } catch (err) {
-      alert(err);
-    } finally {
-      setLoading(false);
-    }
-  }
-
   useEffect(() => {
+    async function handleFetchAgent() {
+      try {
+        setLoading(true);
+        const { data } = await fetchAgentById(String(params.id));
+        setAgent(data);
+      } catch (err) {
+        alert(err);
+      } finally {
+        setLoading(false);
+      }
+    }
+    async function handleFetchAgentAnalytics() {
+      try {
+        setLoading(true);
+        const { data } = await fetchAgentAnalytics(String(params.id));
+        const totalInvocations = data.length;
+        const days = data.map((d) =>
+          new Date(d.created_at).toLocaleString("en-US", { weekday: "long" }),
+        );
+        const dayCounts = days.reduce(
+          (acc, day) => {
+            acc[day] = (acc[day] || 0) + 1;
+            return acc;
+          },
+          {} as Record<string, number>,
+        );
+        const mostCommonDay = Object.entries(dayCounts).reduce(
+          (max, curr) => {
+            return curr[1] > max[1] ? curr : max;
+          },
+          ["", 0],
+        )[0];
+        setAnalytics({ totalInvocations, mostCommonDay });
+      } catch (err) {
+        alert(err);
+      } finally {
+        setLoading(false);
+      }
+    }
     handleFetchAgent();
     handleFetchAgentAnalytics();
   }, [params.id]);
@@ -88,15 +83,9 @@ export default function AgentInfo() {
       </div>
       <ul className="grid grid-cols-2 gap-2">
         <li className="border p-4">
-          <h3 className="text-neutral-600">Invokations</h3>
+          <h3 className="text-neutral-600">Total Invokations</h3>
           <p className="text-2xl font-semibold">
             {analytics?.totalInvocations || "--"}
-          </p>
-        </li>
-        <li className="border p-4">
-          <h3 className="text-neutral-600">Highest concurrent connections</h3>
-          <p className="text-2xl font-semibold">
-            {analytics?.uniqueSessions || "--"}
           </p>
         </li>
         <li className="border p-4">
@@ -104,18 +93,6 @@ export default function AgentInfo() {
           <p className="text-2xl font-semibold">
             {analytics?.mostCommonDay || "--"}
           </p>
-        </li>
-        <li className="border p-4">
-          <h3 className="text-neutral-600">Highest concurrent connections</h3>
-          <p className="text-2xl font-semibold">--</p>
-        </li>
-        <li className="border p-4">
-          <h3 className="text-neutral-600">Top audience location</h3>
-          <p className="text-2xl font-semibold">--</p>
-        </li>
-        <li className="border p-4">
-          <h3 className="text-neutral-600">Popular industry</h3>
-          <p className="text-2xl font-semibold">--</p>
         </li>
       </ul>
     </main>

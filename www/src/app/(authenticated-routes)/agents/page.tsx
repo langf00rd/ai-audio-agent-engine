@@ -1,12 +1,12 @@
 "use client";
 
 import { API_BASE_URL } from "@/lib/constants";
-import { Agent } from "@/lib/types";
+import { AgentConfig } from "@/lib/types";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 
 export default function AgentsPage() {
-  const [agents, setAgents] = useState<Agent[]>([]);
+  const [agents, setAgents] = useState<AgentConfig[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -32,24 +32,12 @@ export default function AgentsPage() {
         {agents.map((agent) => (
           <li
             key={agent.id}
-            className="border border-neutral-200 hover:bg-neutral-100 p-6"
+            className="rounded-md bg-neutral-100/70  hover:bg-neutral-100 p-6"
           >
             <Link href={`/agents/${agent.id}`} className="space-y-2 capitalize">
               <h2 className="text-xl font-semibold">{agent.name}</h2>
-              <p className="">{agent.description}</p>
-              <div className="text-neutral-600">
-                <h3 className="font-medium mb-1">Audience:</h3>
-                <ul className="list-disc list-inside space-y-1">
-                  {Object.entries(agent.audience).map(([key, value]) => (
-                    <li key={key}>
-                      <span className="font-medium">
-                        {key.replaceAll("_", " ")}:
-                      </span>{" "}
-                      {value}
-                    </li>
-                  ))}
-                </ul>
-              </div>
+              <p>{agent.description}</p>
+              <p className="text-sm text-neutral-400">{agent.brand_voice}</p>
             </Link>
           </li>
         ))}

@@ -8,6 +8,7 @@ import {
   createAgent,
   getAgentByID,
   getAgents,
+  updateAgent,
 } from "./controller/agent.controller.js";
 import { aiChat } from "./controller/ai.controller.js";
 import {
@@ -43,6 +44,7 @@ wss.on("connection", async (ws) => {
 
 app.get("/", (_, res) => res.send(`server running`));
 app.post("/agents", createAgent);
+app.put("/agents/:id", updateAgent);
 app.get("/agents", getAgents);
 app.get("/agents/:id", getAgentByID);
 app.post("/ai", aiChat);

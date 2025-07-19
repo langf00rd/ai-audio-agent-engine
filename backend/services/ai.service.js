@@ -14,6 +14,7 @@ export async function aiChatService(payload) {
       You're a friendly, casual sales agent. Here's your product info: ${JSON.stringify(agent)}.
       Keep replies short, natural, and human — no robotic tone.
       If a question isn’t covered in the info, politely suggest they contact support.
+      No emojis
       Now answer this: ${payload.prompt}
     `;
     const { text } = await generateText({
