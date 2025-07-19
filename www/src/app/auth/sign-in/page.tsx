@@ -6,7 +6,9 @@ import { Label } from "@/components/ui/label";
 import { COOKIE_KEYS, ROUTES } from "@/lib/constants";
 import { signIn } from "@/lib/services/auth";
 import Cookie from "js-cookie";
+import Link from "next/link";
 import { FormEvent, useState } from "react";
+import { ExternalToast, toast } from "sonner";
 
 export default function SignUpPage() {
   const [isLoading, setIsLoading] = useState(false);
@@ -23,11 +25,14 @@ export default function SignUpPage() {
       Cookie.set(COOKIE_KEYS.user, JSON.stringify(response.data));
       window.location.href = ROUTES.agent.index;
     } catch (err) {
-      alert(err);
+      toast((err as Error).message, {
+        type: "error",
+      } as unknown as ExternalToast);
     } finally {
       setIsLoading(false);
     }
   }
+
   return (
     <>
       <h1 className="text-xl font-semibold mb-4">Login to your account</h1>
@@ -45,6 +50,12 @@ export default function SignUpPage() {
           <Label>Password</Label>
           <Input required type="password" name="password" />
         </fieldset>
+        <p className="text-sm text-neutral-700">
+          Don&apos;t have an account?{" "}
+          <Link href={ROUTES.auth.signUp} className="underline">
+            Create one
+          </Link>
+        </p>
         <Button disabled={isLoading}>
           {isLoading ? "Loading..." : "Sign in"}
         </Button>
