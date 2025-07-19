@@ -17,6 +17,7 @@ export async function handleWebSocketConnection(ws) {
 
   transcriber.on("open", ({ id }) => {
     console.log(`session opened -> ${id}`);
+    ws.send(JSON.stringify({ sessionId: id }));
   });
 
   transcriber.on("error", (error) => {

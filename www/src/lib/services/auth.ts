@@ -7,7 +7,6 @@ export async function signUp(email: string, password: string) {
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ email, password }),
   });
-  if (!response.ok) throw new Error("an error occurred. try again later.");
   const result = await response.json();
   if (result.error) throw new Error(result.error);
   return result as APIResponse<User>;
@@ -19,7 +18,6 @@ export async function signIn(email: string, password: string) {
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ email, password }),
   });
-  if (!response.ok) throw new Error("an error occurred. try again later.");
   const result = await response.json();
   if (result.error) throw new Error(result.error);
   return result as APIResponse<User>;

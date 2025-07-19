@@ -17,8 +17,27 @@ export interface APIResponse<T> {
 }
 
 export interface User {
-  id: string;
+  id: number;
   created_at: Date;
   email: string;
   token: string;
+}
+
+export interface Analytics<T> {
+  id: number;
+  created_at: Date;
+  type: "AGENT_USAGE";
+  user_id: null | number;
+  metadata: T;
+}
+
+export interface AgentAnalyticsMetadata {
+  agent_id: number;
+  session_id: string;
+}
+
+export interface AgentAnalytics {
+  totalInvocations: number;
+  uniqueSessions: number;
+  mostCommonDay: string;
 }

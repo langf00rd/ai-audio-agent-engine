@@ -3,6 +3,7 @@
 import { Button } from "@/components/ui/button";
 import { useWebSocket } from "@/hooks/use-web-socket";
 import { API_BASE_URL } from "@/lib/constants";
+import { trackAgentUsage } from "@/lib/services/analytics";
 import { speak } from "@/lib/services/tts";
 import { useParams, useSearchParams } from "next/navigation";
 import { useRef, useState } from "react";
@@ -12,6 +13,7 @@ export default function AgentPlayPage() {
   const searchParams = useSearchParams();
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
 
+  const [sessionId, setSessionId] = useState(null);
   const [transcript, setTranscript] = useState("");
   const [aiResponse, setAIResponse] = useState("");
   const [isListening, setIsListening] = useState(false);
@@ -21,11 +23,22 @@ export default function AgentPlayPage() {
     url: "ws://localhost:8000/ws",
     onMessage: (evt) => {
       const data = JSON.parse(evt.data);
+      if (data.sessionId) {
+        setSessionId(data.sessionId);
+        trackAgentUsage(String(params.id), data.sessionId);
+      }
       if (data.transcript) setTranscript(data.transcript);
     },
     onConnectionClose: () => {
       mediaRecorderRef.current?.stop();
     },
+    // onConnection: () => {
+    //   setTimeout(() => {
+    //     console.log("sessionId", sessionId);
+    //     if (!sessionId) return;
+    //     trackAgentUsage(String(params.id), sessionId);
+    //   }, 5000);
+    // },
   });
 
   const startRecording = async () => {
@@ -41,7 +54,7 @@ export default function AgentPlayPage() {
       }
     };
     mediaRecorder.start(250);
-    console.log("[recorder] Started");
+    console.log("[recorder] started");
     setIsListening(true);
   };
 
@@ -51,7 +64,7 @@ export default function AgentPlayPage() {
       mediaRecorderRef.current.state !== "inactive"
     ) {
       mediaRecorderRef.current.stop();
-      console.log("[recorder] Stopped");
+      console.log("[recorder] stopped");
       setIsListening(false);
     }
   };
@@ -79,9 +92,13 @@ export default function AgentPlayPage() {
 
   return (
     <div className="space-y-10">
-      <h1 className="text-2xl font-semibold capitalize">
-        {isListening ? "Speaking" : "Speak"} To {searchParams.get("agent_name")}
-      </h1>
+      <div>
+        <h1 className="text-2xl font-semibold capitalize">
+          {isListening ? "Speaking" : "Speak"} To{" "}
+          {searchParams.get("agent_name")}
+        </h1>
+        <em className="text-sm text-neutral-400">Session ID: {sessionId}</em>
+      </div>
       <div className="space-x-4">
         <Button
           onClick={isListening ? stopRecording : startRecording}
