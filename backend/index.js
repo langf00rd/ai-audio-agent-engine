@@ -54,4 +54,4 @@ app.post("/utils/tts", ttsController);
 app.post("/analytics", analyticsController);
 app.get("/analytics", getAnalyticsController);
 
-server.listen(PORT, () => console.log(`listening on http://localhost:${PORT}`));
+server.listen(PORT, () => console.log(`listening on ${PORT}`));

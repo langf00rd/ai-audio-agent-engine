@@ -2,7 +2,7 @@
 
 import { Button } from "@/components/ui/button";
 import { useWebSocket } from "@/hooks/use-web-socket";
-import { API_BASE_URL } from "@/lib/constants";
+import { API_BASE_URL, WEB_SOCKET_URL } from "@/lib/constants";
 import { trackAgentUsage } from "@/lib/services/analytics";
 import { speak } from "@/lib/services/tts";
 import { useParams, useSearchParams } from "next/navigation";
@@ -20,7 +20,7 @@ export default function AgentPlayPage() {
   const [isLoadingAIResponse, setIsLoadingAIResponse] = useState(false);
 
   const { webSocketRef, connected } = useWebSocket({
-    url: "ws://localhost:8000/ws",
+    url: WEB_SOCKET_URL,
     onMessage: (evt) => {
       const data = JSON.parse(evt.data);
       if (data.sessionId) {
