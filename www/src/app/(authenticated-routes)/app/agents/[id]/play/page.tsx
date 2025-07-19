@@ -32,13 +32,6 @@ export default function AgentPlayPage() {
     onConnectionClose: () => {
       mediaRecorderRef.current?.stop();
     },
-    // onConnection: () => {
-    //   setTimeout(() => {
-    //     console.log("sessionId", sessionId);
-    //     if (!sessionId) return;
-    //     trackAgentUsage(String(params.id), sessionId);
-    //   }, 5000);
-    // },
   });
 
   const startRecording = async () => {
@@ -92,31 +85,55 @@ export default function AgentPlayPage() {
 
   return (
     <div className="space-y-10">
-      <div>
-        <h1 className="text-2xl font-semibold capitalize">
+      {/* <div className="space-y-2">
+        <h1 className="text-xl font-semibold capitalize">
           {isListening ? "Speaking" : "Speak"} To{" "}
           {searchParams.get("agent_name")}
         </h1>
-        <em className="text-sm text-neutral-400">Session ID: {sessionId}</em>
-      </div>
-      <div className="space-x-4">
+      </div> */}
+      {sessionId && (
+        <p className="text-sm text-neutral-400">
+          You are connected. {sessionId}
+        </p>
+      )}
+      {transcript && (
+        <div>
+          <p className="text-sm text-neutral-400">You</p>
+          <p className="text-2xl text-neutral-700 leading-[1.6]">
+            {transcript}
+          </p>
+        </div>
+      )}
+      {aiResponse && (
+        <div className="space-y-1">
+          <div className="flex items-center gap-1 animate-bounce">
+            <div className="size-3 bg-black rounded-sm" />
+            <p className="text-sm text-neutral-400">
+              {searchParams.get("agent_name")}
+            </p>
+          </div>
+          <p className="text-2xl text-neutral-700 leading-[1.6]">
+            {aiResponse}
+          </p>
+        </div>
+      )}
+      <div className="space-x-2 fixed bottom-4">
         <Button
+          size="lg"
           onClick={isListening ? stopRecording : startRecording}
           variant={isListening ? "destructive" : "default"}
         >
           {!isListening ? "Start talking" : "Stop listening"}
         </Button>
-        <Button onClick={handleGetAIResponse} disabled={isLoadingAIResponse}>
+        <Button
+          size="lg"
+          variant="secondary"
+          onClick={handleGetAIResponse}
+          disabled={isLoadingAIResponse}
+        >
           {isLoadingAIResponse ? "Agent is thinking..." : "Ask Agent"}
         </Button>
       </div>
-      <p className="italic">{transcript || "No transcript"}</p>
-      {aiResponse && (
-        <div className="space-y-1">
-          <div className="size-4 bg-black animate-pulse" />
-          <p>{aiResponse}</p>
-        </div>
-      )}
     </div>
   );
 }

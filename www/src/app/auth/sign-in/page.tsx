@@ -20,6 +20,7 @@ export default function SignUpPage() {
       setIsLoading(true);
       const response = await signIn(email, password);
       Cookie.set(COOKIE_KEYS.token, response.data.token);
+      Cookie.set(COOKIE_KEYS.user, JSON.stringify(response.data));
       window.location.href = ROUTES.agent.index;
     } catch (err) {
       alert(err);

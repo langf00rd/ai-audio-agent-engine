@@ -17,14 +17,9 @@ export default function Home() {
           you&apos;re asleep (or on a beach). No training. No sick days. Just
           pure hustle, 24/7.
         </p>
-        <div className="space-x-2">
-          <Link href={ROUTES.agent.create}>
-            <Button size="lg">Create An Agent</Button>
-          </Link>
-          <Link href={ROUTES.agent.index}>
-            <Button size="lg">See Agents List</Button>
-          </Link>
-        </div>
+        <Link href={ROUTES.agent.index}>
+          <Button size="lg">Get started</Button>
+        </Link>
       </div>
     </main>
   );
