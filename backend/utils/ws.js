@@ -1,7 +1,9 @@
 import { AssemblyAI } from "assemblyai";
-import ffmpegPath from "ffmpeg-static";
+import ffmpegStatic from "ffmpeg-static";
 import ffmpeg from "fluent-ffmpeg";
 import { PassThrough, Readable } from "stream";
+
+const ffmpegPath = ffmpegStatic || "/opt/homebrew/bin/ffmpeg";
 
 ffmpeg.setFfmpegPath(ffmpegPath);
 
@@ -15,14 +17,15 @@ export async function handleWebSocketConnection(ws) {
 
   transcriber.on("open", ({ id }) => {
     console.log(`session opened -> ${id}`);
+    ws.send(JSON.stringify({ sessionId: id }));
   });
 
   transcriber.on("error", (error) => {
-    console.error("Error:", error);
+    console.error("transcriber error:", error);
   });
 
   transcriber.on("close", (code, reason) =>
-    console.log("Session closed:", code, reason),
+    console.log("transcriber session closed -> ", code, reason),
   );
 
   transcriber.on("turn", (turn) => {

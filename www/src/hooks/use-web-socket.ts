@@ -4,6 +4,7 @@ export function useWebSocket(props: {
   url: string;
   onMessage?: (event: MessageEvent) => void;
   onConnectionClose?: () => void;
+  onConnection?: () => void;
   onError?: (error: string) => void;
 }) {
   const [connected, setConnected] = useState(false);
@@ -16,6 +17,7 @@ export function useWebSocket(props: {
 
       ws.onopen = () => {
         setConnected(true);
+        props.onConnection?.();
         console.count("[web socket] connected");
       };
 

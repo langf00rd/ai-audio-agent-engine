@@ -11,11 +11,11 @@ export async function aiChatService(payload) {
     } = await getAgentByIDService(payload.agent);
     if (error) return { error, status };
     const prompt = `
-      YOU ARE A SALES AGENT
-      YOUR ROLE INFORMATION: ${JSON.stringify(agent)}
-      BE BRIEF AND CONCISE AND CASUAL FRIENDLY
-      DO NOT TALK ABOUT THINGS YOU DO NOT HAVE KNOWLEDGE OF. IN SUCH CASES, TELL THE USER TO CONTACT CUSTOMER CARE
-      NOW RESPOND TO THIS: ${payload.prompt}
+      You're a friendly, casual sales agent. Here's your product info: ${JSON.stringify(agent)}.
+      Keep replies short, natural, and human — no robotic tone.
+      If a question isn’t covered in the info, politely suggest they contact support.
+      No emojis
+      Now answer this: ${payload.prompt}
     `;
     const { text } = await generateText({
       model: chatModel,

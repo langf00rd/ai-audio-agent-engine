@@ -1,16 +1,26 @@
+import bodyParser from "body-parser";
+import cors from "cors";
 import dotenv from "dotenv";
 import express from "express";
-import bodyParser from "body-parser";
 import http from "http";
 import { WebSocketServer } from "ws";
-import { handleWebSocketConnection } from "./utils/ws.js";
 import {
   createAgent,
   getAgentByID,
   getAgents,
+  updateAgent,
 } from "./controller/agent.controller.js";
-import cors from "cors";
 import { aiChat } from "./controller/ai.controller.js";
+import {
+  signInController,
+  signUpController,
+} from "./controller/auth.controller.js";
+import { ttsController } from "./controller/tts.controller.js";
+import { handleWebSocketConnection } from "./utils/ws.js";
+import {
+  analyticsController,
+  getAnalyticsController,
+} from "./controller/analytics.controller.js";
 
 const PORT = 8000;
 const app = express();
@@ -28,14 +38,20 @@ app.use(
 );
 
 wss.on("connection", async (ws) => {
-  console.log("client connected");
+  console.log("web socket client connected");
   handleWebSocketConnection(ws);
 });
 
 app.get("/", (_, res) => res.send(`server running`));
 app.post("/agents", createAgent);
+app.put("/agents/:id", updateAgent);
 app.get("/agents", getAgents);
 app.get("/agents/:id", getAgentByID);
 app.post("/ai", aiChat);
+app.post("/auth/sign-up", signUpController);
+app.post("/auth/sign-in", signInController);
+app.post("/utils/tts", ttsController);
+app.post("/analytics", analyticsController);
+app.get("/analytics", getAnalyticsController);
 
-server.listen(PORT, () => console.log(`listening on http://localhost:${PORT}`));
+server.listen(PORT, () => console.log(`listening on ${PORT}`));
