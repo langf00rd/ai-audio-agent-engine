@@ -9,6 +9,7 @@ import {
 } from "@/lib/constants";
 import { trackAgentUsage } from "@/lib/services/analytics";
 import { speak } from "@/lib/services/tts";
+import { PlayCircle, StopCircle } from "lucide-react";
 import { useParams, useSearchParams } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 
@@ -38,20 +39,19 @@ export default function AgentPlayPage() {
       }
     },
     onConnectionClose: () => {
-      mediaRecorderRef.current?.stop();
+      stopRecording();
     },
   });
 
   const resetSilenceTimer = (_transcript: string) => {
     if (silenceTimerRef.current) clearTimeout(silenceTimerRef.current);
     silenceTimerRef.current = setTimeout(() => {
-      console.log("AUTO CALL AI HERE", _transcript);
       handleGetAIResponse(_transcript);
     }, AUDIO_INPUT_SILENCE_THRESHOLD_DURATION);
   };
 
   const startRecording = async () => {
-    if (!connected) return alert("socket not connected");
+    if (!connected) return alert("Socket not connected");
     const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
     const mediaRecorder = new MediaRecorder(stream, {
       mimeType: "audio/webm;codecs=opus",
@@ -62,9 +62,9 @@ export default function AgentPlayPage() {
         webSocketRef.current.send(e.data);
       }
     };
-    mediaRecorder.start(250);
-    console.log("[recorder] started");
+    mediaRecorder.start(250); // Send audio chunks every 250ms
     setIsListening(true);
+    console.log("[recorder] started");
   };
 
   const stopRecording = () => {
@@ -74,16 +74,15 @@ export default function AgentPlayPage() {
     ) {
       mediaRecorderRef.current.stop();
       console.log("[recorder] stopped");
-      setIsListening(false);
     }
     if (silenceTimerRef.current) {
       clearTimeout(silenceTimerRef.current);
       silenceTimerRef.current = null;
     }
+    setIsListening(false);
   };
 
   async function handleGetAIResponse(_transcript?: string) {
-    stopRecording();
     try {
       setIsLoadingAIResponse(true);
       const response = await fetch(`${API_BASE_URL}/ai`, {
@@ -113,7 +112,7 @@ export default function AgentPlayPage() {
   if (!connected) return <p>Not connected</p>;
 
   return (
-    <div className="space-y-10">
+    <div className="space-y-10 relative h-[80%]">
       {sessionId && (
         <p className="text-sm text-neutral-400">
           You are connected. {sessionId}
@@ -140,23 +139,19 @@ export default function AgentPlayPage() {
           </p>
         </div>
       )}
-      <div className="space-x-2 fixed bottom-4">
+      {isLoadingAIResponse && (
+        <p className="text-sm text-neutral-500 animate-pulse">
+          Agent is thinking...
+        </p>
+      )}
+      <div className="absolute bottom-[0] w-full flex items-center justify-center">
         <Button
           size="lg"
           onClick={isListening ? stopRecording : startRecording}
           variant={isListening ? "destructive" : "default"}
         >
-          {!isListening ? "Start talking" : "Stop listening"}
-        </Button>
-        <Button
-          size="lg"
-          variant="secondary"
-          onClick={() => handleGetAIResponse()}
-          disabled={isLoadingAIResponse}
-        >
-          {isLoadingAIResponse
-            ? `${searchParams.get("agent_name")} is thinking...`
-            : "Ask Agent"}
+          {isListening ? "Stop" : "Start conversation"}
+          {isListening ? <StopCircle /> : <PlayCircle />}
         </Button>
       </div>
     </div>
