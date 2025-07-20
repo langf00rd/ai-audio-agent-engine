@@ -109,8 +109,8 @@ export default function AgentInfo() {
               <DialogHeader>
                 <DialogTitle>Embed this agent on your website</DialogTitle>
                 <DialogDescription>
-                  Visitors will be able to have a conversaton with your agent.
-                  Hence, customer interaction continues even in your absence
+                  Let visitors chat with your AI agent anytime—ensuring customer
+                  engagement continues, even when you&apos;re offline.
                   <br />
                   <br />
                   Just add the provided tag to the head of your website

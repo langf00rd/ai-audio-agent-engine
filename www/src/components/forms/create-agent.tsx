@@ -263,7 +263,12 @@ export default function CreateAgentForm(props: {
       {/* agent core info */}
       <fieldset>
         <Label>Name</Label>
-        <Input defaultValue={props.data?.name ?? ""} required name="name" />
+        <Input
+          defaultValue={props.data?.name ?? ""}
+          placeholder="Alec from Salesforce"
+          required
+          name="name"
+        />
       </fieldset>
       <fieldset>
         <Label>Description</Label>
@@ -279,6 +284,7 @@ export default function CreateAgentForm(props: {
           defaultValue={props.data?.business_name ?? ""}
           required
           name="business_name"
+          placeholder="Salesforce"
         />
       </fieldset>
       <fieldset>
@@ -287,6 +293,7 @@ export default function CreateAgentForm(props: {
           defaultValue={props.data?.business_slogan ?? ""}
           required
           name="business_slogan"
+          placeholder="For the love of the game"
         />
       </fieldset>
       <fieldset>
@@ -295,6 +302,7 @@ export default function CreateAgentForm(props: {
           defaultValue={props.data?.brand_voice ?? ""}
           required
           name="brand_voice"
+          placeholder="Empathy"
         />
       </fieldset>
       {/* support contact */}
@@ -305,7 +313,7 @@ export default function CreateAgentForm(props: {
         {supportContact.map((item, i) => (
           <div key={i} className="flex gap-2 mb-2">
             <Input
-              placeholder="key"
+              placeholder="Instagram"
               value={item.key}
               name={`support_contact[${i}].key`}
               onChange={(e) =>
@@ -319,7 +327,7 @@ export default function CreateAgentForm(props: {
               }
             />
             <Input
-              placeholder="value"
+              placeholder="@salesforce"
               value={item.value}
               name={`support_contact[${i}].value`}
               onChange={(e) =>
@@ -358,7 +366,7 @@ export default function CreateAgentForm(props: {
         {customInteractions.map((item, i) => (
           <div key={i} className="flex gap-2 mb-2">
             <Input
-              placeholder="key"
+              placeholder="On rejection"
               value={item.key}
               name={`custom_interactions[${i}].key`}
               onChange={(e) =>
@@ -372,7 +380,7 @@ export default function CreateAgentForm(props: {
               }
             />
             <Input
-              placeholder="value"
+              placeholder="Recommend the 14% discount package"
               value={item.value}
               name={`custom_interactions[${i}].value`}
               onChange={(e) =>
