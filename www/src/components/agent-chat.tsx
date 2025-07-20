@@ -10,11 +10,11 @@ import {
 import { trackAgentUsage } from "@/lib/services/analytics";
 import { speak } from "@/lib/services/tts";
 import { PlayCircle, StopCircle } from "lucide-react";
-import { useParams, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
+import { ExternalToast, toast } from "sonner";
 
-export default function AgentChat() {
-  const params = useParams();
+export default function AgentChat(props: { isEmbed?: boolean; id: string }) {
   const searchParams = useSearchParams();
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const silenceTimerRef = useRef<NodeJS.Timeout | null>(null);
@@ -27,11 +27,17 @@ export default function AgentChat() {
 
   const { webSocketRef, connected } = useWebSocket({
     url: WEB_SOCKET_URL,
-    onMessage: (evt) => {
+    onMessage: async (evt) => {
       const data = JSON.parse(evt.data);
       if (data.sessionId) {
         setSessionId(data.sessionId);
-        trackAgentUsage(String(params.id), data.sessionId);
+        try {
+          await trackAgentUsage(String(props.id), data.sessionId);
+        } catch (err) {
+          toast((err as Error).message, {
+            type: "error",
+          } as unknown as ExternalToast);
+        }
       }
       if (data.transcript) {
         setTranscript(data.transcript);
@@ -62,7 +68,7 @@ export default function AgentChat() {
         webSocketRef.current.send(e.data);
       }
     };
-    mediaRecorder.start(250); // Send audio chunks every 250ms
+    mediaRecorder.start(250); // send audio chunks every 250ms
     setIsListening(true);
     console.log("[recorder] started");
   };
@@ -90,14 +96,14 @@ export default function AgentChat() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           prompt: _transcript || transcript,
-          agent: params.id,
+          agent: props.id,
         }),
       });
       const result = await response.json();
       setAIResponse(result.data);
       await speak(result.data);
     } catch (err) {
-      alert(err);
+      toast((err as Error).message);
     } finally {
       setIsLoadingAIResponse(false);
     }
@@ -109,15 +115,16 @@ export default function AgentChat() {
     };
   }, []);
 
-  if (!connected) return <p>Not connected</p>;
+  if (!connected) return <p className="text-center">Not connected</p>;
 
   return (
-    <div className="space-y-10 relative h-[80%]">
+    <div className="space-y-10 h-full relative">
       {sessionId && (
         <p className="text-sm text-neutral-400">
           You are connected. {sessionId}
         </p>
       )}
+      {props.isEmbed && <p className="text-sm text-neutral-400">[EMBED]</p>}
       {transcript && (
         <div>
           <p className="text-sm text-neutral-400">You</p>
@@ -144,9 +151,8 @@ export default function AgentChat() {
           Agent is thinking...
         </p>
       )}
-      <div className="absolute bottom-[0] w-full flex items-center justify-center">
+      <div className="absolute bottom-[10] w-full flex items-center justify-center">
         <Button
-          size="lg"
           onClick={isListening ? stopRecording : startRecording}
           variant={isListening ? "destructive" : "default"}
         >
