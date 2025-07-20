@@ -1,6 +1,5 @@
 import { Metadata } from "next";
 import { Suspense } from "react";
-import { Toaster } from "sonner";
 
 export const metadata: Metadata = {
   title: "authentication",

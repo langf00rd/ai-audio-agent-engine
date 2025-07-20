@@ -1,12 +1,25 @@
 "use client";
+
 import AgentChat from "@/components/agent-chat";
+import { useEffect, useState } from "react";
+
 export default function EmbedPage() {
-  const url = new URL(window.location.href);
-  const agentId = url.searchParams.get("agent_id");
-  if (!agentId) return <p>please pass a valid agent id</p>;
+  const [isGettingAgentId, setIsGettingAgentId] = useState(true);
+  const [agentId, setAgentId] = useState<null | string>(null);
+
+  useEffect(() => {
+    setIsGettingAgentId(true);
+    const url = new URL(window.location.href);
+    const _agentId = url.searchParams.get("agent_id");
+    if (_agentId) setAgentId(_agentId);
+    setIsGettingAgentId(false);
+  }, []);
+
   return (
     <div className="h-screen w-screen p-10 max-w-[500px] mx-auto">
-      <AgentChat id={agentId} isEmbed />
+      {isGettingAgentId && <p>please wait</p>}
+      {!isGettingAgentId && !agentId && <p>please pass a valid agent id</p>}
+      {agentId && <AgentChat id={agentId} isEmbed />}
     </div>
   );
 }
