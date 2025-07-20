@@ -38,11 +38,11 @@ export default function AgentsPage() {
         </Link>
       </div>
       {agents.length === 0 && <p>no agents found</p>}
-      <ul className="space-y-4">
+      <ul className="space-y-2">
         {agents.map((agent) => (
           <li
             key={agent.id}
-            className="rounded-md bg-neutral-50  hover:bg-neutral-100 p-6"
+            className="rounded-[14px] bg-neutral-50  hover:bg-neutral-100 p-4"
           >
             <Link
               href={`${ROUTES.agent.index}/${agent.id}`}

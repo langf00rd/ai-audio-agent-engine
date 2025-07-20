@@ -2,6 +2,15 @@
 
 import { AgentAnalyticsChart } from "@/components/charts/agent";
 import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
 import { ROUTES } from "@/lib/constants";
 import { fetchAgentAnalytics, fetchAgentById } from "@/lib/services/agent";
 import {
@@ -11,7 +20,7 @@ import {
   AgentConfig,
   Analytics,
 } from "@/lib/types";
-import { Settings } from "lucide-react";
+import { Code, Copy, Play, Settings2 } from "lucide-react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -82,28 +91,61 @@ export default function AgentInfo() {
         <h1 className="text-2xl font-semibold capitalize">
           Speak to {agent?.name || "..."}
         </h1>
-        <div className="space-x-2">
+        <div className="gap-x-2 flex items-center">
           <Link href={`${ROUTES.agent.index}/${params.id}/configure`}>
             <Button variant="secondary">
+              <Settings2 />
               Configure Agent
-              <Settings />
             </Button>
           </Link>
+          <Dialog>
+            <DialogTrigger asChild>
+              <Button variant="secondary">
+                <Code />
+                Get embed
+              </Button>
+            </DialogTrigger>
+            <DialogContent>
+              <DialogHeader>
+                <DialogTitle>Embed this agent on your website</DialogTitle>
+                <DialogDescription>
+                  Let visitors chat with your AI agent anytime—ensuring customer
+                  engagement continues, even when you&apos;re offline.
+                  <br />
+                  <br />
+                  Just add the provided tag to the head of your website
+                </DialogDescription>
+              </DialogHeader>
+              <div className="flex gap-2">
+                <Input
+                  readOnly
+                  className="bg-neutral-100"
+                  value={`<link href="${process.env.NEXT_PUBLIC_SITE_URL}embed/${Date.now()}" />`}
+                />
+                <Button>
+                  <Copy />
+                </Button>
+              </div>
+            </DialogContent>
+          </Dialog>
           <Link
             href={`${ROUTES.agent.index}/${params.id}/play?agent_name=${agent?.name}`}
           >
-            <Button>Use Agent</Button>
+            <Button>
+              <Play />
+              Talk to Agent
+            </Button>
           </Link>
         </div>
       </div>
       <ul className="grid grid-cols-2 gap-2">
-        <li className="bg-neutral-50 rounded-md p-4">
+        <li className="bg-neutral-50 rounded-[14px] p-4">
           <h3 className="text-neutral-600">Total Calls</h3>
           <p className="text-2xl font-semibold">
             {analytics?.totalInvocations || "--"}
           </p>
         </li>
-        <li className="bg-neutral-50 rounded-md p-4">
+        <li className="bg-neutral-50 rounded-[14px] p-4">
           <h3 className="text-neutral-600">Highest traffic day</h3>
           <p className="text-2xl font-semibold">
             {analytics?.mostCommonDay || "--"}

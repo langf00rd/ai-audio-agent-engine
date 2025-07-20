@@ -7,10 +7,12 @@ import { COOKIE_KEYS, ROUTES } from "@/lib/constants";
 import { signIn } from "@/lib/services/auth";
 import Cookie from "js-cookie";
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 import { FormEvent, useState } from "react";
 import { ExternalToast, toast } from "sonner";
 
 export default function SignUpPage() {
+  const searchParams = useSearchParams();
   const [isLoading, setIsLoading] = useState(false);
 
   async function handleSubmit(evt: FormEvent) {
@@ -23,7 +25,7 @@ export default function SignUpPage() {
       const response = await signIn(email, password);
       Cookie.set(COOKIE_KEYS.token, response.data.token);
       Cookie.set(COOKIE_KEYS.user, JSON.stringify(response.data));
-      window.location.href = ROUTES.agent.index;
+      window.location.href = searchParams.get("redirect") || ROUTES.agent.index;
     } catch (err) {
       toast((err as Error).message, {
         type: "error",
