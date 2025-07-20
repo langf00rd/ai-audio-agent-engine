@@ -16,6 +16,7 @@ export const COOKIE_KEYS = {
   token: "tk",
   user: "user",
 };
+export const AUDIO_INPUT_SILENCE_THRESHOLD_DURATION = 2000;
 export const DAYS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
 export const MONTHS = [
   "Jan",

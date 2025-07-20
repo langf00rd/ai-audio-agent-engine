@@ -2,18 +2,23 @@
 
 import { Button } from "@/components/ui/button";
 import { useWebSocket } from "@/hooks/use-web-socket";
-import { API_BASE_URL, WEB_SOCKET_URL } from "@/lib/constants";
+import {
+  API_BASE_URL,
+  AUDIO_INPUT_SILENCE_THRESHOLD_DURATION,
+  WEB_SOCKET_URL,
+} from "@/lib/constants";
 import { trackAgentUsage } from "@/lib/services/analytics";
 import { speak } from "@/lib/services/tts";
 import { useParams, useSearchParams } from "next/navigation";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 export default function AgentPlayPage() {
   const params = useParams();
   const searchParams = useSearchParams();
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
+  const silenceTimerRef = useRef<NodeJS.Timeout | null>(null);
 
-  const [sessionId, setSessionId] = useState(null);
+  const [sessionId, setSessionId] = useState<string | null>(null);
   const [transcript, setTranscript] = useState("");
   const [aiResponse, setAIResponse] = useState("");
   const [isListening, setIsListening] = useState(false);
@@ -27,12 +32,23 @@ export default function AgentPlayPage() {
         setSessionId(data.sessionId);
         trackAgentUsage(String(params.id), data.sessionId);
       }
-      if (data.transcript) setTranscript(data.transcript);
+      if (data.transcript) {
+        setTranscript(data.transcript);
+        resetSilenceTimer(data.transcript);
+      }
     },
     onConnectionClose: () => {
       mediaRecorderRef.current?.stop();
     },
   });
+
+  const resetSilenceTimer = (_transcript: string) => {
+    if (silenceTimerRef.current) clearTimeout(silenceTimerRef.current);
+    silenceTimerRef.current = setTimeout(() => {
+      console.log("AUTO CALL AI HERE", _transcript);
+      handleGetAIResponse(_transcript);
+    }, AUDIO_INPUT_SILENCE_THRESHOLD_DURATION);
+  };
 
   const startRecording = async () => {
     if (!connected) return alert("socket not connected");
@@ -60,16 +76,23 @@ export default function AgentPlayPage() {
       console.log("[recorder] stopped");
       setIsListening(false);
     }
+    if (silenceTimerRef.current) {
+      clearTimeout(silenceTimerRef.current);
+      silenceTimerRef.current = null;
+    }
   };
 
-  async function handleGetAIResponse() {
+  async function handleGetAIResponse(_transcript?: string) {
     stopRecording();
     try {
       setIsLoadingAIResponse(true);
       const response = await fetch(`${API_BASE_URL}/ai`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ prompt: transcript, agent: params.id }),
+        body: JSON.stringify({
+          prompt: _transcript || transcript,
+          agent: params.id,
+        }),
       });
       const result = await response.json();
       setAIResponse(result.data);
@@ -81,16 +104,16 @@ export default function AgentPlayPage() {
     }
   }
 
+  useEffect(() => {
+    return () => {
+      stopRecording();
+    };
+  }, []);
+
   if (!connected) return <p>Not connected</p>;
 
   return (
     <div className="space-y-10">
-      {/* <div className="space-y-2">
-        <h1 className="text-xl font-semibold capitalize">
-          {isListening ? "Speaking" : "Speak"} To{" "}
-          {searchParams.get("agent_name")}
-        </h1>
-      </div> */}
       {sessionId && (
         <p className="text-sm text-neutral-400">
           You are connected. {sessionId}
@@ -128,10 +151,12 @@ export default function AgentPlayPage() {
         <Button
           size="lg"
           variant="secondary"
-          onClick={handleGetAIResponse}
+          onClick={() => handleGetAIResponse()}
           disabled={isLoadingAIResponse}
         >
-          {isLoadingAIResponse ? "Agent is thinking..." : "Ask Agent"}
+          {isLoadingAIResponse
+            ? `${searchParams.get("agent_name")} is thinking...`
+            : "Ask Agent"}
         </Button>
       </div>
     </div>
