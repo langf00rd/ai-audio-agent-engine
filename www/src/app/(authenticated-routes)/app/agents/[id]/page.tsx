@@ -98,7 +98,7 @@ export default function AgentInfo() {
           <Link href={`${ROUTES.agent.index}/${params.id}/configure`}>
             <Button variant="secondary">
               <Settings2 />
-              Configure Agent
+              Settings
             </Button>
           </Link>
           <Dialog>
