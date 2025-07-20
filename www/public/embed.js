@@ -1,0 +1,21 @@
+(function () {
+  const currentScript = document.currentScript;
+  const agentId = currentScript.getAttribute("data-agent-id");
+  if (!agentId) return console.error("[embed] missing data-agent-id attribute");
+  const iframe = document.createElement("iframe");
+  const baseURL = "http://localhost:3000/embed";
+  iframe.src = `${baseURL}?agent_id=${encodeURIComponent(agentId)}`;
+  iframe.style.position = "fixed";
+  iframe.style.bottom = "20px";
+  iframe.style.right = "20px";
+  iframe.style.width = "420px";
+  iframe.style.height = "600px";
+  iframe.style.border = "none";
+  iframe.style.borderRadius = "32px";
+  iframe.style.boxShadow = "rgb(0 0 0 / 5%) 0px 4px 20px";
+  iframe.style.zIndex = "999999";
+  iframe.style.border = "1px solid #ededed";
+  iframe.allow = "microphone; autoplay";
+  iframe.setAttribute("id", "ai-agent-widget");
+  document.body.appendChild(iframe);
+})();

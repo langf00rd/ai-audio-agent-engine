@@ -16,7 +16,6 @@ export default function RootLayout({
       <div className="max-w-[400px] w-full mx-auto space-y-4 p-10 bg-neutral-50 rounded-2xl">
         <Suspense>{children}</Suspense>
       </div>
-      <Toaster />
     </div>
   );
 }

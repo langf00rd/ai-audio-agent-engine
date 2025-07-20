@@ -10,7 +10,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 import { ROUTES } from "@/lib/constants";
 import { fetchAgentAnalytics, fetchAgentById } from "@/lib/services/agent";
 import {
@@ -20,6 +20,7 @@ import {
   AgentConfig,
   Analytics,
 } from "@/lib/types";
+import { copyToClipboard } from "@/lib/utils";
 import { Code, Copy, Play, Settings2 } from "lucide-react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
@@ -81,6 +82,8 @@ export default function AgentInfo() {
     handleFetchAgentAnalytics();
   }, [params.id]);
 
+  const embedScript = `<script src="${process.env.NEXT_PUBLIC_SITE_URL}embed.js" data-agent-id="${params.id}"></script>`;
+
   if (loading) return <p className="text-center p-10">loading...</p>;
 
   if (!loading && !agent) return <p>No agent found</p>;
@@ -110,19 +113,17 @@ export default function AgentInfo() {
                 <DialogTitle>Embed this agent on your website</DialogTitle>
                 <DialogDescription>
                   Let visitors chat with your AI agent anytime—ensuring customer
-                  engagement continues, even when you&apos;re offline.
-                  <br />
-                  <br />
-                  Just add the provided tag to the head of your website
+                  engagement continues, even when you&apos;re offline. Just add
+                  the provided tag before the closing body tag of your website
                 </DialogDescription>
               </DialogHeader>
               <div className="flex gap-2">
-                <Input
+                <Textarea
                   readOnly
-                  className="bg-neutral-100"
-                  value={`<link href="${process.env.NEXT_PUBLIC_SITE_URL}embed/${Date.now()}" />`}
+                  className="bg-neutral-100 h-[40px]"
+                  value={embedScript}
                 />
-                <Button>
+                <Button onClick={() => copyToClipboard(embedScript)}>
                   <Copy />
                 </Button>
               </div>
