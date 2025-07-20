@@ -97,13 +97,13 @@ export default function AgentInfo() {
         </div>
       </div>
       <ul className="grid grid-cols-2 gap-2">
-        <li className="bg-neutral-50 rounded-md p-4">
+        <li className="bg-neutral-50 rounded-[14px] p-4">
           <h3 className="text-neutral-600">Total Calls</h3>
           <p className="text-2xl font-semibold">
             {analytics?.totalInvocations || "--"}
           </p>
         </li>
-        <li className="bg-neutral-50 rounded-md p-4">
+        <li className="bg-neutral-50 rounded-[14px] p-4">
           <h3 className="text-neutral-600">Highest traffic day</h3>
           <p className="text-2xl font-semibold">
             {analytics?.mostCommonDay || "--"}
