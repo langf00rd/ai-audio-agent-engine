@@ -2,7 +2,7 @@
 
 this project is a monorepo that uses `pnpm` as a global package manager
 
-`/frontend` => nextjs (app router), tailwind
+`/www` => nextjs (app router), tailwind
 
 `/backend` => nodejs, express application
 
