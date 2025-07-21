@@ -31,3 +31,9 @@ pnpm install
 ```bash
 pnpm dev
 ```
+
+## start project as a background process with pm2
+
+```bash
+pm2 start pnpm --  start:prod
+```
