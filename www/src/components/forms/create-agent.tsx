@@ -156,6 +156,7 @@ export default function CreateAgentForm(props: {
       const match = key.match(/^services\[(\d+)\]\.([\w\[\]\.]+)$/);
       if (match) {
         const [_, idxStr, field] = match;
+        console.log(_);
         const idx = parseInt(idxStr);
         if (!serviceMap.has(idx)) serviceMap.set(idx, { pricing: [] });
         const service = serviceMap.get(idx);
@@ -165,6 +166,7 @@ export default function CreateAgentForm(props: {
           );
           if (pricingMatch) {
             const [__, pIdxStr, pField] = pricingMatch;
+            console.log(__);
             const pIdx = parseInt(pIdxStr);
             // @ts-expect-error: ...
             if (!service.pricing[pIdx])
@@ -197,6 +199,7 @@ export default function CreateAgentForm(props: {
       const match = key.match(/^faqs\[(\d+)\]\.(question|answer)$/);
       if (match) {
         const [_, idxStr, field] = match;
+        console.log(_);
         const idx = parseInt(idxStr);
         if (!faqMap.has(idx)) faqMap.set(idx, {});
         // @ts-expect-error: ...
