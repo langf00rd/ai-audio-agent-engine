@@ -26,7 +26,7 @@ export default function AgentChat(props: { isEmbed?: boolean; id: string }) {
   const [isLoadingAIResponse, setIsLoadingAIResponse] = useState(false);
 
   const { webSocketRef, connected } = useWebSocket({
-    url: WEB_SOCKET_URL,
+    url: WEB_SOCKET_URL!,
     onMessage: async (evt) => {
       const data = JSON.parse(evt.data);
       if (data.sessionId) {
