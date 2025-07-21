@@ -8,6 +8,12 @@ this project is a monorepo that uses `pnpm` as a global package manager
 
 ## requirements
 
+install the `pnpm` package manager
+
+```bash
+curl -fsSL https://get.pnpm.io/install.sh | sh -
+```
+
 you need to have `sox` installed on your machine. you can do that like so:
 
 ```bash

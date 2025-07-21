@@ -11,6 +11,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Switch } from "@/components/ui/switch";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { fetchAgentById } from "@/lib/services/agent";
 import { AgentConfig } from "@/lib/types";
@@ -18,7 +19,7 @@ import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
-const tabs = ["General", "Knowledge base"];
+const tabs = ["General", "Sharing & Embedding", "Knowledge base"];
 
 export default function ConfigureAgent() {
   const params = useParams();
@@ -60,6 +61,21 @@ export default function ConfigureAgent() {
           )}
         </TabsContent>
         <TabsContent value={tabs[1]} className="py-6">
+          <div className="flex items-center justify-between gap-2">
+            <div className="flex-[3] space-y-1">
+              <h3 className="font-medium">Make agent public</h3>
+              <p className="text-sm text-neutral-500">
+                Allow others to interact with this agent by embedding it on your
+                website. Your agent will remain private unless this is turned
+                on.
+              </p>
+            </div>
+            <div className="flex-1 flex items-center justify-end">
+              <Switch id="airplane-mode" />
+            </div>
+          </div>
+        </TabsContent>
+        <TabsContent value={tabs[2]} className="py-6">
           <form className="space-y-10">
             <fieldset className="space-y-2">
               <Label>Upload contact list</Label>
