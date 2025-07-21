@@ -1,12 +1,11 @@
 import { AssemblyAI } from "assemblyai";
-import ffmpegStatic from "ffmpeg-static";
 import ffmpeg from "fluent-ffmpeg";
 import { PassThrough, Readable } from "stream";
 import dotenv from "dotenv";
 
 dotenv.config({ path: ".env" });
 
-const ffmpegPath = ffmpegStatic || process.env.FFMPEG_PATH;
+const ffmpegPath = process.env.FFMPEG_PATH;
 
 ffmpeg.setFfmpegPath(ffmpegPath);
 
