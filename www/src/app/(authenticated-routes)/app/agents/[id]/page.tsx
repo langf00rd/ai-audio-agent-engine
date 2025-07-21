@@ -28,6 +28,7 @@ import { useEffect, useState } from "react";
 
 export default function AgentInfo() {
   const params = useParams();
+  const [domain, setDomain] = useState<string | null>(null);
   const [chartDayFilter, setChartDayFilter] =
     useState<AgentAnalyticsChartDuration>(AgentAnalyticsChartDuration.DAY);
   const [agent, setAgent] = useState<AgentConfig | null>(null);
@@ -80,9 +81,10 @@ export default function AgentInfo() {
     }
     handleFetchAgent();
     handleFetchAgentAnalytics();
+    setDomain(window.location.origin);
   }, [params.id]);
 
-  const embedScript = `<script src="${window.location.origin}embed.js" data-agent-id="${params.id}"></script>`;
+  const embedScript = `<script src="${domain}/embed.js" data-agent-id="${params.id}"></script>`;
 
   if (loading) return <p className="text-center p-10">loading...</p>;
 
