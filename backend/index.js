@@ -24,6 +24,7 @@ import {
 
 const PORT = 8000;
 const app = express();
+const router = express.Router();
 const server = http.createServer(app);
 const wss = new WebSocketServer({ server, path: "/ws" });
 
@@ -37,21 +38,23 @@ app.use(
   }),
 );
 
+app.use("/api", router); // all routes under /api
+
 wss.on("connection", async (ws) => {
   console.log("web socket client connected");
   handleWebSocketConnection(ws);
 });
 
 app.get("/", (_, res) => res.send(`server running`));
-app.post("/agents", createAgent);
-app.put("/agents/:id", updateAgent);
-app.get("/agents", getAgents);
-app.get("/agents/:id", getAgentByID);
-app.post("/ai", aiChat);
-app.post("/auth/sign-up", signUpController);
-app.post("/auth/sign-in", signInController);
-app.post("/utils/tts", ttsController);
-app.post("/analytics", analyticsController);
-app.get("/analytics", getAnalyticsController);
+router.post("/agents", createAgent);
+router.put("/agents/:id", updateAgent);
+router.get("/agents", getAgents);
+router.get("/agents/:id", getAgentByID);
+router.post("/ai", aiChat);
+router.post("/auth/sign-up", signUpController);
+router.post("/auth/sign-in", signInController);
+router.post("/utils/tts", ttsController);
+router.post("/analytics", analyticsController);
+router.get("/analytics", getAnalyticsController);
 
 server.listen(PORT, () => console.log(`listening on ${PORT}`));
