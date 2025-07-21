@@ -3,7 +3,7 @@
   const agentId = currentScript.getAttribute("data-agent-id");
   if (!agentId) return console.error("[embed] missing data-agent-id attribute");
   const iframe = document.createElement("iframe");
-  const baseURL = "http://aivoiceagentthing.duckdns.org/embed";
+  const baseURL = "https://aivoiceagentthing.duckdns.org/embed";
   iframe.src = `${baseURL}?agent_id=${encodeURIComponent(agentId)}`;
   iframe.style.position = "fixed";
   iframe.style.bottom = "20px";
