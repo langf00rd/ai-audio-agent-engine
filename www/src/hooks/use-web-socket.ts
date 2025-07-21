@@ -9,7 +9,6 @@ export function useWebSocket(props: {
 }) {
   const [connected, setConnected] = useState(false);
   const webSocketRef = useRef<WebSocket | null>(null);
-
   useEffect(() => {
     function connectWebSocket() {
       try {
@@ -43,13 +42,12 @@ export function useWebSocket(props: {
         props.onError?.(String(err));
       }
     }
-
     connectWebSocket();
     return () => {
       webSocketRef.current?.close();
       props.onConnectionClose?.();
     };
-  }, [props]);
+  }, []);
 
   return { webSocketRef, connected };
 }
