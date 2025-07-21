@@ -82,7 +82,7 @@ export default function AgentInfo() {
     handleFetchAgentAnalytics();
   }, [params.id]);
 
-  const embedScript = `<script src="${process.env.NEXT_PUBLIC_SITE_URL}embed.js" data-agent-id="${params.id}"></script>`;
+  const embedScript = `<script src="${window.location.origin}embed.js" data-agent-id="${params.id}"></script>`;
 
   if (loading) return <p className="text-center p-10">loading...</p>;
 
