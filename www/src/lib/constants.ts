@@ -1,5 +1,5 @@
-export const API_BASE_URL = `http://localhost:8000`;
-export const WEB_SOCKET_URL = `ws://localhost:8000/ws`;
+export const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
+export const WEB_SOCKET_URL = process.env.NEXT_PUBLIC_WEB_SOCKET_BASE_URL;
 export const ROUTES = {
   index: "/",
   app: "/app",

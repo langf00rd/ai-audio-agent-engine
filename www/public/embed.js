@@ -3,7 +3,7 @@
   const agentId = currentScript.getAttribute("data-agent-id");
   if (!agentId) return console.error("[embed] missing data-agent-id attribute");
   const iframe = document.createElement("iframe");
-  const baseURL = "http://localhost:3000/embed";
+  const baseURL = "http://194.163.172.125:3000/embed";
   iframe.src = `${baseURL}?agent_id=${encodeURIComponent(agentId)}`;
   iframe.style.position = "fixed";
   iframe.style.bottom = "20px";
