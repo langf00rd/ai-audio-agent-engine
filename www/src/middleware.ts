@@ -4,13 +4,15 @@ import { NextResponse } from "next/server";
 import { COOKIE_KEYS, ROUTES } from "./lib/constants";
 
 export async function middleware(request: NextRequest) {
-  if (request.url !== process.env.NEXT_PUBLIC_SITE_URL) {
-    const fromPath = new URL(request.url).pathname;
+  const url = new URL(request.url);
+  const fromPath = url.pathname;
+  const isHomePagePath = fromPath === "/";
+  if (!isHomePagePath) {
     const authCookie = (await cookies()).get(COOKIE_KEYS.token)?.value;
     if (!authCookie) {
-      return NextResponse.redirect(
-        new URL(ROUTES.auth.signIn + `?redirect=` + fromPath, request.url),
-      );
+      const redirectTo = new URL(ROUTES.auth.signIn, request.url);
+      redirectTo.searchParams.set("redirect", fromPath);
+      return NextResponse.redirect(redirectTo);
     }
   }
   return NextResponse.next();
