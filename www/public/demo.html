@@ -2,13 +2,729 @@
 <html lang="en">
     <head>
         <meta charset="UTF-8" />
-        <title>DEMO WEBSITE</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>BlueTech Solutions - Professional Business Services</title>
+        <style>
+            * {
+                margin: 0;
+                padding: 0;
+                box-sizing: border-box;
+            }
+
+            body {
+                font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+                line-height: 1.6;
+                color: #333;
+                overflow-x: hidden;
+            }
+
+            .container {
+                max-width: 1200px;
+                margin: 0 auto;
+                padding: 0 20px;
+            }
+
+            /* Header */
+            header {
+                background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+                color: white;
+                padding: 1rem 0;
+                position: fixed;
+                width: 100%;
+                top: 0;
+                z-index: 1000;
+                backdrop-filter: blur(10px);
+                box-shadow: 0 2px 20px rgba(0, 0, 0, 0.1);
+            }
+
+            nav {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+            }
+
+            .logo {
+                font-size: 1.8rem;
+                font-weight: bold;
+                background: linear-gradient(45deg, #64b5f6, #90caf9);
+                -webkit-background-clip: text;
+                -webkit-text-fill-color: transparent;
+                background-clip: text;
+            }
+
+            .nav-links {
+                display: flex;
+                list-style: none;
+                gap: 2rem;
+            }
+
+            .nav-links a {
+                color: white;
+                text-decoration: none;
+                transition: all 0.3s ease;
+                position: relative;
+                padding: 0.5rem 1rem;
+                border-radius: 25px;
+            }
+
+            .nav-links a:hover {
+                background: rgba(255, 255, 255, 0.1);
+                transform: translateY(-2px);
+            }
+
+            .nav-links a::after {
+                content: "";
+                position: absolute;
+                width: 0;
+                height: 2px;
+                bottom: 0;
+                left: 50%;
+                background: #64b5f6;
+                transition: all 0.3s ease;
+            }
+
+            .nav-links a:hover::after {
+                width: 100%;
+                left: 0;
+            }
+
+            /* Hero Section */
+            .hero {
+                background: linear-gradient(
+                    135deg,
+                    #1e3c72 0%,
+                    #2a5298 50%,
+                    #64b5f6 100%
+                );
+                color: white;
+                padding: 150px 0 100px;
+                text-align: center;
+                position: relative;
+                overflow: hidden;
+            }
+
+            .hero::before {
+                content: "";
+                position: absolute;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grain" width="100" height="100" patternUnits="userSpaceOnUse"><circle cx="25" cy="25" r="1" fill="rgba(255,255,255,0.05)"/><circle cx="75" cy="75" r="1" fill="rgba(255,255,255,0.03)"/><circle cx="50" cy="10" r="0.5" fill="rgba(255,255,255,0.08)"/></pattern></defs><rect width="100" height="100" fill="url(%23grain)"/></svg>');
+                animation: float 20s ease-in-out infinite;
+            }
+
+            @keyframes float {
+                0%,
+                100% {
+                    transform: translateY(0px);
+                }
+                50% {
+                    transform: translateY(-20px);
+                }
+            }
+
+            .hero-content {
+                position: relative;
+                z-index: 2;
+            }
+
+            .hero h1 {
+                font-size: 3.5rem;
+                margin-bottom: 1rem;
+                font-weight: 700;
+                opacity: 0;
+                animation: fadeInUp 1s ease-out 0.5s forwards;
+            }
+
+            .hero p {
+                font-size: 1.3rem;
+                margin-bottom: 2rem;
+                opacity: 0;
+                animation: fadeInUp 1s ease-out 0.7s forwards;
+            }
+
+            .cta-button {
+                display: inline-block;
+                background: linear-gradient(45deg, #64b5f6, #42a5f5);
+                color: white;
+                padding: 15px 40px;
+                text-decoration: none;
+                border-radius: 50px;
+                font-weight: bold;
+                font-size: 1.1rem;
+                transition: all 0.3s ease;
+                box-shadow: 0 8px 25px rgba(100, 181, 246, 0.3);
+                opacity: 0;
+                animation: fadeInUp 1s ease-out 0.9s forwards;
+            }
+
+            .cta-button:hover {
+                transform: translateY(-3px);
+                box-shadow: 0 15px 35px rgba(100, 181, 246, 0.4);
+                background: linear-gradient(45deg, #42a5f5, #1e88e5);
+            }
+
+            @keyframes fadeInUp {
+                from {
+                    opacity: 0;
+                    transform: translateY(30px);
+                }
+                to {
+                    opacity: 1;
+                    transform: translateY(0);
+                }
+            }
+
+            /* Sections */
+            section {
+                padding: 80px 0;
+            }
+
+            .section-title {
+                text-align: center;
+                font-size: 2.5rem;
+                margin-bottom: 3rem;
+                color: #1e3c72;
+                position: relative;
+            }
+
+            .section-title::after {
+                content: "";
+                position: absolute;
+                width: 80px;
+                height: 4px;
+                background: linear-gradient(45deg, #64b5f6, #42a5f5);
+                bottom: -10px;
+                left: 50%;
+                transform: translateX(-50%);
+                border-radius: 2px;
+            }
+
+            /* Services */
+            .services-grid {
+                display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+                gap: 2rem;
+                margin-top: 3rem;
+            }
+
+            .service-card {
+                background: white;
+                padding: 2.5rem;
+                border-radius: 15px;
+                box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+                transition: all 0.3s ease;
+                border: 1px solid rgba(100, 181, 246, 0.1);
+                position: relative;
+                overflow: hidden;
+            }
+
+            .service-card::before {
+                content: "";
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 4px;
+                background: linear-gradient(45deg, #64b5f6, #42a5f5);
+                transform: scaleX(0);
+                transition: transform 0.3s ease;
+            }
+
+            .service-card:hover {
+                transform: translateY(-10px);
+                box-shadow: 0 20px 50px rgba(0, 0, 0, 0.15);
+            }
+
+            .service-card:hover::before {
+                transform: scaleX(1);
+            }
+
+            .service-icon {
+                width: 60px;
+                height: 60px;
+                background: linear-gradient(45deg, #64b5f6, #42a5f5);
+                border-radius: 50%;
+                margin-bottom: 1.5rem;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 1.5rem;
+                color: white;
+            }
+
+            .service-card h3 {
+                color: #1e3c72;
+                margin-bottom: 1rem;
+                font-size: 1.4rem;
+            }
+
+            .service-card p {
+                color: #666;
+                line-height: 1.7;
+            }
+
+            /* About */
+            .about {
+                background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            }
+
+            .about-content {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 3rem;
+                align-items: center;
+            }
+
+            .about-text {
+                font-size: 1.1rem;
+                line-height: 1.8;
+                color: #555;
+            }
+
+            .about-image {
+                width: 100%;
+                height: 400px;
+                background: linear-gradient(45deg, #64b5f6, #42a5f5);
+                border-radius: 15px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                color: white;
+                font-size: 1.2rem;
+                box-shadow: 0 15px 35px rgba(100, 181, 246, 0.3);
+            }
+
+            /* Contact */
+            .contact-form {
+                max-width: 600px;
+                margin: 0 auto;
+                background: white;
+                padding: 3rem;
+                border-radius: 15px;
+                box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+            }
+
+            .form-group {
+                margin-bottom: 2rem;
+            }
+
+            .form-group label {
+                display: block;
+                margin-bottom: 0.5rem;
+                color: #1e3c72;
+                font-weight: 600;
+            }
+
+            .form-group input,
+            .form-group textarea {
+                width: 100%;
+                padding: 15px;
+                border: 2px solid #e0e0e0;
+                border-radius: 10px;
+                font-size: 1rem;
+                transition: all 0.3s ease;
+                background: #f8f9fa;
+            }
+
+            .form-group input:focus,
+            .form-group textarea:focus {
+                outline: none;
+                border-color: #64b5f6;
+                background: white;
+                box-shadow: 0 0 0 3px rgba(100, 181, 246, 0.1);
+            }
+
+            .submit-btn {
+                width: 100%;
+                padding: 15px;
+                background: linear-gradient(45deg, #64b5f6, #42a5f5);
+                color: white;
+                border: none;
+                border-radius: 10px;
+                font-size: 1.1rem;
+                font-weight: bold;
+                cursor: pointer;
+                transition: all 0.3s ease;
+            }
+
+            .submit-btn:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 10px 25px rgba(100, 181, 246, 0.3);
+            }
+
+            /* Footer */
+            footer {
+                background: #1e3c72;
+                color: white;
+                padding: 3rem 0;
+                text-align: center;
+            }
+
+            .footer-content {
+                display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+                gap: 2rem;
+                margin-bottom: 2rem;
+            }
+
+            .footer-section h3 {
+                color: #64b5f6;
+                margin-bottom: 1rem;
+            }
+
+            .footer-section p,
+            .footer-section a {
+                color: #ccc;
+                text-decoration: none;
+                line-height: 1.8;
+            }
+
+            .footer-section a:hover {
+                color: #64b5f6;
+            }
+
+            .footer-bottom {
+                border-top: 1px solid rgba(255, 255, 255, 0.1);
+                padding-top: 2rem;
+                color: #999;
+            }
+
+            /* Mobile Responsiveness */
+            @media (max-width: 768px) {
+                .nav-links {
+                    display: none;
+                }
+
+                .hero h1 {
+                    font-size: 2.5rem;
+                }
+
+                .about-content {
+                    grid-template-columns: 1fr;
+                }
+
+                .about-image {
+                    height: 250px;
+                }
+            }
+
+            /* Smooth scrolling */
+            html {
+                scroll-behavior: smooth;
+            }
+
+            /* Loading animation for interactive elements */
+            .loading {
+                position: relative;
+                overflow: hidden;
+            }
+
+            .loading::after {
+                content: "";
+                position: absolute;
+                top: 0;
+                left: -100%;
+                width: 100%;
+                height: 100%;
+                background: linear-gradient(
+                    90deg,
+                    transparent,
+                    rgba(255, 255, 255, 0.3),
+                    transparent
+                );
+                animation: shimmer 2s infinite;
+            }
+
+            @keyframes shimmer {
+                0% {
+                    left: -100%;
+                }
+                100% {
+                    left: 100%;
+                }
+            }
+        </style>
     </head>
     <body>
-        <h1>DEMO WEBSITE</h1>
+        <header>
+            <nav class="container">
+                <div class="logo">BlueTech Solutions</div>
+                <ul class="nav-links">
+                    <li><a href="#home">Home</a></li>
+                    <li><a href="#services">Services</a></li>
+                    <li><a href="#about">About</a></li>
+                    <li><a href="#contact">Contact</a></li>
+                </ul>
+            </nav>
+        </header>
+
+        <section id="home" class="hero">
+            <div class="container">
+                <div class="hero-content">
+                    <h1>Excellence in Every Solution</h1>
+                    <p>
+                        Transforming businesses with innovative technology and
+                        professional expertise
+                    </p>
+                    <a href="#contact" class="cta-button">Get Started Today</a>
+                </div>
+            </div>
+        </section>
+
+        <section id="services">
+            <div class="container">
+                <h2 class="section-title">Our Services</h2>
+                <div class="services-grid">
+                    <div class="service-card">
+                        <div class="service-icon">💡</div>
+                        <h3>Strategy Consulting</h3>
+                        <p>
+                            Expert guidance to help your business navigate
+                            complex challenges and identify growth opportunities
+                            with data-driven insights and proven methodologies.
+                        </p>
+                    </div>
+                    <div class="service-card">
+                        <div class="service-icon">🚀</div>
+                        <h3>Digital Transformation</h3>
+                        <p>
+                            Modernize your operations with cutting-edge
+                            technology solutions that streamline processes,
+                            enhance efficiency, and drive competitive advantage.
+                        </p>
+                    </div>
+                    <div class="service-card">
+                        <div class="service-icon">📊</div>
+                        <h3>Analytics & Insights</h3>
+                        <p>
+                            Unlock the power of your data with advanced
+                            analytics, reporting dashboards, and actionable
+                            insights that inform strategic decision-making.
+                        </p>
+                    </div>
+                    <div class="service-card">
+                        <div class="service-icon">🔧</div>
+                        <h3>Technical Support</h3>
+                        <p>
+                            Comprehensive technical assistance and maintenance
+                            services to ensure your systems run smoothly with
+                            minimal downtime and maximum performance.
+                        </p>
+                    </div>
+                    <div class="service-card">
+                        <div class="service-icon">🎯</div>
+                        <h3>Project Management</h3>
+                        <p>
+                            Professional project oversight from conception to
+                            completion, ensuring timely delivery, budget
+                            adherence, and exceptional quality standards.
+                        </p>
+                    </div>
+                    <div class="service-card">
+                        <div class="service-icon">💼</div>
+                        <h3>Business Development</h3>
+                        <p>
+                            Strategic partnerships and growth initiatives that
+                            expand market reach, enhance brand presence, and
+                            create sustainable competitive advantages.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="about" class="about">
+            <div class="container">
+                <h2 class="section-title">About Us</h2>
+                <div class="about-content">
+                    <div class="about-text">
+                        <p>
+                            With over a decade of experience in delivering
+                            exceptional business solutions, BlueTech Solutions
+                            has established itself as a trusted partner for
+                            companies seeking innovation and growth.
+                        </p>
+
+                        <p>
+                            Our team of dedicated professionals combines deep
+                            industry expertise with cutting-edge technology to
+                            provide tailored solutions that drive measurable
+                            results. We pride ourselves on building long-term
+                            relationships with our clients, understanding their
+                            unique challenges, and delivering solutions that
+                            exceed expectations.
+                        </p>
+
+                        <p>
+                            From startups to enterprise organizations, we've
+                            helped hundreds of businesses transform their
+                            operations, optimize their processes, and achieve
+                            sustainable growth in today's competitive
+                            marketplace.
+                        </p>
+                    </div>
+                    <div class="about-image">
+                        Professional Team & Modern Solutions
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="contact">
+            <div class="container">
+                <h2 class="section-title">Get In Touch</h2>
+                <form class="contact-form" onsubmit="handleSubmit(event)">
+                    <div class="form-group">
+                        <label for="name">Full Name</label>
+                        <input type="text" id="name" name="name" required />
+                    </div>
+                    <div class="form-group">
+                        <label for="email">Email Address</label>
+                        <input type="email" id="email" name="email" required />
+                    </div>
+                    <div class="form-group">
+                        <label for="company">Company Name</label>
+                        <input type="text" id="company" name="company" />
+                    </div>
+                    <div class="form-group">
+                        <label for="message">Message</label>
+                        <textarea
+                            id="message"
+                            name="message"
+                            rows="5"
+                            required
+                        ></textarea>
+                    </div>
+                    <button type="submit" class="submit-btn">
+                        Send Message
+                    </button>
+                </form>
+            </div>
+        </section>
+
+        <footer>
+            <div class="container">
+                <div class="footer-content">
+                    <div class="footer-section">
+                        <h3>Contact Info</h3>
+                        <p>📧 contact@bluetechsolutions.com</p>
+                        <p>📞 +1 (555) 123-4567</p>
+                        <p>
+                            📍 123 Business Ave, Suite 100<br />Tech City, TC
+                            12345
+                        </p>
+                    </div>
+                    <div class="footer-section">
+                        <h3>Quick Links</h3>
+                        <p><a href="#services">Services</a></p>
+                        <p><a href="#about">About Us</a></p>
+                        <p><a href="#contact">Contact</a></p>
+                        <p><a href="#">Privacy Policy</a></p>
+                    </div>
+                    <div class="footer-section">
+                        <h3>Follow Us</h3>
+                        <p><a href="#">LinkedIn</a></p>
+                        <p><a href="#">Twitter</a></p>
+                        <p><a href="#">Facebook</a></p>
+                        <p><a href="#">Instagram</a></p>
+                    </div>
+                </div>
+                <div class="footer-bottom">
+                    <p>&copy; 2025 BlueTech Solutions. All rights reserved.</p>
+                </div>
+            </div>
+        </footer>
+
+        <script>
+            // Smooth scrolling for navigation links
+            document.querySelectorAll('a[href^="#"]').forEach((anchor) => {
+                anchor.addEventListener("click", function (e) {
+                    e.preventDefault();
+                    const target = document.querySelector(
+                        this.getAttribute("href"),
+                    );
+                    if (target) {
+                        target.scrollIntoView({
+                            behavior: "smooth",
+                            block: "start",
+                        });
+                    }
+                });
+            });
+
+            // Form submission handler
+            function handleSubmit(event) {
+                event.preventDefault();
+                const form = event.target;
+                const submitBtn = form.querySelector(".submit-btn");
+
+                // Add loading effect
+                submitBtn.innerHTML = "Sending...";
+                submitBtn.disabled = true;
+                submitBtn.classList.add("loading");
+
+                // Simulate form submission
+                setTimeout(() => {
+                    submitBtn.innerHTML = "Message Sent! ✓";
+                    submitBtn.style.background =
+                        "linear-gradient(45deg, #4caf50, #45a049)";
+
+                    setTimeout(() => {
+                        form.reset();
+                        submitBtn.innerHTML = "Send Message";
+                        submitBtn.disabled = false;
+                        submitBtn.classList.remove("loading");
+                        submitBtn.style.background =
+                            "linear-gradient(45deg, #64b5f6, #42a5f5)";
+                    }, 2000);
+                }, 1500);
+            }
+
+            // Add scroll effect to header
+            window.addEventListener("scroll", () => {
+                const header = document.querySelector("header");
+                if (window.scrollY > 100) {
+                    header.style.background = "rgba(30, 60, 114, 0.95)";
+                    header.style.backdropFilter = "blur(10px)";
+                } else {
+                    header.style.background =
+                        "linear-gradient(135deg, #1e3c72 0%, #2a5298 100%)";
+                    header.style.backdropFilter = "none";
+                }
+            });
+
+            // Intersection Observer for animations
+            const observerOptions = {
+                threshold: 0.1,
+                rootMargin: "0px 0px -50px 0px",
+            };
+
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach((entry) => {
+                    if (entry.isIntersecting) {
+                        entry.target.style.opacity = "1";
+                        entry.target.style.transform = "translateY(0)";
+                    }
+                });
+            }, observerOptions);
+
+            // Observe service cards and other elements
+            document
+                .querySelectorAll(
+                    ".service-card, .about-content, .contact-form",
+                )
+                .forEach((el) => {
+                    el.style.opacity = "0";
+                    el.style.transform = "translateY(30px)";
+                    el.style.transition = "all 0.8s ease-out";
+                    observer.observe(el);
+                });
+        </script>
         <!-- agent embed below -->
         <script
-            src="https://aivoiceagentthing.duckdns.org/embed.js"
+            src="http://aivoiceagentthing.duckdns.org/embed.js"
             data-agent-id="9"
         ></script>
     </body>
