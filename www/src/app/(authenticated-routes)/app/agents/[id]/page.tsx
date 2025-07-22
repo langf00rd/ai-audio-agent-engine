@@ -50,6 +50,7 @@ export default function AgentInfo() {
         setLoading(false);
       }
     }
+
     async function handleFetchAgentAnalytics() {
       try {
         setLoading(true);
