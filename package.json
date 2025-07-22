@@ -6,7 +6,7 @@
     "install": "pnpm run install:all",
     "install:all": "pnpm --prefix backend install && pnpm --prefix www install",
     "dev": "concurrently \"pnpm run dev:backend\" \"pnpm run dev:www\"",
-    "start:prod": "pnpm --prefix www build && concurrently \"pnpm run dev:backend\" \"pnpm --prefix www start\"",
+    "start:prod": "concurrently \"pnpm --prefix backend start\" \"pnpm --prefix www start\"",
     "dev:backend": "pnpm --prefix backend run dev",
     "dev:www": "pnpm --prefix www run dev"
   },

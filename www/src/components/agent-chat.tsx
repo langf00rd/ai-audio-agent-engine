@@ -41,7 +41,7 @@ export default function AgentChat(props: { isEmbed?: boolean; id: string }) {
       }
       if (data.transcript) {
         setTranscript(data.transcript);
-        resetSilenceTimer(data.transcript);
+        resetSilenceTimer(data.transcript, data.sessionId);
       }
     },
     onConnectionClose: () => {
@@ -49,10 +49,10 @@ export default function AgentChat(props: { isEmbed?: boolean; id: string }) {
     },
   });
 
-  const resetSilenceTimer = (_transcript: string) => {
+  const resetSilenceTimer = (_transcript: string, _sessionId: string) => {
     if (silenceTimerRef.current) clearTimeout(silenceTimerRef.current);
     silenceTimerRef.current = setTimeout(() => {
-      handleGetAIResponse(_transcript);
+      handleGetAIResponse(_sessionId, _transcript);
     }, AUDIO_INPUT_SILENCE_THRESHOLD_DURATION);
   };
 
@@ -88,7 +88,7 @@ export default function AgentChat(props: { isEmbed?: boolean; id: string }) {
     setIsListening(false);
   };
 
-  async function handleGetAIResponse(_transcript?: string) {
+  async function handleGetAIResponse(_sessionId: string, _transcript?: string) {
     try {
       setIsLoadingAIResponse(true);
       const response = await fetch(`${API_BASE_URL}/ai`, {
@@ -97,6 +97,7 @@ export default function AgentChat(props: { isEmbed?: boolean; id: string }) {
         body: JSON.stringify({
           prompt: _transcript || transcript,
           agent: props.id,
+          session_id: sessionId || _sessionId,
         }),
       });
       const result = await response.json();

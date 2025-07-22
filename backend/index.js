@@ -10,7 +10,10 @@ import {
   getAgents,
   updateAgent,
 } from "./controller/agent.controller.js";
-import { aiChat } from "./controller/ai.controller.js";
+import {
+  aiChatController,
+  taggingController,
+} from "./controller/ai.controller.js";
 import {
   signInController,
   signUpController,
@@ -21,6 +24,7 @@ import {
   analyticsController,
   getAnalyticsController,
 } from "./controller/analytics.controller.js";
+import { initDb } from "./config/sqlite.js";
 
 const PORT = 8000;
 const app = express();
@@ -38,23 +42,33 @@ app.use(
   }),
 );
 
-app.use("/api", router); // all routes under /api
+// init sqlite db
+(async () => {
+  try {
+    await initDb();
+    console.log("[SQLITE] DB INITIALIZED");
+  } catch (err) {
+    console.log("[SQLITE] ERROR", err);
+  }
+})();
 
 wss.on("connection", async (ws) => {
   console.log("web socket client connected");
   handleWebSocketConnection(ws);
 });
 
-app.get("/", (_, res) => res.send(`server running`));
+app.use("/api", router); // all routes under /api
+app.get("/", (_, res) => res.send(`SERVER IS UP`));
 router.post("/agents", createAgent);
 router.put("/agents/:id", updateAgent);
 router.get("/agents", getAgents);
 router.get("/agents/:id", getAgentByID);
-router.post("/ai", aiChat);
+router.post("/ai", aiChatController);
+router.post("/ai/tagging", taggingController);
 router.post("/auth/sign-up", signUpController);
 router.post("/auth/sign-in", signInController);
 router.post("/utils/tts", ttsController);
 router.post("/analytics", analyticsController);
 router.get("/analytics", getAnalyticsController);
 
-server.listen(PORT, () => console.log(`listening on ${PORT}`));
+server.listen(PORT, () => console.log(`API RUNNING ON ${PORT}`));
