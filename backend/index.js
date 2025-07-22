@@ -10,7 +10,10 @@ import {
   getAgents,
   updateAgent,
 } from "./controller/agent.controller.js";
-import { aiChat } from "./controller/ai.controller.js";
+import {
+  aiChatController,
+  taggingController,
+} from "./controller/ai.controller.js";
 import {
   signInController,
   signUpController,
@@ -50,7 +53,8 @@ router.post("/agents", createAgent);
 router.put("/agents/:id", updateAgent);
 router.get("/agents", getAgents);
 router.get("/agents/:id", getAgentByID);
-router.post("/ai", aiChat);
+router.post("/ai", aiChatController);
+router.post("/ai/tagging", taggingController);
 router.post("/auth/sign-up", signUpController);
 router.post("/auth/sign-in", signInController);
 router.post("/utils/tts", ttsController);

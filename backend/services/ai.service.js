@@ -1,6 +1,10 @@
 import { generateText } from "ai";
 import { chatModel } from "../config/ai.js";
+import { generateSystemPrompt } from "../utils/ai.js";
 import { getAgentByIDService } from "./agent.service.js";
+import dotenv from "dotenv";
+
+dotenv.config({ path: ".env" });
 
 export async function aiChatService(payload) {
   try {
@@ -27,5 +31,25 @@ export async function aiChatService(payload) {
       error: error.message,
       status: 500,
     };
+  }
+}
+
+export async function taggingService(payload) {
+  try {
+    const ollamaRes = await fetch(`${process.env.DOMAIN_URL}/api/generate`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        model: "tinyllama:chat",
+        prompt: generateSystemPrompt(payload.prompt, "TAGGING"),
+        stream: false,
+      }),
+    });
+    console.log(generateSystemPrompt(payload.prompt, "TAGGING"));
+    const { data, error } = await ollamaRes.json();
+    if (error) throw new Error(error);
+    return { data, status: 200 };
+  } catch (err) {
+    return { status: 500, error: err.message };
   }
 }
