@@ -10,6 +10,7 @@ const ffmpegPath = process.env.FFMPEG_PATH;
 ffmpeg.setFfmpegPath(ffmpegPath);
 
 export async function handleWebSocketConnection(ws) {
+  let sessionId;
   const client = new AssemblyAI({ apiKey: process.env.ASSEMBLY_AI_API_KEY });
 
   const transcriber = client.streaming.transcriber({
@@ -19,6 +20,7 @@ export async function handleWebSocketConnection(ws) {
 
   transcriber.on("open", ({ id }) => {
     console.log(`session opened -> ${id}`);
+    sessionId = id;
     ws.send(JSON.stringify({ sessionId: id }));
   });
 
@@ -32,7 +34,7 @@ export async function handleWebSocketConnection(ws) {
 
   transcriber.on("turn", (turn) => {
     if (!turn.transcript) return;
-    ws.send(JSON.stringify({ transcript: turn.transcript }));
+    ws.send(JSON.stringify({ transcript: turn.transcript, sessionId }));
   });
 
   await transcriber.connect();

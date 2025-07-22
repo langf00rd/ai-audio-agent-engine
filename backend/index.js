@@ -24,6 +24,7 @@ import {
   analyticsController,
   getAnalyticsController,
 } from "./controller/analytics.controller.js";
+import { initDb } from "./config/sqlite.js";
 
 const PORT = 8000;
 const app = express();
@@ -41,14 +42,23 @@ app.use(
   }),
 );
 
-app.use("/api", router); // all routes under /api
+// init sqlite db
+(async () => {
+  try {
+    await initDb();
+    console.log("[SQLITE] DB INITIALIZED");
+  } catch (err) {
+    console.log("[SQLITE] ERROR", err);
+  }
+})();
 
 wss.on("connection", async (ws) => {
   console.log("web socket client connected");
   handleWebSocketConnection(ws);
 });
 
-app.get("/", (_, res) => res.send(`server running`));
+app.use("/api", router); // all routes under /api
+app.get("/", (_, res) => res.send(`SERVER IS UP`));
 router.post("/agents", createAgent);
 router.put("/agents/:id", updateAgent);
 router.get("/agents", getAgents);
@@ -61,4 +71,4 @@ router.post("/utils/tts", ttsController);
 router.post("/analytics", analyticsController);
 router.get("/analytics", getAnalyticsController);
 
-server.listen(PORT, () => console.log(`listening on ${PORT}`));
+server.listen(PORT, () => console.log(`API RUNNING ON ${PORT}`));

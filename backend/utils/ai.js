@@ -8,37 +8,13 @@ import {
  * creates a wrapped and formatted system prompt to be sent to llm
  * @param {string} prompt
  * @param {"TAGGING"|"REGULAR-CONVERSATION"} type
+ * @param {{agentInfo:{},history:{llm:string,user:string}[]}} opt
  */
-export function generateSystemPrompt(prompt = "", type) {
-  if (type === "TAGGING") {
-    //     return `You are an assistant for a business website. Your task is to extract user info and tag their intent for lead generation.
-
-    //    When given a user message, always respond with JSON using this format:
-
-    //    {
-    //      "name": string | null,
-    //      "interest_level": "high" | "medium" | "low" | "none",
-    //      "intent": "interested_in_product" | "booking_request" | "general_inquiry" | "rejection" | "complaint" | "asking_question",
-    //      "urgency": "urgent" | "normal" | "not_urgent",
-    //      "next_action": "follow_up_soon" | "send_more_info" | "ignore" | "escalate_to_human"
-    //    }
-
-    //    Be concise. Do not explain anything. Just return the JSON.
-
-    //    user: ${prompt}
-    // `;
-    // return `input: ${JSON.stringify(prompt)}
-    // extract the info below from the input above and return JSON ONLY and nothing else:
-    // - intent: ${Object.values(conversationTags)}
-    // - confidence: float between 0 and 1
-    // - lead_quality: ${Object.values(leadQuality)}
-    // - next_step: ${Object.values(conversationNextSteps)}
-    // - summary: one sentence
-    // - tags: array of 3-5 keywords
-    // - user_info: {name, email, phone, location}`;
-
-    return `extract user intent and info and return JSON:
-    input: ${JSON.stringify(prompt)}
+export function generateSystemPrompt(prompt = "", type, opt) {
+  switch (type) {
+    case "TAGGING":
+      return `extract user intent and info and return JSON:
+    input: ${prompt}
     output format:
     {
       "intent": any [${Object.values(conversationTags)}],
@@ -48,5 +24,20 @@ export function generateSystemPrompt(prompt = "", type) {
       summary: one sentence,
       "tags": array of 3-5 keywords
     }`;
-  } else return prompt;
+    case "REGULAR-CONVERSATION":
+      return `you are a sales agent. your info and service/product ${JSON.stringify(opt.agentInfo)}. keep replies short, casual, and human. avoid robotic tone. if something isn’t covered, ask them to contact support. continue the conversation from this history: ${JSON.stringify(opt.history)}. no emojis. now respond: ${prompt}`;
+    default:
+      return prompt;
+  }
+}
+
+/**
+ * parses conversation session history to a format consumeable by llm
+ * @param {{llm:string,user:string}[]} history - conversation session history array
+ * @returns formatted conversation history for llm
+ */
+export function parseConversationSessionHistory(history = []) {
+  return history.map((a) => {
+    return { llm: a.llm, user: a.user };
+  });
 }

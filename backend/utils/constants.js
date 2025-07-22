@@ -15,3 +15,5 @@ export const conversationNextSteps = {
   disqualify: "DISQUALIFY",
   escalate: "ESCALATE",
 };
+
+export const SQLITE_DB_PATH = "./db.sqlite";
