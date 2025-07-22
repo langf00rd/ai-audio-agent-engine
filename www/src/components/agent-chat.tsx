@@ -116,43 +116,48 @@ export default function AgentChat(props: { isEmbed?: boolean; id: string }) {
     };
   }, []);
 
-  if (!connected) return <p className="text-center">Not connected</p>;
+  if (!connected) return <p className="text-center">Connecting...</p>;
 
   return (
-    <div className="space-y-10 h-full relative">
-      {sessionId && (
-        <p className="text-sm text-neutral-400">
-          You are connected. {sessionId}
-        </p>
-      )}
-      {props.isEmbed && <p className="text-sm text-neutral-400">[EMBED]</p>}
-      {transcript && (
-        <div>
-          <p className="text-sm text-neutral-400">You</p>
-          <p className="text-2xl text-neutral-700 leading-[1.6]">
-            {transcript}
+    <div className="space-y-10 h-full relative flex flex-col justify-between">
+      <div className="space-y-2">
+        {sessionId && (
+          <p className="text-sm text-neutral-400">
+            You are connected. {sessionId}
           </p>
-        </div>
-      )}
-      {aiResponse && (
-        <div className="space-y-1">
-          <div className="flex items-center gap-1 animate-bounce">
-            <div className="size-3 bg-black rounded-sm" />
-            <p className="text-sm text-neutral-400">
-              {searchParams.get("agent_name")}
+        )}
+        {isLoadingAIResponse && (
+          <p className="text-sm text-neutral-500 animate-pulse">
+            Agent is responding...
+          </p>
+        )}
+      </div>
+      <div className="pb-20 space-y-8">
+        {transcript && (
+          <div>
+            <p className="text-sm text-neutral-400">You</p>
+            <p className="text-xl md:text-2xl text-neutral-600 leading-[1.6]">
+              {transcript}
             </p>
           </div>
-          <p className="text-2xl text-neutral-700 leading-[1.6]">
-            {aiResponse}
-          </p>
-        </div>
-      )}
-      {isLoadingAIResponse && (
-        <p className="text-sm text-neutral-500 animate-pulse">
-          Agent is thinking...
-        </p>
-      )}
-      <div className="absolute bottom-[10] w-full flex items-center justify-center">
+        )}
+        {aiResponse && (
+          <div className="space-y-1">
+            <div
+              className={`flex items-center gap-1 ${isLoadingAIResponse && "animate-bounce"}`}
+            >
+              <div className="size-3 bg-black rounded-sm" />
+              <p className="text-sm text-neutral-400">
+                {searchParams.get("agent_name")}
+              </p>
+            </div>
+            <p className="text-xl md:text-2xl text-neutral-700 leading-[1.6]">
+              {aiResponse}
+            </p>
+          </div>
+        )}
+      </div>
+      <div className="sticky bottom-[10] w-full flex items-center justify-center">
         <Button
           onClick={isListening ? stopRecording : startRecording}
           variant={isListening ? "destructive" : "default"}
