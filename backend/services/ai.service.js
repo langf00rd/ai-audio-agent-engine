@@ -46,6 +46,7 @@ export async function aiChatService(payload) {
       [payload.session_id, payload.agent, payload.prompt, text],
     );
     return { data: text, status: 200 };
+    // TODO: let response come with speech. frontend currently calls a separate endpoint for speech
   } catch (error) {
     console.log("error", error);
     return {
