@@ -58,20 +58,22 @@ export async function aiChatService(payload) {
 
 export async function taggingService(payload) {
   try {
-    const ollamaRes = await fetch(`${process.env.DOMAIN_URL}/api/generate`, {
+    const prompt = generateSystemPrompt(payload.prompt, "TAGGING");
+    console.log("prompt", prompt);
+    const response = await fetch(`${process.env.DOMAIN_URL}/api/generate`, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        model: "tinyllama:chat",
-        prompt: generateSystemPrompt(payload.prompt, "TAGGING"),
+        model: "deepseek-r1:1.5b",
         stream: false,
+        prompt,
       }),
     });
-    console.log(generateSystemPrompt(payload.prompt, "TAGGING"));
-    const { data, error } = await ollamaRes.json();
-    if (error) throw new Error(error);
-    return { data, status: 200 };
+    if (!response.ok) throw new Error(response.statusText);
+    const result = await response.json();
+    console.log("response", response.ok);
+    return { data: result.response, status: 200 };
   } catch (err) {
+    console.log("err", err);
     return { status: 500, error: err.message };
   }
 }
