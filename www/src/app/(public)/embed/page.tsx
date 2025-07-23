@@ -15,9 +15,10 @@ export default function EmbedPage() {
         setIsGettingAgentId(false);
     }, []);
 
+    if (isGettingAgentId) return null;
+
     return (
         <div className="h-screen w-screen p-10 max-w-[500px] mx-auto">
-            {isGettingAgentId && <p>please wait</p>}
             {!isGettingAgentId && !agentId && (
                 <p>please pass a valid agent id</p>
             )}

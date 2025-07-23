@@ -3,34 +3,34 @@
 import { Button } from "@/components/ui/button";
 import { useWebSocket } from "@/hooks/use-web-socket";
 import {
-    API_BASE_URL,
     AUDIO_INPUT_SILENCE_THRESHOLD_DURATION,
     WEB_SOCKET_URL,
 } from "@/lib/constants";
 import { fetchAgentById } from "@/lib/services/agent";
+import { fetchAIResponse } from "@/lib/services/ai";
 import { trackAgentUsage } from "@/lib/services/analytics";
 import { speak } from "@/lib/services/tts";
-import { AgentConfig } from "@/lib/types";
 import { PlayCircle, StopCircle } from "lucide-react";
 import { useSearchParams } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { ExternalToast, toast } from "sonner";
+import EmptyState from "./empty-state";
 import { ErrorText } from "./typography";
 
 export default function AgentChat(props: { isEmbed?: boolean; id: string }) {
     const searchParams = useSearchParams();
     const mediaRecorderRef = useRef<MediaRecorder | null>(null);
     const silenceTimerRef = useRef<NodeJS.Timeout | null>(null);
-
-    const [isFetchingAgent, setIsFetchingAgent] = useState(false);
-    const [agent, setAgent] = useState<AgentConfig | null>(null);
     const [sessionId, setSessionId] = useState<string | null>(null);
     const [transcript, setTranscript] = useState("");
     const [aiResponse, setAIResponse] = useState("");
     const [isListening, setIsListening] = useState(false);
     const [isLoadingAIResponse, setIsLoadingAIResponse] = useState(false);
+    const [isReady, setIsReady] = useState(false);
+    const [isLoading, setIsLoading] = useState<null | boolean>(null);
+    const [isPublic, setIsPublic] = useState<boolean | null>(null);
 
-    const { webSocketRef, connected } = useWebSocket({
+    const { webSocketRef, connected, connect } = useWebSocket({
         url: WEB_SOCKET_URL!,
         onMessage: async (evt) => {
             const data = JSON.parse(evt.data);
@@ -62,22 +62,26 @@ export default function AgentChat(props: { isEmbed?: boolean; id: string }) {
     };
 
     const startRecording = async () => {
-        if (!connected) return alert("socket not connected");
-        const stream = await navigator.mediaDevices.getUserMedia({
-            audio: true,
-        });
-        const mediaRecorder = new MediaRecorder(stream, {
-            mimeType: "audio/webm;codecs=opus",
-        });
-        mediaRecorderRef.current = mediaRecorder;
-        mediaRecorder.ondataavailable = (e) => {
-            if (webSocketRef.current?.readyState === WebSocket.OPEN) {
-                webSocketRef.current.send(e.data);
-            }
-        };
-        mediaRecorder.start(250); // send audio chunks every 250ms
-        setIsListening(true);
-        console.log("[recorder] started");
+        try {
+            if (!connected) return alert("socket not connected");
+            const stream = await navigator.mediaDevices.getUserMedia({
+                audio: true,
+            });
+            const mediaRecorder = new MediaRecorder(stream, {
+                mimeType: "audio/webm;codecs=opus",
+            });
+            mediaRecorderRef.current = mediaRecorder;
+            mediaRecorder.ondataavailable = (e) => {
+                if (webSocketRef.current?.readyState === WebSocket.OPEN) {
+                    webSocketRef.current.send(e.data);
+                }
+            };
+            mediaRecorder.start(250); // send audio chunks every 250ms
+            setIsListening(true);
+            console.log("[recorder] started");
+        } catch (err) {
+            alert(err);
+        }
     };
 
     const stopRecording = () => {
@@ -101,18 +105,13 @@ export default function AgentChat(props: { isEmbed?: boolean; id: string }) {
     ) {
         try {
             setIsLoadingAIResponse(true);
-            const response = await fetch(`${API_BASE_URL}/ai`, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                    prompt: _transcript || transcript,
-                    agent: props.id,
-                    session_id: sessionId || _sessionId,
-                }),
-            });
-            const result = await response.json();
-            setAIResponse(result.data);
-            await speak(result.data);
+            const response = await fetchAIResponse(
+                _transcript || transcript,
+                props.id,
+                sessionId || _sessionId,
+            );
+            if (response.data) await speak(response.data);
+            setAIResponse(response.data);
         } catch (err) {
             toast((err as Error).message);
         } finally {
@@ -120,35 +119,53 @@ export default function AgentChat(props: { isEmbed?: boolean; id: string }) {
         }
     }
 
-    useEffect(() => {
-        async function handleGetAgent() {
-            try {
-                setIsFetchingAgent(true);
-                const _agent = await fetchAgentById(props.id);
-                setAgent(_agent.data);
-            } catch (err) {
-                toast((err as Error).message);
-            } finally {
-                setIsFetchingAgent(false);
-            }
+    async function handleGetAgent() {
+        try {
+            const _agent = await fetchAgentById(props.id);
+            return _agent.data;
+        } catch (err) {
+            toast((err as Error).message);
         }
-        handleGetAgent();
+    }
+
+    useEffect(() => {
         return () => {
             stopRecording();
         };
     }, []);
 
-    if (isFetchingAgent) return <p className="text-center">Preparing...</p>;
+    if (!isReady) {
+        return (
+            <EmptyState
+                title={`Conversation not started yet`}
+                isActionButtonDisabled={Boolean(isLoading)}
+                actionButtonLabel={isLoading ? "Connecting..." : "Connect"}
+                onActionButtonClick={async () => {
+                    try {
+                        setIsLoading(true);
+                        const _agent = await handleGetAgent();
+                        setIsPublic(Boolean(_agent?.is_public));
+                        if (props.isEmbed) {
+                            if (Boolean(_agent?.is_public)) connect();
+                        } else connect();
+                        setIsReady(true);
+                    } catch (err) {
+                        alert(err);
+                    } finally {
+                        setIsLoading(false);
+                    }
+                }}
+            />
+        );
+    }
 
-    if (!isFetchingAgent && !agent?.is_public) {
+    if (props.isEmbed && !isPublic) {
         return (
             <ErrorText>
                 Could not find agent. Please contact the admin
             </ErrorText>
         );
     }
-
-    if (!connected) return <p className="text-center">Connecting...</p>;
 
     return (
         <div className="space-y-10 h-full relative flex flex-col justify-between">
@@ -194,8 +211,15 @@ export default function AgentChat(props: { isEmbed?: boolean; id: string }) {
                     onClick={isListening ? stopRecording : startRecording}
                     variant={isListening ? "destructive" : "default"}
                 >
-                    {isListening ? "Stop" : "Start conversation"}
-                    {isListening ? <StopCircle /> : <PlayCircle />}
+                    {isListening ? (
+                        <>
+                            Stop <StopCircle />
+                        </>
+                    ) : (
+                        <>
+                            Start conversation <PlayCircle />
+                        </>
+                    )}
                 </Button>
             </div>
         </div>
