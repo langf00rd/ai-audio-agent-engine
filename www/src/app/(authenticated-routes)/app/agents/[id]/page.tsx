@@ -22,7 +22,7 @@ import {
     Analytics,
 } from "@/lib/types";
 import { copyToClipboard } from "@/lib/utils";
-import { Code, Copy, Play, Settings2 } from "lucide-react";
+import { Code, Copy, Play, Settings2, ChevronRight } from "lucide-react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -98,7 +98,7 @@ export default function AgentInfo() {
         <main className="space-y-10">
             <div className="space-y-4">
                 <h1 className="text-2xl font-semibold capitalize">
-                    Speak to {agent?.name || "..."}
+                    {agent?.name || "..."}
                 </h1>
                 <div className="gap-x-2 flex items-center">
                     <Link href={`${ROUTES.agent.index}/${params.id}/configure`}>
@@ -115,31 +115,58 @@ export default function AgentInfo() {
                             </Button>
                         </DialogTrigger>
                         <DialogContent>
-                            <DialogHeader>
-                                <DialogTitle>
-                                    Embed this agent on your website
-                                </DialogTitle>
-                                <DialogDescription>
-                                    Let visitors chat with your AI agent
-                                    anytime—ensuring customer engagement
-                                    continues, even when you&apos;re offline.
-                                    Just add the provided tag before the closing
-                                    body tag of your website
-                                </DialogDescription>
-                            </DialogHeader>
-                            <div className="flex flex-col gap-2">
-                                <Textarea
-                                    readOnly
-                                    className="bg-neutral-100"
-                                    value={embedScript}
-                                />
-                                <Button
-                                    className="w-fit"
-                                    onClick={() => copyToClipboard(embedScript)}
-                                >
-                                    <Copy /> Copy code
-                                </Button>
-                            </div>
+                            {agent?.is_public ? (
+                                <>
+                                    <DialogHeader>
+                                        <DialogTitle>
+                                            Embed this agent on your website
+                                        </DialogTitle>
+                                        <DialogDescription>
+                                            Let visitors chat with your AI agent
+                                            anytime—ensuring customer engagement
+                                            continues, even when you&apos;re
+                                            offline. Just add the provided tag
+                                            before the closing body tag of your
+                                            website
+                                        </DialogDescription>
+                                    </DialogHeader>
+                                    <div className="flex flex-col gap-2">
+                                        <Textarea
+                                            readOnly
+                                            className="bg-neutral-100"
+                                            value={embedScript}
+                                        />
+                                        <Button
+                                            className="w-fit"
+                                            onClick={() =>
+                                                copyToClipboard(embedScript)
+                                            }
+                                        >
+                                            <Copy /> Copy code
+                                        </Button>
+                                    </div>
+                                </>
+                            ) : (
+                                <div className="space-y-4">
+                                    <p>
+                                        To enable this agent on a public
+                                        website, you need to make the agent
+                                        public.
+                                    </p>
+                                    <div className="flex items-center gap-1 text-neutral-600 text-[14px]">
+                                        <p>Settings</p>
+                                        <ChevronRight size={12} />
+                                        <p>General</p>
+                                        <ChevronRight size={12} />
+                                        <p>Make agent public</p>
+                                    </div>
+                                    <Link
+                                        href={`${ROUTES.agent.index}/${params.id}/configure`}
+                                    >
+                                        <Button>Or click here</Button>
+                                    </Link>
+                                </div>
+                            )}
                         </DialogContent>
                     </Dialog>
                     <Link
