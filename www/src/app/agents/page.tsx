@@ -1,15 +1,18 @@
 "use client";
 
-import { Agent } from "@/lib/types";
+import { Button } from "@/components/ui/button";
+import { API_BASE_URL, ROUTES } from "@/lib/constants";
+import { AgentConfig } from "@/lib/types";
+import { Plus } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 
 export default function AgentsPage() {
-  const [agents, setAgents] = useState<Agent[]>([]);
+  const [agents, setAgents] = useState<AgentConfig[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch("http://localhost:8000/agents")
+    fetch(`${API_BASE_URL}/agents`)
       .then((res) => res.json())
       .then((data) => {
         setAgents(data.data);
@@ -25,30 +28,31 @@ export default function AgentsPage() {
 
   return (
     <div className="space-y-6">
-      <h1 className="text-2xl font-semibold">Your agents</h1>
-      {agents.length === 0 && <p>No agents found.</p>}
-      <ul className="gap-4 grid grid-cols-2">
+      <div className="flex items-center justify-between">
+        <h1 className="text-xl font-semibold">Your agents</h1>
+        <Link href={ROUTES.agent.create}>
+          <Button>
+            <Plus />
+            Create agent
+          </Button>
+        </Link>
+      </div>
+      {agents.length === 0 && <p>no agents found</p>}
+      <ul className="space-y-2">
         {agents.map((agent) => (
           <li
             key={agent.id}
-            className="border border-neutral-200 hover:bg-neutral-100 p-6"
+            className="rounded-[14px] bg-neutral-50  hover:bg-neutral-100 p-4"
           >
-            <Link href={`/agents/${agent.id}`} className="space-y-2 capitalize">
-              <h2 className="text-xl font-semibold">{agent.name}</h2>
-              <p className="">{agent.description}</p>
-              <div className="text-neutral-600">
-                <h3 className="font-medium mb-1">Audience:</h3>
-                <ul className="list-disc list-inside space-y-1">
-                  {Object.entries(agent.audience).map(([key, value]) => (
-                    <li key={key}>
-                      <span className="font-medium">
-                        {key.replaceAll("_", " ")}:
-                      </span>{" "}
-                      {value}
-                    </li>
-                  ))}
-                </ul>
+            <Link
+              href={`${ROUTES.agent.index}/${agent.id}`}
+              className="space-y-1 capitalize"
+            >
+              <div className="flex items-center justify-between">
+                <h2 className="font-semibold">{agent.name}</h2>
+                <p className="text-sm text-neutral-400">{agent.brand_voice}</p>
               </div>
+              <p className="text-neutral-600">{agent.description}</p>
             </Link>
           </li>
         ))}
@@ -56,3 +60,4 @@ export default function AgentsPage() {
     </div>
   );
 }
+
