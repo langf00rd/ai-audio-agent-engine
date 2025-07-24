@@ -5,19 +5,19 @@ import { SQLITE_DB_PATH } from "../utils/constants.js";
 export let sqliteDb;
 
 export async function initDb() {
-  console.log("[SQLITE] INITIALIZING...");
-  const SQL = await initSqlJs();
-  if (fs.existsSync(SQLITE_DB_PATH)) {
-    console.log("[SQLITE] DB FILE EXISTS");
-    const fileBuffer = fs.readFileSync(SQLITE_DB_PATH);
-    sqliteDb = new SQL.Database(fileBuffer);
-  } else {
-    console.log("[SQLITE] DB DOES NOT EXIST. CREATING FILE...");
-    sqliteDb = new SQL.Database();
-    sqliteDb.run(sqliteSeed);
-    saveDb();
-    console.log("[SQLITE] DB FILE CREATED");
-  }
+    console.log("[SQLITE] INITIALIZING...");
+    const SQL = await initSqlJs();
+    if (fs.existsSync(SQLITE_DB_PATH)) {
+        console.log("[SQLITE] DB FILE EXISTS");
+        const fileBuffer = fs.readFileSync(SQLITE_DB_PATH);
+        sqliteDb = new SQL.Database(fileBuffer);
+    } else {
+        console.log("[SQLITE] DB DOES NOT EXIST. CREATING FILE...");
+        sqliteDb = new SQL.Database();
+        sqliteDb.run(sqliteSeed);
+        saveDb();
+        console.log("[SQLITE] DB FILE CREATED");
+    }
 }
 
 /**
@@ -26,22 +26,24 @@ export async function initDb() {
  * @param {[]} value - values to be inserted into db
  */
 export async function insertIntoSQlite(query, value) {
-  sqliteDb.run(query, value);
-  saveDb();
+    sqliteDb.run(query, value);
+    saveDb();
 }
 /**
  * reads from sqlite
  * @param {string} query
  */
 export async function readFromSQlite(query, param) {
-  const result = sqliteDb.exec(query, param);
-  if (result.length < 1) return [];
-  return convertToObjects(result[0]);
+    let result;
+    if (param) result = sqliteDb.exec(query, param);
+    else result = sqliteDb.exec(query);
+    if (result.length < 1) return [];
+    return convertToObjects(result[0]);
 }
 
 function saveDb() {
-  const data = sqliteDb.export();
-  fs.writeFileSync(SQLITE_DB_PATH, Buffer.from(data));
+    const data = sqliteDb.export();
+    fs.writeFileSync(SQLITE_DB_PATH, Buffer.from(data));
 }
 
 const sqliteSeed = `CREATE TABLE IF NOT EXISTS messages (

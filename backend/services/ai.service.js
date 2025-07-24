@@ -1,11 +1,11 @@
 import { generateText } from "ai";
 import { chatModel } from "../config/ai.js";
+import { insertIntoSQlite, readFromSQlite } from "../config/sqlite.js";
 import {
   generateSystemPrompt,
   parseConversationSessionHistory,
 } from "../utils/ai.js";
 import { getAgentByIDService } from "./agent.service.js";
-import { insertIntoSQlite, readFromSQlite } from "../config/sqlite.js";
 
 export async function aiChatService(payload) {
   try {
@@ -16,15 +16,12 @@ export async function aiChatService(payload) {
     const parsedConversationHistory = parseConversationSessionHistory(
       conversationHistory.slice(-3),
     );
-    console.log("parsedConversationHistory", parsedConversationHistory);
     const {
       data: agent,
       error,
       status,
     } = await getAgentByIDService(payload.agent);
-
     if (error) return { error, status };
-
     const prompt = generateSystemPrompt(
       payload.prompt,
       "REGULAR-CONVERSATION",
@@ -58,20 +55,35 @@ export async function aiChatService(payload) {
 
 export async function taggingService(payload) {
   try {
-    const prompt = generateSystemPrompt(payload.prompt, "TAGGING");
-    console.log("prompt", prompt);
-    const response = await fetch(`${process.env.DOMAIN_URL}/api/generate`, {
-      method: "POST",
-      body: JSON.stringify({
-        model: "deepseek-r1:1.5b",
-        stream: false,
-        prompt,
-      }),
+    const conversationHistory = await readFromSQlite(
+      `SELECT * FROM messages WHERE session_id = ? ORDER BY created_at ASC`,
+      [payload.session_id],
+    );
+    console.log("conversationHistory", conversationHistory);
+    if (conversationHistory.length < 1) {
+      return {
+        status: 404,
+        error: "no conversations found for this session id",
+      };
+    }
+    const formattedConversationHistory = conversationHistory.map((a) => {
+      return {
+        user: a.user,
+        llm: a.llm,
+        created_at: a.created_at,
+      };
     });
-    if (!response.ok) throw new Error(response.statusText);
-    const result = await response.json();
-    console.log("response", response.ok);
-    return { data: result.response, status: 200 };
+    const prompt = generateSystemPrompt(
+      formattedConversationHistory,
+      "TAGGING",
+    );
+    // TODO: use locally trained llm to handle tagging
+    const { text } = await generateText({
+      model: chatModel,
+      prompt,
+    });
+    console.log("text", text);
+    return { data: JSON.parse(text), status: 200 };
   } catch (err) {
     console.log("err", err);
     return { status: 500, error: err.message };

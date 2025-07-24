@@ -1,19 +1,23 @@
 export const conversationTags = {
-  interested: "INTERESTED",
-  notInterested: "NOT_INTERESTED",
-  spam: "SPAM",
+    interested: "INTERESTED",
+    notInterested: "NOT_INTERESTED",
+    spam: "SPAM",
 };
 
 export const leadQuality = {
-  hot: "HOT",
-  warm: "WARM",
-  cold: "COLD",
+    hot: "HOT",
+    warm: "WARM",
+    cold: "COLD",
 };
 
 export const conversationNextSteps = {
-  followUp: "FOLLOW_UP",
-  disqualify: "DISQUALIFY",
-  escalate: "ESCALATE",
+    followUp: "FOLLOW_UP",
+    disqualify: "DISQUALIFY",
+    escalate: "ESCALATE",
 };
 
 export const SQLITE_DB_PATH = "./db.sqlite";
+
+export const QEUES = {
+    conversationTagging: "conversation-tagging",
+};
