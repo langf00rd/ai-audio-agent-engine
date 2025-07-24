@@ -1,13 +1,11 @@
 import { generateText } from "ai";
 import { chatModel } from "../config/ai.js";
+import { insertIntoSQlite, readFromSQlite } from "../config/sqlite.js";
 import {
     generateSystemPrompt,
     parseConversationSessionHistory,
-    pickJSONFromText,
 } from "../utils/ai.js";
 import { getAgentByIDService } from "./agent.service.js";
-import { insertIntoSQlite, readFromSQlite } from "../config/sqlite.js";
-import { getConversationDuration } from "../utils/index.js";
 
 export async function aiChatService(payload) {
     try {
@@ -18,15 +16,12 @@ export async function aiChatService(payload) {
         const parsedConversationHistory = parseConversationSessionHistory(
             conversationHistory.slice(-3),
         );
-        console.log("parsedConversationHistory", parsedConversationHistory);
         const {
             data: agent,
             error,
             status,
         } = await getAgentByIDService(payload.agent);
-
         if (error) return { error, status };
-
         const prompt = generateSystemPrompt(
             payload.prompt,
             "REGULAR-CONVERSATION",
