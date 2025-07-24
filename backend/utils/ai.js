@@ -13,30 +13,8 @@ import {
 export function generateSystemPrompt(prompt = "", type, opt) {
   switch (type) {
     case "TAGGING":
-      return `You are a smart lead intent tagging assistant for a sales AI.
-
-    Given a customer message "${prompt}", analyze it and return a valid JSON object with these keys:
-
-    {
-      "intent": one of  [${Object.values(conversationTags)}],
-      "lead_quality": one of  [${Object.values(leadQuality)}],
-      "next_step": one of [${Object.values(conversationNextSteps)}],
-      "confidence": number from 0 to 1,
-      "summary": a short 1-sentence summary of the user's intent,
-      "tags": relevant keywords as an array of strings
-    }
-
-    Always return ONLY the JSON. No extra text, comments, or formatting.
-`;
-      return `extract the data below and return JSON from this user message "${prompt}"
-    {
-      "intent": any of [${Object.values(conversationTags)}],
-      "lead_quality": any of [${Object.values(leadQuality)}],
-      "next_step": any of [${Object.values(conversationNextSteps)}],
-      "confidence": number (0-1),
-      summary: string,
-      "tags": string array
-    }. maintain the json keys as shared above and do not return anything else other than the json`;
+      return `you will be provided with a user input and as a sales tagging model and returning markdown, you are tasked to return strictly only json containing these:
+      intent [any of [${Object.values(conversationTags)}]], summary, lead_quality: any of [${Object.values(leadQuality)}], next_step: any of [${Object.values(conversationNextSteps)}], confidence: number (0-1). now tag this user input: "${prompt}"`;
     case "REGULAR-CONVERSATION":
       return `you are a sales agent. your info and service/product ${JSON.stringify(opt.agentInfo)}. keep replies short, casual, and human. avoid robotic tone. if something isn’t covered, ask them to contact support. continue the conversation from this history: ${JSON.stringify(opt.history)}. no emojis. now respond: ${prompt}`;
     default:
@@ -53,4 +31,21 @@ export function parseConversationSessionHistory(history = []) {
   return history.map((a) => {
     return { llm: a.llm, user: a.user };
   });
+}
+
+export function pickJSONFromText(text) {
+  const blockMatch = text.match(/```json\s*([\s\S]*?)\s*```/i);
+  let jsonString;
+  if (blockMatch) {
+    jsonString = blockMatch[1];
+  } else {
+    const rawMatch = text.match(/{[\s\S]*}/);
+    if (!rawMatch) throw new Error("JSON not found in text");
+    jsonString = rawMatch[0];
+  }
+  try {
+    return JSON.parse(jsonString);
+  } catch (err) {
+    throw new Error("Failed to parse JSON: " + err.message);
+  }
 }

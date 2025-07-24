@@ -3,6 +3,7 @@ import { chatModel } from "../config/ai.js";
 import {
   generateSystemPrompt,
   parseConversationSessionHistory,
+  pickJSONFromText,
 } from "../utils/ai.js";
 import { getAgentByIDService } from "./agent.service.js";
 import { insertIntoSQlite, readFromSQlite } from "../config/sqlite.js";
@@ -60,18 +61,22 @@ export async function taggingService(payload) {
   try {
     const prompt = generateSystemPrompt(payload.prompt, "TAGGING");
     console.log("prompt", prompt);
-    const response = await fetch(`${process.env.DOMAIN_URL}/api/generate`, {
-      method: "POST",
-      body: JSON.stringify({
-        model: "deepseek-r1:1.5b",
-        stream: false,
-        prompt,
-      }),
-    });
+    const response = await fetch(
+      `${process.env.OLLAMA_DOMAIN_URL}/api/generate`,
+      {
+        method: "POST",
+        body: JSON.stringify({
+          model: "deepseek-r1:1.5b",
+          stream: false,
+          prompt,
+          raw: true,
+        }),
+      },
+    );
     if (!response.ok) throw new Error(response.statusText);
     const result = await response.json();
-    console.log("response", response.ok);
-    return { data: result.response, status: 200 };
+    console.log("response ---", response.ok, result.response, "----");
+    return { data: pickJSONFromText(result.response), status: 200 };
   } catch (err) {
     console.log("err", err);
     return { status: 500, error: err.message };
