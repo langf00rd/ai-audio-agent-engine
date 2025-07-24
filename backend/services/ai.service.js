@@ -75,28 +75,13 @@ export async function taggingService(payload) {
             formattedConversationHistory,
             "TAGGING",
         );
+        // TODO: use locally trained llm to handle tagging
         const { text } = await generateText({
             model: chatModel,
             prompt,
         });
         console.log("text", text);
         return { data: JSON.parse(text), status: 200 };
-        // const response = await fetch(
-        //     `${process.env.OLLAMA_DOMAIN_URL}/api/generate`,
-        //     {
-        //         method: "POST",
-        //         body: JSON.stringify({
-        //             model: "deepseek-r1:1.5b",
-        //             stream: false,
-        //             prompt,
-        //             raw: true,
-        //         }),
-        //     },
-        // );
-        // if (!response.ok) throw new Error(response.statusText);
-        // const result = await response.json();
-        // console.log("--->", result.response, "<----");
-        // return { data: pickJSONFromText(result.response), status: 200 };
     } catch (err) {
         console.log("err", err);
         return { status: 500, error: err.message };
