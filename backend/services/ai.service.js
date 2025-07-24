@@ -59,6 +59,10 @@ export async function taggingService(payload) {
             `SELECT * FROM messages WHERE session_id = ? ORDER BY created_at ASC`,
             [payload.session_id],
         );
+        console.log("conversationHistory", conversationHistory);
+        if (conversationHistory.length < 1) {
+            throw new Error("no conversations found for this session id");
+        }
         const formattedConversationHistory = conversationHistory.map((a) => {
             return {
                 user: a.user,
