@@ -6,25 +6,26 @@ import http from "http";
 import { WebSocketServer } from "ws";
 import { initDb } from "./config/sqlite.js";
 import {
-    createAgent,
-    getAgentByID,
-    getAgents,
-    updateAgent,
+  createAgent,
+  getAgentByID,
+  getAgents,
+  updateAgent,
 } from "./controller/agent.controller.js";
 import {
-    aiChatController,
-    taggingController,
+  aiChatController,
+  taggingController,
 } from "./controller/ai.controller.js";
 import {
-    signInController,
-    signUpController,
+  signInController,
+  signUpController,
 } from "./controller/auth.controller.js";
 import { ttsController } from "./controller/tts.controller.js";
 import {
-    analyticsController,
-    getAnalyticsController,
+  analyticsController,
+  getAnalyticsController,
 } from "./controller/analytics.controller.js";
 import { handleWebSocketConnection } from "./utils/ws.js";
+import { getConversationsController } from "./controller/conversations.controller.js";
 
 const PORT = 8000;
 const app = express();
@@ -37,24 +38,24 @@ dotenv.config({ path: ".env" });
 app.use(cors());
 app.use(bodyParser.json());
 app.use(
-    bodyParser.urlencoded({
-        extended: true,
-    }),
+  bodyParser.urlencoded({
+    extended: true,
+  }),
 );
 
 // init sqlite db
 (async () => {
-    try {
-        await initDb();
-        console.log("[SQLITE] DB INITIALIZED");
-    } catch (err) {
-        console.log("[SQLITE] ERROR", err);
-    }
+  try {
+    await initDb();
+    console.log("[SQLITE] DB INITIALIZED");
+  } catch (err) {
+    console.log("[SQLITE] ERROR", err);
+  }
 })();
 
 wss.on("connection", async (ws) => {
-    console.log("web socket client connected");
-    handleWebSocketConnection(ws);
+  console.log("web socket client connected");
+  handleWebSocketConnection(ws);
 });
 
 app.use("/api", router); // all routes under /api
@@ -70,5 +71,6 @@ router.post("/auth/sign-in", signInController);
 router.post("/utils/tts", ttsController);
 router.post("/analytics", analyticsController);
 router.get("/analytics", getAnalyticsController);
+router.get("/conversations", getConversationsController);
 
 server.listen(PORT, () => console.log(`API RUNNING ON ${PORT}`));

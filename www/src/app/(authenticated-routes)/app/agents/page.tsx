@@ -1,13 +1,17 @@
 "use client";
 
+import EmptyState from "@/components/empty-state";
+import Loader from "@/components/loader";
 import { Button } from "@/components/ui/button";
 import { API_BASE_URL, ROUTES } from "@/lib/constants";
 import { AgentConfig } from "@/lib/types";
 import { Plus } from "lucide-react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
 export default function AgentsPage() {
+  const router = useRouter();
   const [agents, setAgents] = useState<AgentConfig[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -24,7 +28,7 @@ export default function AgentsPage() {
       });
   }, []);
 
-  if (loading) return <p className="text-center p-10">loading agents...</p>;
+  if (loading) return <Loader />;
 
   return (
     <div className="space-y-6">
@@ -37,26 +41,38 @@ export default function AgentsPage() {
           </Button>
         </Link>
       </div>
-      {agents.length === 0 && <p>no agents found</p>}
-      <ul className="space-y-2">
-        {agents.map((agent) => (
-          <li
-            key={agent.id}
-            className="rounded-[14px] bg-neutral-50  hover:bg-neutral-100 p-4"
-          >
-            <Link
-              href={`${ROUTES.agent.index}/${agent.id}`}
-              className="space-y-1 capitalize"
+      {agents.length === 0 ? (
+        <EmptyState
+          actionButtonVariant="secondary"
+          title="No agents found"
+          actionButtonLabel="Create your first agent"
+          onActionButtonClick={() => {
+            router.push(ROUTES.agent.create);
+          }}
+        />
+      ) : (
+        <ul className="space-y-2">
+          {agents.map((agent) => (
+            <li
+              key={agent.id}
+              className="rounded-[14px] bg-neutral-50  hover:bg-neutral-100 p-4"
             >
-              <div className="flex items-center justify-between">
-                <h2 className="font-semibold">{agent.name}</h2>
-                <p className="text-sm text-neutral-400">{agent.brand_voice}</p>
-              </div>
-              <p className="text-neutral-600">{agent.description}</p>
-            </Link>
-          </li>
-        ))}
-      </ul>
+              <Link
+                href={`${ROUTES.agent.index}/${agent.id}`}
+                className="space-y-1 capitalize"
+              >
+                <div className="flex items-center justify-between">
+                  <h2 className="font-semibold">{agent.name}</h2>
+                  <p className="text-sm text-neutral-400">
+                    {agent.brand_voice}
+                  </p>
+                </div>
+                <p className="text-neutral-600">{agent.description}</p>
+              </Link>
+            </li>
+          ))}
+        </ul>
+      )}
     </div>
   );
 }
