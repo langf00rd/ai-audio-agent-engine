@@ -41,7 +41,7 @@ export default function AgentConversations() {
                 className="bg-neutral-50 hover:bg-neutral-100 transition-colors block space-y-4 p-4 rounded-xl"
               >
                 <p className="font-medium line-clamp-2">
-                  <span className="text-neutral-400">User</span>:{" "}
+                  <span className="text-neutral-400">Customer</span>:{" "}
                   {a.messages[0].user}...{" "}
                   <span className="text-neutral-400">Agent</span>:{" "}
                   {a.messages[0].llm}

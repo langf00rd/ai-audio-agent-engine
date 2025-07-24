@@ -1,5 +1,6 @@
 "use client";
 
+import EmptyState from "@/components/empty-state";
 import Loader from "@/components/loader";
 import {
   Breadcrumb,
@@ -34,7 +35,7 @@ export default function SessionDetailsPage() {
         <>
           <Tabs defaultValue="Conversation">
             <TabsList>
-              {["Conversation", "Analytics"].map((a) => (
+              {["Conversation", "Analytics", "Customer Info"].map((a) => (
                 <TabsTrigger key={a} value={a}>
                   {a}
                 </TabsTrigger>
@@ -59,7 +60,10 @@ export default function SessionDetailsPage() {
               </ul>
             </TabsContent>
             <TabsContent value="Analytics">
-              Change your password here.
+              <EmptyState title="Coming soon..." />
+            </TabsContent>
+            <TabsContent value="Customer Info">
+              <EmptyState title="Coming soon..." />
             </TabsContent>
           </Tabs>
         </>

@@ -4,6 +4,7 @@
   "main": "index.js",
   "scripts": {
     "install": "pnpm run install:all",
+    "build": "pnpm --prefix www build",
     "install:all": "pnpm --prefix backend install && pnpm --prefix www install",
     "dev": "concurrently \"pnpm run dev:backend\" \"pnpm run dev:www\"",
     "start:prod": "concurrently \"pnpm --prefix backend start\" \"pnpm --prefix www start\"",

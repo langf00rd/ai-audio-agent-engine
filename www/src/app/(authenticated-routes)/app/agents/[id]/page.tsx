@@ -1,6 +1,7 @@
 "use client";
 
 import { AgentAnalyticsChart } from "@/components/charts/agent";
+import EmptyState from "@/components/empty-state";
 import Loader from "@/components/loader";
 import StatCard from "@/components/stat-card";
 import {
@@ -33,15 +34,17 @@ import {
   APIResponse,
   SessionConversation,
 } from "@/lib/types";
-import { copyToClipboard } from "@/lib/utils";
+import { copyToClipboard, getTotalConversationDuration } from "@/lib/utils";
 import { useQuery } from "@tanstack/react-query";
 import { ChevronRight, Code, Copy, Globe, Play, Settings2 } from "lucide-react";
 import Link from "next/link";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+import { toast } from "sonner";
 
 export default function AgentInfo() {
   const params = useParams();
+  const router = useRouter();
   const [domain, setDomain] = useState<string | null>(null);
   const [chartDayFilter, setChartDayFilter] =
     useState<AgentAnalyticsChartDuration>(AgentAnalyticsChartDuration.DAY);
@@ -67,7 +70,7 @@ export default function AgentInfo() {
         const { data } = await fetchAgentById(String(params.id));
         setAgent(data);
       } catch (err) {
-        alert(err);
+        toast((err as Error).message);
       } finally {
         setLoading(false);
       }
@@ -99,7 +102,7 @@ export default function AgentInfo() {
         )[0];
         setAnalytics({ totalInvocations, mostCommonDay });
       } catch (err) {
-        alert(err);
+        toast((err as Error).message);
       } finally {
         setLoading(false);
       }
@@ -114,7 +117,15 @@ export default function AgentInfo() {
 
   if (loading) return <Loader />;
 
-  if (!loading && !agent) return <p>No agent found</p>;
+  if (!loading && !agent)
+    return (
+      <EmptyState
+        title="No agent found"
+        actionButtonLabel="Create new agent"
+        actionButtonVariant="secondary"
+        onActionButtonClick={() => router.push(ROUTES.agent.create)}
+      />
+    );
 
   return (
     <main className="space-y-10">
@@ -205,13 +216,16 @@ export default function AgentInfo() {
           title="Highest traffic day"
           value={analytics?.mostCommonDay}
         />
-        <StatCard title="General intent" value="Interested" />
-        <StatCard title="Most inquired product/service" value="Interested" />
-        <StatCard title="Average conversation duration" value="5mins 20secs" />
+        {/* <StatCard title="General intent" value="Interested" /> */}
+        {/* <StatCard title="Most inquired product/service" value="Interested" /> */}
         <StatCard
+          title="Conversations duration"
+          value={getTotalConversationDuration(sessionConversations?.data || [])}
+        />
+        {/* <StatCard
           title="Most asked question"
           value="What is the lowest price of a purse?"
-        />
+        /> */}
       </ul>
       <div>
         <div className="space-x-1 float-right">

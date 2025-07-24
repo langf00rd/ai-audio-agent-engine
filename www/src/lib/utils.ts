@@ -1,6 +1,7 @@
 import { clsx, type ClassValue } from "clsx";
 import { toast } from "sonner";
 import { twMerge } from "tailwind-merge";
+import { SessionConversation } from "./types";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -40,4 +41,30 @@ export function getDurationString(
   if (seconds > 0 || parts.length === 0)
     parts.push(`${seconds}sec${seconds > 1 ? "s" : ""}`);
   return parts.join(" ");
+}
+
+export function getTotalConversationDuration(
+  sessions: SessionConversation[],
+): string {
+  function formatDuration(ms: number): string {
+    let totalSeconds = Math.floor(ms / 1000);
+    const hours = Math.floor(totalSeconds / 3600);
+    totalSeconds %= 3600;
+    const minutes = Math.floor(totalSeconds / 60);
+    const seconds = totalSeconds % 60;
+    const parts: string[] = [];
+    if (hours > 0) parts.push(`${hours}hr${hours > 1 ? "s" : ""}`);
+    if (minutes > 0) parts.push(`${minutes}min${minutes > 1 ? "s" : ""}`);
+    if (seconds > 0 || parts.length === 0)
+      parts.push(`${seconds}sec${seconds > 1 ? "s" : ""}`);
+    return parts.join(" ");
+  }
+  return formatDuration(
+    sessions.reduce((total, session) => {
+      const start = new Date(session.start_dt).getTime();
+      const end = new Date(session.end_dt).getTime();
+      const duration = end - start;
+      return total + duration;
+    }, 0),
+  ); // duration in milliseconds
 }
