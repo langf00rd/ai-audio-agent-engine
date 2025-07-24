@@ -1,12 +1,13 @@
 import { generateText } from "ai";
 import { chatModel } from "../config/ai.js";
 import {
-  generateSystemPrompt,
-  parseConversationSessionHistory,
-  pickJSONFromText,
+    generateSystemPrompt,
+    parseConversationSessionHistory,
+    pickJSONFromText,
 } from "../utils/ai.js";
 import { getAgentByIDService } from "./agent.service.js";
 import { insertIntoSQlite, readFromSQlite } from "../config/sqlite.js";
+import { getConversationDuration } from "../utils/index.js";
 
 export async function aiChatService(payload) {
     try {
@@ -59,23 +60,43 @@ export async function aiChatService(payload) {
 
 export async function taggingService(payload) {
     try {
-        const prompt = generateSystemPrompt(payload.prompt, "TAGGING");
-        const response = await fetch(
-            `${process.env.OLLAMA_DOMAIN_URL}/api/generate`,
-            {
-                method: "POST",
-                body: JSON.stringify({
-                    model: "deepseek-r1:1.5b",
-                    stream: false,
-                    prompt,
-                    raw: true,
-                }),
-            },
+        const conversationHistory = await readFromSQlite(
+            `SELECT * FROM messages WHERE session_id = ? ORDER BY created_at ASC`,
+            [payload.session_id],
         );
-        if (!response.ok) throw new Error(response.statusText);
-        const result = await response.json();
-        console.log("response ---", response.ok, result.response, "----");
-        return { data: pickJSONFromText(result.response), status: 200 };
+        const formattedConversationHistory = conversationHistory.map((a) => {
+            return {
+                user: a.user,
+                llm: a.llm,
+                created_at: a.created_at,
+            };
+        });
+        const prompt = generateSystemPrompt(
+            formattedConversationHistory,
+            "TAGGING",
+        );
+        const { text } = await generateText({
+            model: chatModel,
+            prompt,
+        });
+        console.log("text", text);
+        return { data: JSON.parse(text), status: 200 };
+        // const response = await fetch(
+        //     `${process.env.OLLAMA_DOMAIN_URL}/api/generate`,
+        //     {
+        //         method: "POST",
+        //         body: JSON.stringify({
+        //             model: "deepseek-r1:1.5b",
+        //             stream: false,
+        //             prompt,
+        //             raw: true,
+        //         }),
+        //     },
+        // );
+        // if (!response.ok) throw new Error(response.statusText);
+        // const result = await response.json();
+        // console.log("--->", result.response, "<----");
+        // return { data: pickJSONFromText(result.response), status: 200 };
     } catch (err) {
         console.log("err", err);
         return { status: 500, error: err.message };

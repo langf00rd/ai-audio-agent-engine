@@ -13,10 +13,9 @@ import {
 export function generateSystemPrompt(prompt = "", type, opt) {
     switch (type) {
         case "TAGGING":
-            return `you will be provided with a user input and as a sales tagging model and returning markdown, you are tasked to return strictly only json containing these:
-      {user_info: {name: string, email: string, phone: string. location: string}}, intent [any of [${Object.values(conversationTags)}]], summary, lead_quality: any of [${Object.values(leadQuality)}], next_step: any of [${Object.values(conversationNextSteps)}], confidence: number (0-1). now tag this user input: "${prompt}"`;
+            return `you are given an a convo history with user input and llm response. as a sales convo tagging model, extract relevant info and return ALONE STRICTLY stringified json matching this schema slotted with the info you extract and deduce: {"user_info":{"name":"string","email":"string","phone":"string","location":"string"},"intent":"${Object.values(conversationTags)}","summary":"string","lead_quality":"${Object.values(leadQuality)}","next_step":"${Object.values(conversationNextSteps)}","confidence":"float"}. now tag this conversation: "${JSON.stringify(prompt)}"`;
         case "REGULAR-CONVERSATION":
-            return `you are a sales agent. your info and service/product ${JSON.stringify(opt.agentInfo)}. keep replies short, casual, and human. avoid robotic tone. if something isn’t covered, ask them to contact support. continue the conversation from this history: ${JSON.stringify(opt.history)}. no emojis. now respond: ${prompt}`;
+            return `you are a sales agent. your info and service/product ${JSON.stringify(opt.agentInfo)}. keep replies short, casual, and human. avoid robotic tone. if something isn’t covered, ask them to contact support. continue the conversation from this history: ${JSON.stringify(opt.history)}. no emojis. now respond: ${JSON.stringify(prompt)}`;
         default:
             return prompt;
     }
@@ -46,6 +45,6 @@ export function pickJSONFromText(text) {
     try {
         return JSON.parse(jsonString);
     } catch (err) {
-        throw new Error("Failed to parse JSON: " + err.message);
+        throw new Error("failed to parse JSON: " + err.message);
     }
 }
