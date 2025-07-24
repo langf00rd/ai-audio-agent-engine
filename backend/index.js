@@ -4,6 +4,7 @@ import dotenv from "dotenv";
 import express from "express";
 import http from "http";
 import { WebSocketServer } from "ws";
+import { initDb } from "./config/sqlite.js";
 import {
   createAgent,
   getAgentByID,
@@ -20,11 +21,6 @@ import {
 } from "./controller/auth.controller.js";
 import { ttsController } from "./controller/tts.controller.js";
 import { handleWebSocketConnection } from "./utils/ws.js";
-import {
-  analyticsController,
-  getAnalyticsController,
-} from "./controller/analytics.controller.js";
-import { initDb } from "./config/sqlite.js";
 
 const PORT = 8000;
 const app = express();
@@ -53,8 +49,8 @@ app.use(
 })();
 
 wss.on("connection", async (ws) => {
-  console.log("web socket client connected");
-  handleWebSocketConnection(ws);
+    console.log("web socket client connected");
+    handleWebSocketConnection(ws);
 });
 
 app.use("/api", router); // all routes under /api
