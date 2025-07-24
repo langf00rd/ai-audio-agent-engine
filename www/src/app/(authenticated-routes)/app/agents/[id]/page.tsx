@@ -35,7 +35,7 @@ import {
 } from "@/lib/types";
 import { copyToClipboard } from "@/lib/utils";
 import { useQuery } from "@tanstack/react-query";
-import { ChevronRight, Code, Copy, Play, Settings2 } from "lucide-react";
+import { ChevronRight, Code, Copy, Globe, Play, Settings2 } from "lucide-react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -118,10 +118,11 @@ export default function AgentInfo() {
 
   return (
     <main className="space-y-10">
-      <BreadCrumbs id={String(params.id)} />
+      <BreadCrumbs />
       <div className="space-y-4">
-        <h1 className="text-2xl font-semibold capitalize">
-          {agent?.name || "..."}
+        <h1 className="text-2xl font-semibold capitalize flex items-center gap-2">
+          {agent?.name || "..."}{" "}
+          {agent?.is_public && <Globe size={16} className="text-primary" />}
         </h1>
         <div className="gap-x-2 flex items-center">
           <Link href={`${ROUTES.agent.index}/${params.id}/configure`}>
@@ -233,7 +234,7 @@ export default function AgentInfo() {
   );
 }
 
-function BreadCrumbs(props: { id: string }) {
+function BreadCrumbs() {
   return (
     <Breadcrumb>
       <BreadcrumbList>

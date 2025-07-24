@@ -5,7 +5,7 @@ import Loader from "@/components/loader";
 import { Button } from "@/components/ui/button";
 import { API_BASE_URL, ROUTES } from "@/lib/constants";
 import { AgentConfig } from "@/lib/types";
-import { Plus } from "lucide-react";
+import { Globe, Plus } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -62,10 +62,15 @@ export default function AgentsPage() {
                 className="space-y-1 capitalize"
               >
                 <div className="flex items-center justify-between">
-                  <h2 className="font-semibold">{agent.name}</h2>
-                  <p className="text-sm text-neutral-400">
-                    {agent.brand_voice}
-                  </p>
+                  <h2 className="font-semibold">
+                    {agent.name} •{" "}
+                    <span className="text-neutral-500">
+                      {agent.business_name}
+                    </span>
+                  </h2>
+                  {agent.is_public && (
+                    <Globe size={16} className="text-primary" />
+                  )}
                 </div>
                 <p className="text-neutral-600">{agent.description}</p>
               </Link>
