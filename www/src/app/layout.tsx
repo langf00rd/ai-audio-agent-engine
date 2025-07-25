@@ -5,26 +5,26 @@ import { DM_Sans } from "next/font/google";
 import "./globals.css";
 
 const defaultSans = DM_Sans({
-  variable: "--font-default-sans",
-  subsets: ["latin"],
+    variable: "--font-default-sans",
+    subsets: ["latin"],
 });
 
 export const metadata: Metadata = {
-  title: "ai sales agent",
-  description: "create your personal ai sales agent",
+    title: "ai sales agent",
+    description: "create your personal ai sales agent",
 };
 
 export default function RootLayout({
-  children,
+    children,
 }: Readonly<{
-  children: React.ReactNode;
+    children: React.ReactNode;
 }>) {
-  return (
-    <html lang="en">
-      <body className={`${defaultSans.className} antialiased`}>
-        <Providers>{children}</Providers>
-        <Toaster />
-      </body>
-    </html>
-  );
+    return (
+        <html lang="en">
+            <body className={`${defaultSans.variable} antialiased`}>
+                <Providers>{children}</Providers>
+                <Toaster />
+            </body>
+        </html>
+    );
 }
