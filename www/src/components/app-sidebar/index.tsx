@@ -39,11 +39,18 @@ export async function AppSidebar() {
     (await cookies()).get(COOKIE_KEYS.user)?.value as unknown as string,
   );
   return (
-    <Sidebar collapsible="icon">
-      <SidebarHeader className="h-20 p-4 flex justify-center">
-        <h2 className="font-bold">AI VOICE AGENT</h2>
+    <Sidebar collapsible="icon" className="border-r border-neutral-100">
+      <SidebarHeader className="h-20 p-4 bg-white">
+        <div className="flex items-center w-full gap-2">
+          <div className="flex flex-col gap-[2px] scale-[0.7]">
+            <div className="w-[40px] h-[20px] rounded-[4px] bg-primary" />
+            <div className="w-[40px] h-[8px] rounded-[4px] bg-primary" />
+            <div className="w-[40px] h-[5px] rounded-[4px] bg-primary" />
+          </div>
+          <h2 className="font-bold text-primary">AI VOICE AGENT</h2>
+        </div>
       </SidebarHeader>
-      <SidebarContent>
+      <SidebarContent className="bg-white px-4">
         <SidebarGroup>
           <SidebarGroupContent>
             <SidebarMenu className="space-y-2 mt-4">
@@ -61,7 +68,7 @@ export async function AppSidebar() {
           </SidebarGroupContent>
         </SidebarGroup>
       </SidebarContent>
-      <SidebarFooter>
+      <SidebarFooter className="bg-white">
         <SidebarMenu>
           <SidebarMenuItem>
             <DropdownMenu>

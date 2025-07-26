@@ -8,7 +8,7 @@ export default function StatCard(props: {
 }) {
   return (
     <Link href={props.route || "#"} className="block">
-      <div className="bg-neutral-50 rounded-[14px] p-4 space-y-3">
+      <div className="bg-white border border-neutral-100 rounded-[14px] p-4 space-y-3">
         <h3 className="text-neutral-600 text-[12px] capitalize md:text-[14px]">
           {props.title}
         </h3>

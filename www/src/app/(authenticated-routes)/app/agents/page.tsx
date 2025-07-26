@@ -52,14 +52,11 @@ export default function AgentsPage() {
         />
       ) : (
         <ul className="space-y-2">
-          {agents.map((agent) => (
-            <li
-              key={agent.id}
-              className="rounded-[14px] bg-neutral-50  hover:bg-neutral-100 p-4"
-            >
+          {agents.map((agent, index) => (
+            <li key={agent.id}>
               <Link
                 href={`${ROUTES.agent.index}/${agent.id}`}
-                className="space-y-1 capitalize"
+                className="block space-y-1 capitalize rounded-[14px] bg-white border border-neutral-100 shadow-xs cursor-pointer  hover:bg-neutral-100 p-4"
               >
                 <div className="flex items-center justify-between">
                   <h2 className="font-semibold">

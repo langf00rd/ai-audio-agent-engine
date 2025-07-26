@@ -9,7 +9,7 @@ export default function EmptyState(props: {
   return (
     <>
       <div className="flex items-center flex-col gap-4 py-20">
-        <h2 className="font-medium">{props.title}</h2>
+        <h2 className="font-medium text-primary">{props.title}</h2>
         {props.actionButtonLabel && props.onActionButtonClick && (
           <Button
             variant={props.actionButtonVariant || "default"}

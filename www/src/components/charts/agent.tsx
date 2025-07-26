@@ -17,7 +17,7 @@ import { Bar, BarChart, CartesianGrid, XAxis } from "recharts";
 const chartConfig = {
   usage: {
     label: "Calls",
-    color: "#222",
+    color: "var(--primary)",
   },
 };
 
