@@ -38,10 +38,10 @@ export default function AgentConversations() {
             <li key={a.session_id}>
               <Link
                 href={`${ROUTES.agent.index}/${id}/sessions/${a.session_id}`}
-                className="bg-neutral-50 hover:bg-neutral-100 transition-colors block space-y-4 p-4 rounded-xl"
+                className="bg-white border border-neutral-100 shadow-xs hover:bg-neutral-100 transition-colors block space-y-4 p-4 rounded-[25px]"
               >
                 <p className="font-medium line-clamp-2">
-                  <span className="text-neutral-400">Customer</span>:{" "}
+                  <span className="opacity-50">Customer</span>:{" "}
                   {a.messages[0].user}...{" "}
                   <span className="text-neutral-400">Agent</span>:{" "}
                   {a.messages[0].llm}
