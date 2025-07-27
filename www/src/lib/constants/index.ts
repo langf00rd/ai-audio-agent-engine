@@ -2,6 +2,7 @@ export const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
 export const WEB_SOCKET_URL = process.env.NEXT_PUBLIC_WEB_SOCKET_BASE_URL;
 export const ROUTES = {
   index: "/",
+  demo: "/demo.html",
   app: {
     index: "/app",
     agents: {

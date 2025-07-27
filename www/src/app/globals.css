@@ -1,7 +1,7 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 
-@custom-variant dark (&:is(.dark *));
+/* @custom-variant dark (&:is(.dark *)); */
 
 @theme inline {
     --color-background: var(--background);
@@ -172,4 +172,5 @@ body {
 .bold-heading {
     font-family: var(--font-heading-bold-sans);
     color: var(--primary);
+    @apply tracking-tighter;
 }

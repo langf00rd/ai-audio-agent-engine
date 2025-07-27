@@ -1,23 +1,23 @@
 import Providers from "@/components/providers";
 import { Toaster } from "@/components/ui/sonner";
 import type { Metadata } from "next";
-import { DM_Sans, Luckiest_Guy } from "next/font/google";
+import { Funnel_Display, Funnel_Sans } from "next/font/google";
 import "./globals.css";
 
-const defaultSans = DM_Sans({
+const defaultSans = Funnel_Sans({
   variable: "--font-default-sans",
   subsets: ["latin"],
 });
 
-const headingBoldSans = Luckiest_Guy({
+const headingBoldSans = Funnel_Display({
   variable: "--font-heading-bold-sans",
   subsets: ["latin"],
-  weight: "400",
+  weight: "600",
 });
 
 export const metadata: Metadata = {
-  title: "ai sales agent",
-  description: "create your personal ai sales agent",
+  title: "toow - Create An Autonomous Sales Agents",
+  description: "One Platform to Create An Autonomous Sales Agents",
 };
 
 export default function RootLayout({
