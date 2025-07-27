@@ -113,7 +113,7 @@ export default function AgentInfo() {
     setDomain(window.location.origin);
   }, [params.id]);
 
-  const embedScript = `<script src="${domain}/embed.js" data-agent-id="${params.id}"></script>`;
+  const embedScript = `<script async src="${domain}/embed.js" data-agent-id="${params.id}" type="text/javascript"></script>`;
 
   if (loading) return <Loader />;
 

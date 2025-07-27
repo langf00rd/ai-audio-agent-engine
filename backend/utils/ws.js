@@ -15,7 +15,6 @@ export async function handleWebSocketConnection(ws) {
 
   const transcriber = client.streaming.transcriber({
     sampleRate: 16_000,
-    formatTurns: true,
   });
 
   transcriber.on("open", ({ id }) => {

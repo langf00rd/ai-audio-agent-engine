@@ -20,6 +20,7 @@ import {
 import { COOKIE_KEYS, ROUTES } from "@/lib/constants";
 import { cookies } from "next/headers";
 import SignOutButton from "../buttons/sign-out";
+import { Logo } from "../logo";
 
 const items = [
   {
@@ -41,14 +42,7 @@ export async function AppSidebar() {
   return (
     <Sidebar collapsible="icon" className="border-r border-neutral-100">
       <SidebarHeader className="h-20 p-4 bg-white">
-        <div className="flex items-center w-full gap-2">
-          <div className="flex flex-col gap-[2px] scale-[0.7]">
-            <div className="w-[40px] h-[20px] rounded-[4px] bg-primary" />
-            <div className="w-[40px] h-[8px] rounded-[4px] bg-primary" />
-            <div className="w-[40px] h-[5px] rounded-[4px] bg-primary" />
-          </div>
-          <h2 className="font-bold text-primary">AI VOICE AGENT</h2>
-        </div>
+        <Logo />
       </SidebarHeader>
       <SidebarContent className="bg-white px-4">
         <SidebarGroup>

@@ -12,7 +12,7 @@ export default function RootLayout({
 }>) {
   return (
     <div className="items-center justify-center flex min-h-screen">
-      <div className="max-w-[400px] w-full mx-auto space-y-4 p-10 bg-neutral-50 rounded-2xl">
+      <div className="max-w-[400px] w-full mx-auto space-y-4 p-10 bg-white shadow-xs rounded-[45px] border border-neutral-100">
         <Suspense>{children}</Suspense>
       </div>
     </div>
