@@ -2,7 +2,13 @@ export const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
 export const WEB_SOCKET_URL = process.env.NEXT_PUBLIC_WEB_SOCKET_BASE_URL;
 export const ROUTES = {
   index: "/",
-  app: "/app",
+  app: {
+    index: "/app",
+    agents: {
+      index: "/app/agents",
+      create: "/app/agents/create",
+    },
+  },
   agent: {
     index: "/app/agents",
     create: "/app/agents/create",
@@ -11,6 +17,9 @@ export const ROUTES = {
     signIn: "/auth/sign-in",
     signUp: "/auth/sign-up",
   },
+  about: "#",
+  blog: "#",
+  contact: "#",
 };
 export const COOKIE_KEYS = {
   token: "tk",
