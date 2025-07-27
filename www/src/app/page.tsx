@@ -2,7 +2,7 @@
 
 import { Logo } from "@/components/logo";
 import { Button } from "@/components/ui/button";
-import { Flame } from "lucide-react";
+import { PlusIcon } from "lucide-react";
 import Link from "next/link";
 import { ROUTES } from "../lib/constants";
 
@@ -24,40 +24,50 @@ const routes = [
 export default function Home() {
   return (
     <>
-      <header className="h-[100px] px-5">
-        <div className="h-full w-full items-center justify-between container mx-auto flex border-b border-neutral-200/50">
+      <header className="h-[70px] px-5">
+        <div className="h-full w-full items-center justify-between container mx-auto flex">
+          <Logo />
           <nav className="h-full hidden md:block">
             <ul className="flex items-center h-full gap-4">
               {routes.map((a) => (
                 <li key={a.label}>
-                  <Link href={a.pathname}>{a.label}</Link>
+                  <Link
+                    href={a.pathname}
+                    className="uppercase font-semibold hover:underline text-sm"
+                  >
+                    {a.label}
+                  </Link>
                 </li>
               ))}
             </ul>
           </nav>
-          <Logo />
           <Link href={ROUTES.app.agents.index} className="hidden md:block">
             <Button>Get Started</Button>
           </Link>
         </div>
       </header>
-      <section className="items-center justify-center flex h-[calc(100vh-100px)] px-5">
-        <div className="max-w-[800px] text-center space-y-10">
-          <h1 className="text-2xl md:text-[3.5rem] leading-[1.2] bold-heading">
+      <section className="items-center justify-center flex h-[calc(100vh-70px)] px-5">
+        <div className="text-center space-y-10">
+          <h1 className="text-2xl md:text-[4rem] w-full max-w-[1000px] mx-auto leading-[1.2] bold-heading">
             Fire Your Sales Team. Hire a Voice Agent (It Works Weekends).
           </h1>
-          <p className="text-neutral-600 leading-[1.7] md:text-xl">
+          <p className="text-neutral-600 max-w-[700px] mx-auto leading-[1.7] md:text-[20px]">
             Why pay monthly huge salaries when you can deploy an AI Sales Agent
             in seconds for less than $50/mo? Let it cold call, follow up, and
             close deals while you&apos;re asleep (or on a beach). No leave/sick
             days. Just pure hustle, 24/7.
           </p>
-          <Link href={ROUTES.app.agents.index} className="block w-max mx-auto">
-            <Button size="lg">
-              <Flame />
-              Ship your first agent
-            </Button>
-          </Link>
+          <div className="flex items-center justify-center gap-4">
+            <Link href={ROUTES.app.agents.index} className="block">
+              <Button>
+                <PlusIcon />
+                deploy your first agent
+              </Button>
+            </Link>
+            <Link href={ROUTES.demo} target="_blank" className="block">
+              <Button variant="outline">See live demo</Button>
+            </Link>
+          </div>
         </div>
       </section>
     </>

@@ -2,7 +2,7 @@ import { Metadata } from "next";
 import { Suspense } from "react";
 
 export const metadata: Metadata = {
-  title: "authentication",
+  title: "toow - Authentication",
 };
 
 export default function RootLayout({
