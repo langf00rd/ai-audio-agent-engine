@@ -3,7 +3,7 @@
     <head>
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <title>BlueTech Solutions - Professional Business Services</title>
+        <title>Bagversity - Every Bag for Every Woman</title>
         <style>
             * {
                 margin: 0;
@@ -12,157 +12,94 @@
             }
 
             body {
-                font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+                font-family:
+                    "Inter",
+                    -apple-system,
+                    BlinkMacSystemFont,
+                    sans-serif;
+                background: #ffffff;
+                color: #1a1a1a;
                 line-height: 1.6;
-                color: #333;
                 overflow-x: hidden;
             }
 
-            .container {
-                max-width: 1200px;
-                margin: 0 auto;
-                padding: 0 20px;
-            }
-
-            /* Header */
-            header {
-                background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
-                color: white;
-                padding: 1rem 0;
+            .header {
                 position: fixed;
-                width: 100%;
                 top: 0;
+                width: 100%;
+                background: rgba(255, 255, 255, 0.95);
+                backdrop-filter: blur(20px);
                 z-index: 1000;
-                backdrop-filter: blur(10px);
-                box-shadow: 0 2px 20px rgba(0, 0, 0, 0.1);
+                padding: 1.5rem 2rem;
+                transition: all 0.3s ease;
+                border-bottom: 1px solid rgba(26, 26, 26, 0.05);
             }
 
-            nav {
+            .nav {
                 display: flex;
                 justify-content: space-between;
                 align-items: center;
+                max-width: 1400px;
+                margin: 0 auto;
             }
 
             .logo {
-                font-size: 1.8rem;
-                font-weight: bold;
-                background: linear-gradient(45deg, #64b5f6, #90caf9);
-                -webkit-background-clip: text;
-                -webkit-text-fill-color: transparent;
-                background-clip: text;
+                font-size: 2.2rem;
+                font-weight: 300;
+                color: #1a1a1a;
+                letter-spacing: -0.5px;
+                text-transform: lowercase;
             }
 
             .nav-links {
                 display: flex;
+                gap: 3rem;
                 list-style: none;
-                gap: 2rem;
             }
 
             .nav-links a {
-                color: white;
+                color: #1a1a1a;
                 text-decoration: none;
+                font-weight: 400;
+                font-size: 0.95rem;
+                letter-spacing: 0.3px;
                 transition: all 0.3s ease;
                 position: relative;
-                padding: 0.5rem 1rem;
-                border-radius: 25px;
             }
 
             .nav-links a:hover {
-                background: rgba(255, 255, 255, 0.1);
-                transform: translateY(-2px);
+                color: #8b7355;
             }
 
             .nav-links a::after {
                 content: "";
                 position: absolute;
+                bottom: -5px;
+                left: 0;
                 width: 0;
-                height: 2px;
-                bottom: 0;
-                left: 50%;
-                background: #64b5f6;
-                transition: all 0.3s ease;
+                height: 1px;
+                background: #8b7355;
+                transition: width 0.3s ease;
             }
 
             .nav-links a:hover::after {
                 width: 100%;
-                left: 0;
             }
 
-            /* Hero Section */
             .hero {
-                background: linear-gradient(
-                    135deg,
-                    #1e3c72 0%,
-                    #2a5298 50%,
-                    #64b5f6 100%
-                );
-                color: white;
-                padding: 150px 0 100px;
+                height: 100vh;
+                display: flex;
+                align-items: center;
+                justify-content: center;
                 text-align: center;
+                background: linear-gradient(180deg, #ffffff 0%, #fafafa 100%);
                 position: relative;
-                overflow: hidden;
-            }
-
-            .hero::before {
-                content: "";
-                position: absolute;
-                top: 0;
-                left: 0;
-                right: 0;
-                bottom: 0;
-                background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grain" width="100" height="100" patternUnits="userSpaceOnUse"><circle cx="25" cy="25" r="1" fill="rgba(255,255,255,0.05)"/><circle cx="75" cy="75" r="1" fill="rgba(255,255,255,0.03)"/><circle cx="50" cy="10" r="0.5" fill="rgba(255,255,255,0.08)"/></pattern></defs><rect width="100" height="100" fill="url(%23grain)"/></svg>');
-                animation: float 20s ease-in-out infinite;
-            }
-
-            @keyframes float {
-                0%,
-                100% {
-                    transform: translateY(0px);
-                }
-                50% {
-                    transform: translateY(-20px);
-                }
             }
 
             .hero-content {
-                position: relative;
-                z-index: 2;
-            }
-
-            .hero h1 {
-                font-size: 3.5rem;
-                margin-bottom: 1rem;
-                font-weight: 700;
-                opacity: 0;
-                animation: fadeInUp 1s ease-out 0.5s forwards;
-            }
-
-            .hero p {
-                font-size: 1.3rem;
-                margin-bottom: 2rem;
-                opacity: 0;
-                animation: fadeInUp 1s ease-out 0.7s forwards;
-            }
-
-            .cta-button {
-                display: inline-block;
-                background: linear-gradient(45deg, #64b5f6, #42a5f5);
-                color: white;
-                padding: 15px 40px;
-                text-decoration: none;
-                border-radius: 50px;
-                font-weight: bold;
-                font-size: 1.1rem;
-                transition: all 0.3s ease;
-                box-shadow: 0 8px 25px rgba(100, 181, 246, 0.3);
-                opacity: 0;
-                animation: fadeInUp 1s ease-out 0.9s forwards;
-            }
-
-            .cta-button:hover {
-                transform: translateY(-3px);
-                box-shadow: 0 15px 35px rgba(100, 181, 246, 0.4);
-                background: linear-gradient(45deg, #42a5f5, #1e88e5);
+                max-width: 900px;
+                padding: 0 2rem;
+                animation: fadeInUp 1s ease-out;
             }
 
             @keyframes fadeInUp {
@@ -176,464 +113,573 @@
                 }
             }
 
-            /* Sections */
-            section {
-                padding: 80px 0;
+            .hero h1 {
+                font-size: clamp(3.5rem, 8vw, 7rem);
+                font-weight: 200;
+                color: #1a1a1a;
+                margin-bottom: 2rem;
+                line-height: 1.1;
+                letter-spacing: -2px;
+            }
+
+            .hero p {
+                font-size: 1.3rem;
+                color: #666;
+                margin-bottom: 3rem;
+                font-weight: 300;
+                letter-spacing: 0.5px;
+            }
+
+            .cta-button {
+                display: inline-block;
+                padding: 1.2rem 3rem;
+                background: #8b7355;
+                color: white;
+                text-decoration: none;
+                border: none;
+                font-weight: 400;
+                font-size: 1rem;
+                letter-spacing: 1px;
+                transition: all 0.3s ease;
+                cursor: pointer;
+                text-transform: uppercase;
+            }
+
+            .cta-button:hover {
+                background: #1a1a1a;
+                transform: translateY(-2px);
+            }
+
+            .section {
+                padding: 8rem 2rem;
+                max-width: 1400px;
+                margin: 0 auto;
             }
 
             .section-title {
+                font-size: 3.5rem;
+                font-weight: 200;
                 text-align: center;
-                font-size: 2.5rem;
-                margin-bottom: 3rem;
-                color: #1e3c72;
-                position: relative;
+                margin-bottom: 4rem;
+                color: #1a1a1a;
+                letter-spacing: -1px;
             }
 
-            .section-title::after {
-                content: "";
-                position: absolute;
-                width: 80px;
-                height: 4px;
-                background: linear-gradient(45deg, #64b5f6, #42a5f5);
-                bottom: -10px;
-                left: 50%;
-                transform: translateX(-50%);
-                border-radius: 2px;
-            }
-
-            /* Services */
-            .services-grid {
+            .categories {
                 display: grid;
-                grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-                gap: 2rem;
-                margin-top: 3rem;
-            }
-
-            .service-card {
-                background: white;
-                padding: 2.5rem;
-                border-radius: 15px;
-                box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-                transition: all 0.3s ease;
-                border: 1px solid rgba(100, 181, 246, 0.1);
-                position: relative;
-                overflow: hidden;
-            }
-
-            .service-card::before {
-                content: "";
-                position: absolute;
-                top: 0;
-                left: 0;
-                width: 100%;
-                height: 4px;
-                background: linear-gradient(45deg, #64b5f6, #42a5f5);
-                transform: scaleX(0);
-                transition: transform 0.3s ease;
-            }
-
-            .service-card:hover {
-                transform: translateY(-10px);
-                box-shadow: 0 20px 50px rgba(0, 0, 0, 0.15);
-            }
-
-            .service-card:hover::before {
-                transform: scaleX(1);
-            }
-
-            .service-icon {
-                width: 60px;
-                height: 60px;
-                background: linear-gradient(45deg, #64b5f6, #42a5f5);
-                border-radius: 50%;
-                margin-bottom: 1.5rem;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                font-size: 1.5rem;
-                color: white;
-            }
-
-            .service-card h3 {
-                color: #1e3c72;
-                margin-bottom: 1rem;
-                font-size: 1.4rem;
-            }
-
-            .service-card p {
-                color: #666;
-                line-height: 1.7;
-            }
-
-            /* About */
-            .about {
-                background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-            }
-
-            .about-content {
-                display: grid;
-                grid-template-columns: 1fr 1fr;
+                grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
                 gap: 3rem;
-                align-items: center;
+                margin-top: 4rem;
             }
 
-            .about-text {
-                font-size: 1.1rem;
-                line-height: 1.8;
-                color: #555;
-            }
-
-            .about-image {
-                width: 100%;
-                height: 400px;
-                background: linear-gradient(45deg, #64b5f6, #42a5f5);
-                border-radius: 15px;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                color: white;
-                font-size: 1.2rem;
-                box-shadow: 0 15px 35px rgba(100, 181, 246, 0.3);
-            }
-
-            /* Contact */
-            .contact-form {
-                max-width: 600px;
-                margin: 0 auto;
-                background: white;
-                padding: 3rem;
-                border-radius: 15px;
-                box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
-            }
-
-            .form-group {
-                margin-bottom: 2rem;
-            }
-
-            .form-group label {
-                display: block;
-                margin-bottom: 0.5rem;
-                color: #1e3c72;
-                font-weight: 600;
-            }
-
-            .form-group input,
-            .form-group textarea {
-                width: 100%;
-                padding: 15px;
-                border: 2px solid #e0e0e0;
-                border-radius: 10px;
-                font-size: 1rem;
-                transition: all 0.3s ease;
-                background: #f8f9fa;
-            }
-
-            .form-group input:focus,
-            .form-group textarea:focus {
-                outline: none;
-                border-color: #64b5f6;
-                background: white;
-                box-shadow: 0 0 0 3px rgba(100, 181, 246, 0.1);
-            }
-
-            .submit-btn {
-                width: 100%;
-                padding: 15px;
-                background: linear-gradient(45deg, #64b5f6, #42a5f5);
-                color: white;
-                border: none;
-                border-radius: 10px;
-                font-size: 1.1rem;
-                font-weight: bold;
-                cursor: pointer;
-                transition: all 0.3s ease;
-            }
-
-            .submit-btn:hover {
-                transform: translateY(-2px);
-                box-shadow: 0 10px 25px rgba(100, 181, 246, 0.3);
-            }
-
-            /* Footer */
-            footer {
-                background: #1e3c72;
-                color: white;
-                padding: 3rem 0;
+            .category-card {
+                background: #ffffff;
+                border: 1px solid #f0f0f0;
+                padding: 3rem 2.5rem;
                 text-align: center;
-            }
-
-            .footer-content {
-                display: grid;
-                grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-                gap: 2rem;
-                margin-bottom: 2rem;
-            }
-
-            .footer-section h3 {
-                color: #64b5f6;
-                margin-bottom: 1rem;
-            }
-
-            .footer-section p,
-            .footer-section a {
-                color: #ccc;
-                text-decoration: none;
-                line-height: 1.8;
-            }
-
-            .footer-section a:hover {
-                color: #64b5f6;
-            }
-
-            .footer-bottom {
-                border-top: 1px solid rgba(255, 255, 255, 0.1);
-                padding-top: 2rem;
-                color: #999;
-            }
-
-            /* Mobile Responsiveness */
-            @media (max-width: 768px) {
-                .nav-links {
-                    display: none;
-                }
-
-                .hero h1 {
-                    font-size: 2.5rem;
-                }
-
-                .about-content {
-                    grid-template-columns: 1fr;
-                }
-
-                .about-image {
-                    height: 250px;
-                }
-            }
-
-            /* Smooth scrolling */
-            html {
-                scroll-behavior: smooth;
-            }
-
-            /* Loading animation for interactive elements */
-            .loading {
+                transition: all 0.4s ease;
+                cursor: pointer;
                 position: relative;
                 overflow: hidden;
             }
 
-            .loading::after {
+            .category-card::before {
                 content: "";
                 position: absolute;
                 top: 0;
                 left: -100%;
                 width: 100%;
-                height: 100%;
-                background: linear-gradient(
-                    90deg,
-                    transparent,
-                    rgba(255, 255, 255, 0.3),
-                    transparent
-                );
-                animation: shimmer 2s infinite;
+                height: 2px;
+                background: #8b7355;
+                transition: left 0.4s ease;
             }
 
-            @keyframes shimmer {
-                0% {
-                    left: -100%;
+            .category-card:hover::before {
+                left: 0;
+            }
+
+            .category-card:hover {
+                transform: translateY(-5px);
+                box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
+                border-color: #8b7355;
+            }
+
+            .category-card h3 {
+                color: #1a1a1a;
+                font-size: 1.8rem;
+                font-weight: 300;
+                margin-bottom: 1.5rem;
+                letter-spacing: 0.5px;
+            }
+
+            .category-card p {
+                color: #666;
+                line-height: 1.7;
+                font-weight: 300;
+                font-size: 1rem;
+            }
+
+            .features {
+                background: #fafafa;
+                padding: 6rem 4rem;
+                margin: 6rem 0;
+                border: 1px solid #f0f0f0;
+            }
+
+            .features-grid {
+                display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+                gap: 4rem;
+                margin-top: 4rem;
+            }
+
+            .feature {
+                text-align: center;
+            }
+
+            .feature-icon {
+                width: 90px;
+                height: 90px;
+                background: #8b7355;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                margin: 0 auto 2rem;
+                font-size: 2.2rem;
+                color: white;
+                transition: all 0.3s ease;
+            }
+
+            .feature:hover .feature-icon {
+                background: #1a1a1a;
+                transform: scale(1.05);
+            }
+
+            .feature h4 {
+                color: #1a1a1a;
+                font-size: 1.5rem;
+                font-weight: 300;
+                margin-bottom: 1rem;
+                letter-spacing: 0.3px;
+            }
+
+            .feature p {
+                color: #666;
+                line-height: 1.7;
+                font-weight: 300;
+            }
+
+            .newsletter {
+                text-align: center;
+                background: #ffffff;
+                border: 1px solid #f0f0f0;
+                padding: 6rem 4rem;
+                position: relative;
+            }
+
+            .newsletter::before {
+                content: "";
+                position: absolute;
+                top: 0;
+                left: 50%;
+                transform: translateX(-50%);
+                width: 60px;
+                height: 2px;
+                background: #8b7355;
+            }
+
+            .newsletter h3 {
+                color: #1a1a1a;
+                font-size: 2.8rem;
+                font-weight: 200;
+                margin-bottom: 1.5rem;
+                letter-spacing: -0.5px;
+            }
+
+            .newsletter p {
+                color: #666;
+                font-size: 1.2rem;
+                margin-bottom: 3rem;
+                font-weight: 300;
+            }
+
+            .newsletter-form {
+                display: flex;
+                gap: 0;
+                max-width: 600px;
+                margin: 0 auto;
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+
+            .newsletter-input {
+                flex: 1;
+                min-width: 350px;
+                padding: 1.2rem 2rem;
+                border: 1px solid #e0e0e0;
+                background: #ffffff;
+                color: #1a1a1a;
+                font-size: 1rem;
+                outline: none;
+                transition: all 0.3s ease;
+                font-weight: 300;
+            }
+
+            .newsletter-input::placeholder {
+                color: #999;
+                font-weight: 300;
+            }
+
+            .newsletter-input:focus {
+                border-color: #8b7355;
+            }
+
+            .newsletter-button {
+                padding: 1.2rem 2.5rem;
+                background: #8b7355;
+                color: white;
+                border: none;
+                font-weight: 400;
+                cursor: pointer;
+                transition: all 0.3s ease;
+                text-transform: uppercase;
+                letter-spacing: 1px;
+                font-size: 0.9rem;
+            }
+
+            .newsletter-button:hover {
+                background: #1a1a1a;
+            }
+
+            .footer {
+                background: #1a1a1a;
+                color: white;
+                padding: 6rem 2rem 3rem;
+            }
+
+            .footer-content {
+                max-width: 1400px;
+                margin: 0 auto;
+                display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+                gap: 4rem;
+                margin-bottom: 3rem;
+            }
+
+            .footer-section h4 {
+                color: white;
+                font-size: 1.2rem;
+                font-weight: 300;
+                margin-bottom: 2rem;
+                letter-spacing: 0.5px;
+            }
+
+            .footer-section ul {
+                list-style: none;
+            }
+
+            .footer-section ul li {
+                margin-bottom: 1rem;
+            }
+
+            .footer-section ul li a {
+                color: #ccc;
+                text-decoration: none;
+                transition: color 0.3s ease;
+                font-weight: 300;
+            }
+
+            .footer-section ul li a:hover {
+                color: #8b7355;
+            }
+
+            .footer-bottom {
+                color: #999;
+                padding-top: 3rem;
+                border-top: 1px solid #333;
+                text-align: center;
+                font-weight: 300;
+            }
+
+            .mobile-menu {
+                display: none;
+            }
+
+            @media (max-width: 768px) {
+                .nav-links {
+                    display: none;
                 }
+
+                .mobile-menu {
+                    display: block;
+                    color: #1a1a1a;
+                    font-size: 1.5rem;
+                    cursor: pointer;
+                }
+
+                .hero h1 {
+                    font-size: 3rem;
+                }
+
+                .hero p {
+                    font-size: 1.1rem;
+                }
+
+                .categories {
+                    grid-template-columns: 1fr;
+                }
+
+                .newsletter-form {
+                    flex-direction: column;
+                    align-items: center;
+                }
+
+                .newsletter-input {
+                    min-width: auto;
+                    width: 100%;
+                    margin-bottom: 1rem;
+                }
+
+                .section {
+                    padding: 4rem 2rem;
+                }
+            }
+
+            .scroll-indicator {
+                position: absolute;
+                bottom: 40px;
+                left: 50%;
+                transform: translateX(-50%);
+                color: #8b7355;
+                text-align: center;
+                animation: bounce 2s infinite;
+                font-weight: 300;
+            }
+
+            @keyframes bounce {
+                0%,
+                20%,
+                50%,
+                80%,
                 100% {
-                    left: 100%;
+                    transform: translateX(-50%) translateY(0);
                 }
+                40% {
+                    transform: translateX(-50%) translateY(-8px);
+                }
+                60% {
+                    transform: translateX(-50%) translateY(-4px);
+                }
+            }
+
+            .divider {
+                width: 60px;
+                height: 1px;
+                background: #8b7355;
+                margin: 4rem auto;
             }
         </style>
     </head>
     <body>
-        <header>
-            <nav class="container">
-                <div class="logo">BlueTech Solutions</div>
+        <header class="header">
+            <nav class="nav">
+                <div class="logo">bagversity</div>
                 <ul class="nav-links">
                     <li><a href="#home">Home</a></li>
-                    <li><a href="#services">Services</a></li>
+                    <li><a href="#categories">Collections</a></li>
                     <li><a href="#about">About</a></li>
                     <li><a href="#contact">Contact</a></li>
                 </ul>
+                <div class="mobile-menu">☰</div>
             </nav>
         </header>
 
-        <section id="home" class="hero">
-            <div class="container">
-                <div class="hero-content">
-                    <h1>Excellence in Every Solution</h1>
+        <section class="hero" id="home">
+            <div class="hero-content">
+                <h1>Every Bag for Every Woman</h1>
+                <div class="divider"></div>
+                <p>
+                    Curated collections of timeless elegance and contemporary
+                    design
+                </p>
+                <a href="#categories" class="cta-button">Explore Collections</a>
+            </div>
+            <div class="scroll-indicator">
+                <div style="font-size: 1.5rem">↓</div>
+                <div
+                    style="
+                        font-size: 0.8rem;
+                        margin-top: 0.5rem;
+                        letter-spacing: 1px;
+                    "
+                >
+                    SCROLL
+                </div>
+            </div>
+        </section>
+
+        <section class="section" id="categories">
+            <h2 class="section-title">Our Collections</h2>
+            <div class="divider"></div>
+            <div class="categories">
+                <div class="category-card">
+                    <h3>Handbags</h3>
                     <p>
-                        Transforming businesses with innovative technology and
-                        professional expertise
+                        Timeless silhouettes crafted for the modern woman. From
+                        structured totes to soft shoulder bags, each piece
+                        embodies effortless sophistication.
                     </p>
-                    <a href="#contact" class="cta-button">Get Started Today</a>
+                </div>
+                <div class="category-card">
+                    <h3>Backpacks</h3>
+                    <p>
+                        Where functionality meets fashion. Premium materials and
+                        thoughtful design create backpacks that transition
+                        seamlessly from work to weekend.
+                    </p>
+                </div>
+                <div class="category-card">
+                    <h3>Work Essentials</h3>
+                    <p>
+                        Professional elegance redefined. Structured briefcases
+                        and spacious totes designed for the contemporary
+                        businesswoman.
+                    </p>
+                </div>
+                <div class="category-card">
+                    <h3>Evening Collection</h3>
+                    <p>
+                        Exquisite clutches and evening bags that capture
+                        attention. Perfect companions for life's most memorable
+                        moments.
+                    </p>
+                </div>
+                <div class="category-card">
+                    <h3>Travel Companions</h3>
+                    <p>
+                        Durable luxury for the discerning traveler. Thoughtfully
+                        designed pieces that make every journey more refined.
+                    </p>
+                </div>
+                <div class="category-card">
+                    <h3>Crossbody & Mini</h3>
+                    <p>
+                        Compact elegance for hands-free living. Perfectly
+                        proportioned bags that complement your active lifestyle.
+                    </p>
                 </div>
             </div>
         </section>
 
-        <section id="services">
-            <div class="container">
-                <h2 class="section-title">Our Services</h2>
-                <div class="services-grid">
-                    <div class="service-card">
-                        <div class="service-icon">💡</div>
-                        <h3>Strategy Consulting</h3>
+        <section class="section">
+            <div class="features">
+                <h2 class="section-title">The Bagversity Experience</h2>
+                <div class="divider"></div>
+                <div class="features-grid">
+                    <div class="feature">
+                        <div class="feature-icon">★</div>
+                        <h4>Curated Excellence</h4>
                         <p>
-                            Expert guidance to help your business navigate
-                            complex challenges and identify growth opportunities
-                            with data-driven insights and proven methodologies.
+                            Each piece in our collection is carefully selected
+                            for its exceptional quality, timeless design, and
+                            superior craftsmanship.
                         </p>
                     </div>
-                    <div class="service-card">
-                        <div class="service-icon">🚀</div>
-                        <h3>Digital Transformation</h3>
+                    <div class="feature">
+                        <div class="feature-icon">✈</div>
+                        <h4>Global Delivery</h4>
                         <p>
-                            Modernize your operations with cutting-edge
-                            technology solutions that streamline processes,
-                            enhance efficiency, and drive competitive advantage.
+                            Complimentary worldwide shipping on orders over
+                            $200, with express options available for when time
+                            is of the essence.
                         </p>
                     </div>
-                    <div class="service-card">
-                        <div class="service-icon">📊</div>
-                        <h3>Analytics & Insights</h3>
+                    <div class="feature">
+                        <div class="feature-icon">♦</div>
+                        <h4>Personal Service</h4>
                         <p>
-                            Unlock the power of your data with advanced
-                            analytics, reporting dashboards, and actionable
-                            insights that inform strategic decision-making.
+                            Our dedicated style consultants are available to
+                            help you find the perfect bag for any occasion or
+                            lifestyle need.
                         </p>
                     </div>
-                    <div class="service-card">
-                        <div class="service-icon">🔧</div>
-                        <h3>Technical Support</h3>
+                    <div class="feature">
+                        <div class="feature-icon">↻</div>
+                        <h4>Satisfaction Promise</h4>
                         <p>
-                            Comprehensive technical assistance and maintenance
-                            services to ensure your systems run smoothly with
-                            minimal downtime and maximum performance.
+                            60-day returns and exchanges ensure your complete
+                            satisfaction with every Bagversity purchase.
                         </p>
-                    </div>
-                    <div class="service-card">
-                        <div class="service-icon">🎯</div>
-                        <h3>Project Management</h3>
-                        <p>
-                            Professional project oversight from conception to
-                            completion, ensuring timely delivery, budget
-                            adherence, and exceptional quality standards.
-                        </p>
-                    </div>
-                    <div class="service-card">
-                        <div class="service-icon">💼</div>
-                        <h3>Business Development</h3>
-                        <p>
-                            Strategic partnerships and growth initiatives that
-                            expand market reach, enhance brand presence, and
-                            create sustainable competitive advantages.
-                        </p>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <section id="about" class="about">
-            <div class="container">
-                <h2 class="section-title">About Us</h2>
-                <div class="about-content">
-                    <div class="about-text">
-                        <p>
-                            With over a decade of experience in delivering
-                            exceptional business solutions, BlueTech Solutions
-                            has established itself as a trusted partner for
-                            companies seeking innovation and growth.
-                        </p>
-
-                        <p>
-                            Our team of dedicated professionals combines deep
-                            industry expertise with cutting-edge technology to
-                            provide tailored solutions that drive measurable
-                            results. We pride ourselves on building long-term
-                            relationships with our clients, understanding their
-                            unique challenges, and delivering solutions that
-                            exceed expectations.
-                        </p>
-
-                        <p>
-                            From startups to enterprise organizations, we've
-                            helped hundreds of businesses transform their
-                            operations, optimize their processes, and achieve
-                            sustainable growth in today's competitive
-                            marketplace.
-                        </p>
-                    </div>
-                    <div class="about-image">
-                        Professional Team & Modern Solutions
                     </div>
                 </div>
             </div>
         </section>
 
-        <section id="contact">
-            <div class="container">
-                <h2 class="section-title">Get In Touch</h2>
-                <form class="contact-form" onsubmit="handleSubmit(event)">
-                    <div class="form-group">
-                        <label for="name">Full Name</label>
-                        <input type="text" id="name" name="name" required />
-                    </div>
-                    <div class="form-group">
-                        <label for="email">Email Address</label>
-                        <input type="email" id="email" name="email" required />
-                    </div>
-                    <div class="form-group">
-                        <label for="company">Company Name</label>
-                        <input type="text" id="company" name="company" />
-                    </div>
-                    <div class="form-group">
-                        <label for="message">Message</label>
-                        <textarea
-                            id="message"
-                            name="message"
-                            rows="5"
-                            required
-                        ></textarea>
-                    </div>
-                    <button type="submit" class="submit-btn">
-                        Send Message
+        <section class="section">
+            <div class="newsletter">
+                <h3>Stay Connected</h3>
+                <p>
+                    Be the first to discover new arrivals and exclusive
+                    collections
+                </p>
+                <form class="newsletter-form">
+                    <input
+                        type="email"
+                        class="newsletter-input"
+                        placeholder="Your email address"
+                        required
+                    />
+                    <button type="submit" class="newsletter-button">
+                        Subscribe
                     </button>
                 </form>
             </div>
         </section>
 
-        <footer>
-            <div class="container">
-                <div class="footer-content">
-                    <div class="footer-section">
-                        <h3>Contact Info</h3>
-                        <p>📧 contact@bluetechsolutions.com</p>
-                        <p>📞 +1 (555) 123-4567</p>
-                        <p>
-                            📍 123 Business Ave, Suite 100<br />Tech City, TC
-                            12345
-                        </p>
-                    </div>
-                    <div class="footer-section">
-                        <h3>Quick Links</h3>
-                        <p><a href="#services">Services</a></p>
-                        <p><a href="#about">About Us</a></p>
-                        <p><a href="#contact">Contact</a></p>
-                        <p><a href="#">Privacy Policy</a></p>
-                    </div>
-                    <div class="footer-section">
-                        <h3>Follow Us</h3>
-                        <p><a href="#">LinkedIn</a></p>
-                        <p><a href="#">Twitter</a></p>
-                        <p><a href="#">Facebook</a></p>
-                        <p><a href="#">Instagram</a></p>
-                    </div>
+        <footer class="footer">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h4>Collections</h4>
+                    <ul>
+                        <li><a href="#">New Arrivals</a></li>
+                        <li><a href="#">Best Sellers</a></li>
+                        <li><a href="#">Limited Edition</a></li>
+                        <li><a href="#">Gift Collection</a></li>
+                    </ul>
                 </div>
-                <div class="footer-bottom">
-                    <p>&copy; 2025 BlueTech Solutions. All rights reserved.</p>
+                <div class="footer-section">
+                    <h4>Customer Care</h4>
+                    <ul>
+                        <li><a href="#">Contact Us</a></li>
+                        <li><a href="#">Care Guide</a></li>
+                        <li><a href="#">Shipping & Returns</a></li>
+                        <li><a href="#">Size Guide</a></li>
+                    </ul>
                 </div>
+                <div class="footer-section">
+                    <h4>About Bagversity</h4>
+                    <ul>
+                        <li><a href="#">Our Story</a></li>
+                        <li><a href="#">Craftsmanship</a></li>
+                        <li><a href="#">Sustainability</a></li>
+                        <li><a href="#">Press</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>Connect</h4>
+                    <ul>
+                        <li><a href="#">Instagram</a></li>
+                        <li><a href="#">Pinterest</a></li>
+                        <li><a href="#">Newsletter</a></li>
+                        <li><a href="#">Style Blog</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>
+                    &copy; 2025 Bagversity. All rights reserved. Privacy Policy
+                    | Terms of Service
+                </p>
             </div>
         </footer>
 
@@ -654,48 +700,48 @@
                 });
             });
 
-            // Form submission handler
-            function handleSubmit(event) {
-                event.preventDefault();
-                const form = event.target;
-                const submitBtn = form.querySelector(".submit-btn");
-
-                // Add loading effect
-                submitBtn.innerHTML = "Sending...";
-                submitBtn.disabled = true;
-                submitBtn.classList.add("loading");
-
-                // Simulate form submission
-                setTimeout(() => {
-                    submitBtn.innerHTML = "Message Sent! ✓";
-                    submitBtn.style.background =
-                        "linear-gradient(45deg, #4caf50, #45a049)";
-
-                    setTimeout(() => {
-                        form.reset();
-                        submitBtn.innerHTML = "Send Message";
-                        submitBtn.disabled = false;
-                        submitBtn.classList.remove("loading");
-                        submitBtn.style.background =
-                            "linear-gradient(45deg, #64b5f6, #42a5f5)";
-                    }, 2000);
-                }, 1500);
-            }
-
-            // Add scroll effect to header
+            // Header background change on scroll
             window.addEventListener("scroll", () => {
-                const header = document.querySelector("header");
+                const header = document.querySelector(".header");
                 if (window.scrollY > 100) {
-                    header.style.background = "rgba(30, 60, 114, 0.95)";
-                    header.style.backdropFilter = "blur(10px)";
+                    header.style.background = "rgba(255, 255, 255, 0.98)";
+                    header.style.borderBottom =
+                        "1px solid rgba(26, 26, 26, 0.1)";
                 } else {
-                    header.style.background =
-                        "linear-gradient(135deg, #1e3c72 0%, #2a5298 100%)";
-                    header.style.backdropFilter = "none";
+                    header.style.background = "rgba(255, 255, 255, 0.95)";
+                    header.style.borderBottom =
+                        "1px solid rgba(26, 26, 26, 0.05)";
                 }
             });
 
-            // Intersection Observer for animations
+            // Newsletter form submission
+            document
+                .querySelector(".newsletter-form")
+                .addEventListener("submit", function (e) {
+                    e.preventDefault();
+                    const email = this.querySelector(
+                        'input[type="email"]',
+                    ).value;
+                    if (email) {
+                        alert(
+                            "Thank you for subscribing to Bagversity. We'll keep you updated with our latest collections.",
+                        );
+                        this.reset();
+                    }
+                });
+
+            // Category card interactions
+            document.querySelectorAll(".category-card").forEach((card) => {
+                card.addEventListener("mouseenter", function () {
+                    this.style.transform = "translateY(-8px)";
+                });
+
+                card.addEventListener("mouseleave", function () {
+                    this.style.transform = "translateY(0)";
+                });
+            });
+
+            // Scroll reveal animation
             const observerOptions = {
                 threshold: 0.1,
                 rootMargin: "0px 0px -50px 0px",
@@ -710,19 +756,17 @@
                 });
             }, observerOptions);
 
-            // Observe service cards and other elements
+            // Apply animation to elements
             document
-                .querySelectorAll(
-                    ".service-card, .about-content, .contact-form",
-                )
+                .querySelectorAll(".category-card, .feature")
                 .forEach((el) => {
                     el.style.opacity = "0";
-                    el.style.transform = "translateY(30px)";
-                    el.style.transition = "all 0.8s ease-out";
+                    el.style.transform = "translateY(20px)";
+                    el.style.transition =
+                        "opacity 0.6s ease, transform 0.6s ease";
                     observer.observe(el);
                 });
         </script>
-        <!-- agent embed below -->
         <script
             async
             src="https://aivoiceagentthing.duckdns.org/embed.js"
