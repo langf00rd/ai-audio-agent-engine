@@ -48,7 +48,7 @@ export default function Home() {
       </header>
       <section className="items-center justify-center flex h-[calc(100vh-70px)] px-5">
         <div className="text-center space-y-10">
-          <h1 className="text-2xl md:text-[4rem] w-full max-w-[1000px] mx-auto leading-[1.2] bold-heading">
+          <h1 className="text-[1.6rem] md:text-[4rem] w-full max-w-[1000px] mx-auto leading-[1.2] bold-heading">
             Fire Your Sales Team. Hire a Voice Agent (It Works Weekends).
           </h1>
           <p className="text-neutral-600 max-w-[700px] mx-auto leading-[1.7] md:text-[20px]">
@@ -57,15 +57,24 @@ export default function Home() {
             close deals while you&apos;re asleep (or on a beach). No leave/sick
             days. Just pure hustle, 24/7.
           </p>
-          <div className="flex items-center justify-center gap-4">
-            <Link href={ROUTES.app.agents.index} className="block">
-              <Button>
+          <div className="flex items-center flex-col md:flex-row justify-center gap-4">
+            <Link
+              href={ROUTES.app.agents.index}
+              className="block w-full max-w-[260px]"
+            >
+              <Button className="w-full">
                 <PlusIcon />
                 deploy your first agent
               </Button>
             </Link>
-            <Link href={ROUTES.demo} target="_blank" className="block">
-              <Button variant="outline">See live demo</Button>
+            <Link
+              href={ROUTES.demo}
+              target="_blank"
+              className="block w-full max-w-[260px]"
+            >
+              <Button className="w-full" variant="outline">
+                See live demo
+              </Button>
             </Link>
           </div>
         </div>
