@@ -8,13 +8,27 @@ import {
 import { getAgentByIDService } from "./agent.service.js";
 import { pool } from "../config/pg.js";
 
-export async function getConversationHistory(agentId, sessionId) {
+export async function getConversationHistory(sessionId) {
   try {
     const conversationHistory = await readFromSQlite(
       `SELECT * FROM messages WHERE session_id = ? ORDER BY created_at ASC`,
       [sessionId],
     );
     return conversationHistory || [];
+  } catch (err) {}
+}
+
+export async function createConversationHistory(
+  sessionId,
+  agentId,
+  prompt,
+  llmResponse,
+) {
+  try {
+    insertIntoSQlite(
+      `INSERT INTO messages (session_id, agent_id, user, llm) VALUES (?, ?, ?, ?)`,
+      [sessionId, agentId, prompt, llmResponse],
+    );
   } catch (err) {}
 }
 

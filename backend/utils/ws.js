@@ -5,29 +5,17 @@ import ffmpeg from "fluent-ffmpeg";
 import { PassThrough, Readable } from "stream";
 import { chatModel } from "../config/ai.js";
 import { getAgentByIDService } from "../services/agent.service.js";
-import { getConversationHistory } from "../services/ai.service.js";
-import { parseConversationSessionHistory } from "./ai.js";
+import {
+  createConversationHistory,
+  getConversationHistory,
+} from "../services/ai.service.js";
+import { generateSystemPrompt, parseConversationSessionHistory } from "./ai.js";
 import { minifyJSONForLLM } from "./index.js";
 
 dotenv.config({ path: ".env" });
 
 const ffmpegPath = process.env.FFMPEG_PATH;
-
 ffmpeg.setFfmpegPath(ffmpegPath);
-
-async function handleGetAgent(agentId) {
-  const { data: agent, error } = await getAgentByIDService(agentId);
-  if (error) throw new Error(error);
-  return agent;
-}
-
-async function handleGetConversationHistory(sessionId) {
-  console.log("transcriberSessionId", sessionId);
-  const conversationHistory = await getConversationHistory(agentId, sessionId);
-  return conversationHistory
-    ? parseConversationSessionHistory(conversationHistory.slice(-3))
-    : [];
-}
 
 async function initTranscriber() {
   console.log("connecting to transcriber");
@@ -66,25 +54,26 @@ export async function handleWebSocketConnection(ws, agentId) {
 
     transcriberClient.on("turn", async (turn) => {
       if (turn.end_of_turn) {
-        console.log("turn.end_of_turn", turn.end_of_turn);
         try {
+          const conversationHistory =
+            await handleGetConversationHistory(transcriberSessionId);
+          const prompt = generateSystemPrompt(
+            turn.transcript,
+            "REGULAR-CONVERSATION",
+            {
+              agentInfo: agent,
+              history: conversationHistory,
+            },
+          );
           const result = streamText({
+            prompt,
             model: chatModel,
             system: "use less words",
-            // prompt: turn.transcript,
-            messages: [
-              {
-                role: "user",
-                content: turn.transcript,
-              },
-            ],
           });
           let llmResponse = "";
           const reader = result.baseStream.getReader();
           while (true) {
             const { value, done } = await reader.read();
-            console.log("value, done", value, done);
-
             if (value?.part?.type === "text") {
               llmResponse += value?.part?.text;
               ws.send(
@@ -96,7 +85,12 @@ export async function handleWebSocketConnection(ws, agentId) {
             }
             if (done) break;
           }
-          console.log("llmResponse -->", llmResponse, "<-- llmResponse");
+          createConversationHistory(
+            transcriberSessionId,
+            agentId,
+            turn.transcript,
+            llmResponse,
+          );
         } catch (err) {
           console.log("LLM ERR", err);
         }
@@ -131,4 +125,18 @@ export async function handleWebSocketConnection(ws, agentId) {
       await transcriberClient.close();
     });
   });
+}
+
+async function handleGetAgent(agentId) {
+  const { data: agent, error } = await getAgentByIDService(agentId);
+  if (error) throw new Error(error);
+  return agent;
+}
+
+async function handleGetConversationHistory(sessionId) {
+  console.log("transcriberSessionId", sessionId);
+  const conversationHistory = await getConversationHistory(sessionId);
+  return conversationHistory
+    ? parseConversationSessionHistory(conversationHistory.slice(-3))
+    : [];
 }
