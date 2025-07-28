@@ -2,29 +2,21 @@
 
 import { Button } from "@/components/ui/button";
 import { useWebSocket } from "@/hooks/use-web-socket";
-import {
-  AUDIO_INPUT_SILENCE_THRESHOLD_DURATION,
-  WEB_SOCKET_URL,
-} from "@/lib/constants";
+import { WEB_SOCKET_URL } from "@/lib/constants";
 import { fetchAgentById } from "@/lib/services/agent";
-import { fetchAIResponse } from "@/lib/services/ai";
-import { speak } from "@/lib/services/tts";
-import { PlayCircle, StopCircle } from "lucide-react";
-import { useSearchParams } from "next/navigation";
+import { AgentConfig } from "@/lib/types";
+import { MicIcon, PhoneIcon, PhoneOffIcon } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 import EmptyState from "./empty-state";
 import { ErrorText } from "./typography";
 
 export default function AgentChat(props: { isEmbed?: boolean; id: string }) {
-  const searchParams = useSearchParams();
+  const [agent, setAgent] = useState<AgentConfig | null>(null);
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const silenceTimerRef = useRef<NodeJS.Timeout | null>(null);
-  const [sessionId, setSessionId] = useState<string | null>(null);
-  const [transcript, setTranscript] = useState("");
-  const [aiResponse, setAIResponse] = useState("");
   const [isListening, setIsListening] = useState(false);
-  const [isLoadingAIResponse, setIsLoadingAIResponse] = useState(false);
+  // const [aiResponse, setAIResponse] = useState("");
   const [isReady, setIsReady] = useState(false);
   const [isLoading, setIsLoading] = useState<null | boolean>(null);
   const [isPublic, setIsPublic] = useState<boolean | null>(null);
@@ -34,9 +26,9 @@ export default function AgentChat(props: { isEmbed?: boolean; id: string }) {
     agentId: props.id,
     onMessage: async (evt) => {
       const data = JSON.parse(evt.data);
-      if (data.type === "LLM_RESPONSE") {
-        setAIResponse((prev) => prev + data.llm_response);
-      }
+      // if (data.type === "LLM_RESPONSE") {
+      //   setAIResponse((prev) => prev + data.llm_response);
+      // }
       if (data.type === "TTS_AUDIO") {
         const base64Audio = data.audio;
         const audioBuffer = Uint8Array.from(atob(base64Audio), (c) =>
@@ -52,13 +44,6 @@ export default function AgentChat(props: { isEmbed?: boolean; id: string }) {
       stopRecording();
     },
   });
-
-  const resetSilenceTimer = (_transcript: string, _sessionId: string) => {
-    if (silenceTimerRef.current) clearTimeout(silenceTimerRef.current);
-    silenceTimerRef.current = setTimeout(() => {
-      handleGetAIResponse(_sessionId, _transcript);
-    }, AUDIO_INPUT_SILENCE_THRESHOLD_DURATION);
-  };
 
   const startRecording = async () => {
     try {
@@ -98,26 +83,10 @@ export default function AgentChat(props: { isEmbed?: boolean; id: string }) {
     setIsListening(false);
   };
 
-  async function handleGetAIResponse(_sessionId: string, _transcript?: string) {
-    try {
-      setIsLoadingAIResponse(true);
-      const response = await fetchAIResponse(
-        _transcript || transcript,
-        props.id,
-        sessionId || _sessionId,
-      );
-      if (response.data) await speak(response.data);
-      setAIResponse(response.data);
-    } catch (err) {
-      toast((err as Error).message);
-    } finally {
-      setIsLoadingAIResponse(false);
-    }
-  }
-
   async function handleGetAgent() {
     try {
       const _agent = await fetchAgentById(props.id);
+      setAgent(_agent.data);
       return _agent.data;
     } catch (err) {
       toast((err as Error).message);
@@ -163,58 +132,32 @@ export default function AgentChat(props: { isEmbed?: boolean; id: string }) {
 
   return (
     <div className="space-y-10 h-full relative flex flex-col justify-between">
-      <div className="space-y-2">
-        {sessionId && (
-          <p className="text-sm text-neutral-400">
-            You are connected. {sessionId}
-          </p>
-        )}
-        {isLoadingAIResponse && (
-          <p className="text-sm text-neutral-500 animate-pulse">
-            Agent is responding...
-          </p>
-        )}
-      </div>
-      <div className="pb-20 space-y-8">
-        {transcript && (
-          <div>
-            <p className="text-sm text-neutral-400">You</p>
-            <p className="text-xl md:text-2xl text-neutral-600 leading-[1.6]">
-              {transcript}
-            </p>
-          </div>
-        )}
-        {aiResponse && (
-          <div className="space-y-1">
-            <div
-              className={`flex items-center gap-1 ${isLoadingAIResponse && "animate-bounce"}`}
-            >
-              <div className="size-3 bg-black rounded-sm" />
-              <p className="text-sm text-neutral-400">
-                {searchParams.get("agent_name")}
-              </p>
-            </div>
-            <p className="text-xl md:text-2xl text-neutral-700 leading-[1.6]">
-              {aiResponse}
-            </p>
-          </div>
-        )}
-      </div>
-      <div className="sticky bottom-[10] w-full flex items-center justify-center">
-        <Button
-          onClick={isListening ? stopRecording : startRecording}
-          variant={isListening ? "destructive" : "default"}
-        >
-          {isListening ? (
-            <>
-              Stop <StopCircle />
-            </>
-          ) : (
-            <>
-              Start conversation <PlayCircle />
-            </>
-          )}
-        </Button>
+      <div className="h-full items-center flex flex-col justify-center gap-5">
+        <div className="size-[160px] bg-gradient-to-b from-[#ffb800] via-[#ffd9a8] to-[#ffb800] animate-pulse rounded-full" />
+        <p className="uppercase font-semibold">
+          {isListening ? "Speaking" : "Speak"} to {agent?.name}
+        </p>
+        <div className="flex gap-2">
+          <Button disabled variant="outline">
+            <MicIcon />
+            Mute
+          </Button>
+          <Button
+            onClick={isListening ? stopRecording : startRecording}
+            variant={isListening ? "destructive-secondary" : "default"}
+          >
+            {isListening ? (
+              <>
+                End Call <PhoneOffIcon />
+              </>
+            ) : (
+              <>
+                <PhoneIcon />
+                Start call
+              </>
+            )}
+          </Button>
+        </div>
       </div>
     </div>
   );

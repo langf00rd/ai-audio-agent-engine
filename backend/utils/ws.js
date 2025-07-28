@@ -126,7 +126,6 @@ async function handleGetAgent(agentId) {
 }
 
 async function handleGetConversationHistory(sessionId) {
-  console.log("transcriberSessionId", sessionId);
   const conversationHistory = await getConversationHistory(sessionId);
   return conversationHistory
     ? parseConversationSessionHistory(conversationHistory.slice(-3))
