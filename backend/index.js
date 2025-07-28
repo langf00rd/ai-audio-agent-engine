@@ -27,6 +27,7 @@ import {
 } from "./controller/conversations.controller.js";
 import { ttsController } from "./controller/tts.controller.js";
 import { handleWebSocketConnection } from "./utils/ws.js";
+import { authMiddleware } from "./middlewares/auth.middleware.js";
 
 const PORT = 8000;
 const app = express();

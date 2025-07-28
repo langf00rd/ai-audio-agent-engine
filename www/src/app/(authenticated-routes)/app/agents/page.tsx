@@ -2,33 +2,31 @@
 
 import EmptyState from "@/components/empty-state";
 import Loader from "@/components/loader";
+import { ErrorText } from "@/components/typography";
 import { Button } from "@/components/ui/button";
-import { API_BASE_URL, ROUTES } from "@/lib/constants";
-import { AgentConfig } from "@/lib/types";
+import { ROUTES } from "@/lib/constants";
+import { fetchAgents } from "@/lib/services/agent";
+import { AgentConfig, APIResponse } from "@/lib/types";
+import { useQuery } from "@tanstack/react-query";
 import { Globe, Plus } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
 
 export default function AgentsPage() {
     const router = useRouter();
-    const [agents, setAgents] = useState<AgentConfig[]>([]);
-    const [loading, setLoading] = useState(true);
 
-    useEffect(() => {
-        fetch(`${API_BASE_URL}/agents`)
-            .then((res) => res.json())
-            .then((data) => {
-                setAgents(data.data);
-                setLoading(false);
-            })
-            .catch((err) => {
-                console.error("Failed to fetch agents:", err);
-                setLoading(false);
-            });
-    }, []);
+    const {
+        data: agents,
+        isFetching,
+        error,
+    } = useQuery<APIResponse<AgentConfig[]>>({
+        queryKey: ["agents"],
+        queryFn: fetchAgents,
+    });
 
-    if (loading) return <Loader />;
+    if (error) return <ErrorText>{error.message}</ErrorText>;
+
+    if (isFetching) return <Loader />;
 
     return (
         <div className="space-y-6">
@@ -41,7 +39,7 @@ export default function AgentsPage() {
                     </Button>
                 </Link>
             </div>
-            {agents.length === 0 ? (
+            {agents?.data.length === 0 ? (
                 <EmptyState
                     actionButtonVariant="secondary"
                     title="No agents found"
@@ -52,7 +50,7 @@ export default function AgentsPage() {
                 />
             ) : (
                 <ul className="space-y-2">
-                    {agents.map((agent, index) => (
+                    {agents?.data.map((agent, index) => (
                         <li key={agent.id}>
                             <Link
                                 href={`${ROUTES.agent.index}/${agent.id}`}
