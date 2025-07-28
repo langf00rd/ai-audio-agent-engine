@@ -5,29 +5,31 @@ import express from "express";
 import http from "http";
 import { WebSocketServer } from "ws";
 import { initDb } from "./config/sqlite.js";
+import querystring from "querystring";
 import {
-    createAgent,
-    getAgentByID,
-    getAgents,
-    updateAgent,
+  createAgent,
+  getAgentByID,
+  getAgents,
+  updateAgent,
 } from "./controller/agent.controller.js";
 import { aiChatController } from "./controller/ai.controller.js";
 import {
-    analyticsController,
-    getAnalyticsController,
+  analyticsController,
+  getAnalyticsController,
 } from "./controller/analytics.controller.js";
 import {
-    signInController,
-    signUpController,
+  signInController,
+  signUpController,
 } from "./controller/auth.controller.js";
 import {
-    createConvoTaggingController,
-    getConversationsController,
-    getConvoTaggingController,
+  createConvoTaggingController,
+  getConversationsController,
+  getConvoTaggingController,
 } from "./controller/conversations.controller.js";
 import { ttsController } from "./controller/tts.controller.js";
 import { handleWebSocketConnection } from "./utils/ws.js";
 import { authMiddleware } from "./middlewares/auth.middleware.js";
+import { parse } from "url";
 
 const PORT = 8000;
 const app = express();
@@ -40,24 +42,26 @@ dotenv.config({ path: ".env" });
 app.use(cors());
 app.use(bodyParser.json());
 app.use(
-    bodyParser.urlencoded({
-        extended: true,
-    }),
+  bodyParser.urlencoded({
+    extended: true,
+  }),
 );
 
 // init sqlite db
 (async () => {
-    try {
-        await initDb();
-        console.log("[SQLITE] DB INITIALIZED");
-    } catch (err) {
-        console.log("[SQLITE] ERROR", err);
-    }
+  try {
+    await initDb();
+    console.log("[SQLITE] DB INITIALIZED");
+  } catch (err) {
+    console.log("[SQLITE] ERROR", err);
+  }
 })();
 
-wss.on("connection", async (ws) => {
-    console.log("web socket client connected");
-    handleWebSocketConnection(ws);
+wss.on("connection", async (ws, req) => {
+  const { query } = parse(req.url);
+  const params = querystring.parse(query);
+  console.log("[web socket] client connected", params);
+  handleWebSocketConnection(ws, params.agentId);
 });
 
 app.use("/api", router); // all routes under /api

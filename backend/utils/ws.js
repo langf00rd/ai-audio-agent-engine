@@ -1,7 +1,13 @@
+import { streamText } from "ai";
 import { AssemblyAI } from "assemblyai";
+import dotenv from "dotenv";
 import ffmpeg from "fluent-ffmpeg";
 import { PassThrough, Readable } from "stream";
-import dotenv from "dotenv";
+import { chatModel } from "../config/ai.js";
+import { getAgentByIDService } from "../services/agent.service.js";
+import { getConversationHistory } from "../services/ai.service.js";
+import { parseConversationSessionHistory } from "./ai.js";
+import { minifyJSONForLLM } from "./index.js";
 
 dotenv.config({ path: ".env" });
 
@@ -9,54 +15,120 @@ const ffmpegPath = process.env.FFMPEG_PATH;
 
 ffmpeg.setFfmpegPath(ffmpegPath);
 
-export async function handleWebSocketConnection(ws) {
+async function handleGetAgent(agentId) {
+  const { data: agent, error } = await getAgentByIDService(agentId);
+  if (error) throw new Error(error);
+  return agent;
+}
+
+async function handleGetConversationHistory(sessionId) {
+  console.log("transcriberSessionId", sessionId);
+  const conversationHistory = await getConversationHistory(agentId, sessionId);
+  return conversationHistory
+    ? parseConversationSessionHistory(conversationHistory.slice(-3))
+    : [];
+}
+
+async function initTranscriber() {
+  console.log("connecting to transcriber");
   let sessionId;
   const client = new AssemblyAI({ apiKey: process.env.ASSEMBLY_AI_API_KEY });
-
   const transcriber = client.streaming.transcriber({
     sampleRate: 16_000,
   });
-
   transcriber.on("open", ({ id }) => {
-    console.log(`session opened -> ${id}`);
     sessionId = id;
-    ws.send(JSON.stringify({ sessionId: id }));
+    console.log("new transcriber session", id);
   });
-
-  transcriber.on("error", (error) => {
-    console.error("transcriber error:", error);
-  });
-
-  transcriber.on("close", (code, reason) =>
-    console.log("transcriber session closed -> ", code, reason),
-  );
-
-  transcriber.on("turn", (turn) => {
-    if (!turn.transcript) return;
-    ws.send(JSON.stringify({ transcript: turn.transcript, sessionId }));
-  });
-
   await transcriber.connect();
-  const inputStream = new PassThrough();
+  return { transcriber, sessionId };
+}
 
-  const ffmpegProcess = ffmpeg()
-    .input(inputStream)
-    .inputFormat("webm")
-    .audioFrequency(16000)
-    .audioChannels(1)
-    .audioCodec("pcm_s16le")
-    .format("s16le")
-    .on("error", (err) => console.error("ffmpeg error:", err))
-    .pipe();
+export async function handleWebSocketConnection(ws, agentId) {
+  let agent;
+  let transcriberClient;
+  let transcriberSessionId;
 
-  Readable.toWeb(ffmpegProcess).pipeTo(transcriber.stream());
+  async function init() {
+    agent = minifyJSONForLLM(await handleGetAgent(agentId));
+    const { transcriber, sessionId } = await initTranscriber();
+    transcriberClient = transcriber;
+    transcriberSessionId = sessionId;
+  }
 
-  ws.on("message", (data) => {
-    inputStream.write(data);
-  });
+  await init().then(() => {
+    console.log(
+      "[transcriber and agent ready]",
+      agent,
+      transcriberSessionId,
+      transcriberClient.params,
+    );
 
-  ws.on("close", async () => {
-    inputStream.end();
-    await transcriber.close();
+    transcriberClient.on("turn", async (turn) => {
+      if (turn.end_of_turn) {
+        console.log("turn.end_of_turn", turn.end_of_turn);
+        try {
+          const result = streamText({
+            model: chatModel,
+            system: "use less words",
+            // prompt: turn.transcript,
+            messages: [
+              {
+                role: "user",
+                content: turn.transcript,
+              },
+            ],
+          });
+          let llmResponse = "";
+          const reader = result.baseStream.getReader();
+          while (true) {
+            const { value, done } = await reader.read();
+            console.log("value, done", value, done);
+
+            if (value?.part?.type === "text") {
+              llmResponse += value?.part?.text;
+              ws.send(
+                JSON.stringify({
+                  type: "LLM_RESPONSE",
+                  llm_response: value.part.text,
+                }),
+              );
+            }
+            if (done) break;
+          }
+          console.log("llmResponse -->", llmResponse, "<-- llmResponse");
+        } catch (err) {
+          console.log("LLM ERR", err);
+        }
+      }
+    });
+
+    // piping audio to transcriber stream
+    const inputStream = new PassThrough();
+    const ffmpegProcess = ffmpeg()
+      .input(inputStream)
+      .inputFormat("webm")
+      .audioFrequency(16000)
+      .audioChannels(1)
+      .audioCodec("pcm_s16le")
+      .format("s16le")
+      .on("error", (err) => console.error("ffmpeg error:", err))
+      .pipe();
+    Readable.toWeb(ffmpegProcess).pipeTo(transcriberClient.stream());
+
+    // transcriber events
+    transcriberClient.on("error", (error) => {
+      console.error("transcriber error:", error);
+    });
+    transcriberClient.on("close", (code, reason) =>
+      console.log("transcriber session closed -> ", code, reason),
+    );
+
+    // web socket events
+    ws.on("message", (data) => inputStream.write(data));
+    ws.on("close", async () => {
+      inputStream.end();
+      await transcriberClient.close();
+    });
   });
 }
