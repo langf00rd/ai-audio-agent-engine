@@ -1,4 +1,4 @@
-# ai sales agent engine
+# toow ai sales agent
 
 this project is a monorepo that uses `pnpm` as a global package manager
 
