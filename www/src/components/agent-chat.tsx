@@ -47,20 +47,6 @@ export default function AgentChat(props: { isEmbed?: boolean; id: string }) {
         const audio = new Audio(audioUrl);
         audio.play().catch((err) => console.error("audio play error", err));
       }
-      // if (data.sessionId) {
-      //   setSessionId(data.sessionId);
-      //   try {
-      //     await trackAgentUsage(String(props.id), data.sessionId);
-      //   } catch (err) {
-      //     toast((err as Error).message, {
-      //       type: "error",
-      //     } as unknown as ExternalToast);
-      //   }
-      // }
-      // if (data.transcript) {
-      //   setTranscript(data.transcript);
-      //   resetSilenceTimer(data.transcript, data.sessionId);
-      // }
     },
     onConnectionClose: () => {
       stopRecording();
