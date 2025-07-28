@@ -6,20 +6,20 @@ import * as React from "react";
 import { cn } from "@/lib/utils";
 
 function Label({
-  className,
-  ...props
+    className,
+    ...props
 }: React.ComponentProps<typeof LabelPrimitive.Root>) {
-  return (
-    <LabelPrimitive.Root
-      data-slot="label"
-      className={cn(
-        "flex items-center gap-2 text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50",
-        "capitalize text-[13px]",
-        className,
-      )}
-      {...props}
-    />
-  );
+    return (
+        <LabelPrimitive.Root
+            data-slot="label"
+            className={cn(
+                "flex items-center gap-2 text-sm leading-none font-semibold select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50",
+                "uppercase text-[13px] opacity-60 relative left-2",
+                className,
+            )}
+            {...props}
+        />
+    );
 }
 
 export { Label };
