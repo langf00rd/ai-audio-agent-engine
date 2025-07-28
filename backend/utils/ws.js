@@ -17,21 +17,6 @@ dotenv.config({ path: ".env" });
 const ffmpegPath = process.env.FFMPEG_PATH;
 ffmpeg.setFfmpegPath(ffmpegPath);
 
-async function initTranscriber() {
-  console.log("connecting to transcriber");
-  let sessionId;
-  const client = new AssemblyAI({ apiKey: process.env.ASSEMBLY_AI_API_KEY });
-  const transcriber = client.streaming.transcriber({
-    sampleRate: 16_000,
-  });
-  transcriber.on("open", ({ id }) => {
-    sessionId = id;
-    console.log("new transcriber session", id);
-  });
-  await transcriber.connect();
-  return { transcriber, sessionId };
-}
-
 export async function handleWebSocketConnection(ws, agentId) {
   let agent;
   let transcriberClient;
@@ -139,4 +124,19 @@ async function handleGetConversationHistory(sessionId) {
   return conversationHistory
     ? parseConversationSessionHistory(conversationHistory.slice(-3))
     : [];
+}
+
+async function initTranscriber() {
+  console.log("connecting to transcriber");
+  let sessionId;
+  const client = new AssemblyAI({ apiKey: process.env.ASSEMBLY_AI_API_KEY });
+  const transcriber = client.streaming.transcriber({
+    sampleRate: 16_000,
+  });
+  transcriber.on("open", ({ id }) => {
+    sessionId = id;
+    console.log("new transcriber session", id);
+  });
+  await transcriber.connect();
+  return { transcriber, sessionId };
 }
