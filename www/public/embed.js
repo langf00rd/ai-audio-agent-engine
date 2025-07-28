@@ -9,8 +9,8 @@
     position: "fixed",
     bottom: "80px",
     right: "20px",
-    width: "420px",
-    height: "600px",
+    width: "290px",
+    height: "350px",
     border: "1px solid #ededed",
     borderRadius: "32px",
     boxShadow: "rgb(0 0 0 / 5%) 0px 4px 20px",
@@ -21,7 +21,7 @@
   iframe.setAttribute("id", "ai-agent-widget");
   document.body.appendChild(iframe);
   const fab = document.createElement("button");
-  fab.innerHTML = "Talk to voice agent";
+  fab.innerHTML = "Talk to sales agent";
   Object.assign(fab.style, {
     position: "fixed",
     bottom: "20px",
@@ -46,6 +46,6 @@
   fab.addEventListener("click", () => {
     isOpen = !isOpen;
     iframe.style.display = isOpen ? "block" : "none";
-    fab.innerHTML = !isOpen ? "Talk to voice agent" : "Hide agent";
+    fab.innerHTML = !isOpen ? "Talk to sales agent" : "Hide agent";
   });
 })();

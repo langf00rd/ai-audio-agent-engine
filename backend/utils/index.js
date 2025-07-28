@@ -37,3 +37,14 @@ export function groupConversationsBySession(data) {
     }, {}),
   );
 }
+
+export function minifyJSONForLLM(obj) {
+  const clean = JSON.parse(
+    JSON.stringify(obj, (k, v) =>
+      v === null || v === "" || (Array.isArray(v) && v.length === 0)
+        ? undefined
+        : v,
+    ),
+  );
+  return JSON.stringify(clean);
+}
