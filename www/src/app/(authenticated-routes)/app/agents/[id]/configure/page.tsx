@@ -2,6 +2,7 @@
 
 import EmptyState from "@/components/empty-state";
 import CreateAgentForm from "@/components/forms/create-agent";
+import Loader from "@/components/loader";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -57,7 +58,7 @@ export default function ConfigureAgent() {
                     ))}
                 </TabsList>
                 <TabsContent value={tabs[0]} className="py-6">
-                    {loading && "loading..."}
+                    {loading && <Loader />}
                     {agent && (
                         <CreateAgentForm
                             onSubmitSuccess={() =>

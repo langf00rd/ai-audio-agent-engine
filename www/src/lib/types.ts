@@ -8,6 +8,8 @@ export interface User {
     created_at: Date;
     email: string;
     token: string;
+    first_name: string;
+    last_name: string;
 }
 
 export interface Analytics<T> {
