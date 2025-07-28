@@ -11,6 +11,8 @@ import {
 } from "../services/ai.service.js";
 import { generateSystemPrompt, parseConversationSessionHistory } from "./ai.js";
 import { minifyJSONForLLM } from "./index.js";
+import { polly } from "../config/tts.js";
+import { SynthesizeSpeechCommand } from "@aws-sdk/client-polly";
 
 dotenv.config({ path: ".env" });
 
@@ -30,12 +32,10 @@ export async function handleWebSocketConnection(ws, agentId) {
   }
 
   await init().then(() => {
-    console.log(
-      "[transcriber and agent ready]",
+    console.log("[transcriber and agent ready]", {
       agent,
       transcriberSessionId,
-      transcriberClient.params,
-    );
+    });
 
     transcriberClient.on("turn", async (turn) => {
       if (turn.end_of_turn) {
@@ -70,6 +70,13 @@ export async function handleWebSocketConnection(ws, agentId) {
             }
             if (done) break;
           }
+          const audioBuffer = await ttsService(llmResponse);
+          ws.send(
+            JSON.stringify({
+              type: "TTS_AUDIO",
+              audio: audioBuffer.toString("base64"),
+            }),
+          );
           createConversationHistory(
             transcriberSessionId,
             agentId,
@@ -139,4 +146,25 @@ async function initTranscriber() {
   });
   await transcriber.connect();
   return { transcriber, sessionId };
+}
+
+async function ttsService(text) {
+  try {
+    const command = new SynthesizeSpeechCommand({
+      OutputFormat: "mp3",
+      Text: text,
+      VoiceId: "Matthew",
+      Engine: "neural",
+    });
+    const { AudioStream } = await polly.send(command);
+    if (!AudioStream) throw new Error("No audio stream from Polly");
+    const chunks = [];
+    for await (const chunk of AudioStream) {
+      chunks.push(chunk);
+    }
+    return Buffer.concat(chunks);
+  } catch (err) {
+    console.error("Polly TTS error:", err);
+    throw err;
+  }
 }

@@ -37,6 +37,16 @@ export default function AgentChat(props: { isEmbed?: boolean; id: string }) {
       if (data.type === "LLM_RESPONSE") {
         setAIResponse((prev) => prev + data.llm_response);
       }
+      if (data.type === "TTS_AUDIO") {
+        const base64Audio = data.audio;
+        const audioBuffer = Uint8Array.from(atob(base64Audio), (c) =>
+          c.charCodeAt(0),
+        );
+        const blob = new Blob([audioBuffer], { type: "audio/mpeg" });
+        const audioUrl = URL.createObjectURL(blob);
+        const audio = new Audio(audioUrl);
+        audio.play().catch((err) => console.error("audio play error", err));
+      }
       // if (data.sessionId) {
       //   setSessionId(data.sessionId);
       //   try {
