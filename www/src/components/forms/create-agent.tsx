@@ -297,7 +297,6 @@ export default function CreateAgentForm(props: {
                         <Label>Description</Label>
                         <Textarea
                             defaultValue={props.data?.description ?? ""}
-                            required
                             name="description"
                         />
                     </fieldset>
@@ -319,7 +318,6 @@ export default function CreateAgentForm(props: {
                         <Label>Business Slogan</Label>
                         <Textarea
                             defaultValue={props.data?.business_slogan ?? ""}
-                            required
                             name="business_slogan"
                         />
                     </fieldset>
@@ -548,24 +546,14 @@ export default function CreateAgentForm(props: {
                                         </Button>
                                     </div>
                                 ))}
-                                <div className="flex items-center gap-2">
-                                    <Button
-                                        size="sm"
-                                        variant="outline"
-                                        type="button"
-                                        onClick={() => addPricing(i)}
-                                    >
-                                        + Add Another
-                                    </Button>
-                                    <Button
-                                        size="sm"
-                                        type="button"
-                                        variant="destructive-secondary"
-                                        onClick={() => removeService(i)}
-                                    >
-                                        <X /> Service
-                                    </Button>
-                                </div>
+                                <Button
+                                    size="sm"
+                                    type="button"
+                                    variant="destructive-secondary"
+                                    onClick={() => removeService(i)}
+                                >
+                                    <X /> Service
+                                </Button>
                             </div>
                         ))}
                     </div>
@@ -589,7 +577,6 @@ export default function CreateAgentForm(props: {
                         {faqs.map((faq, i) => (
                             <div key={i} className="space-y-2">
                                 <Input
-                                    required
                                     placeholder="FAQ Question"
                                     name={`faqs[${i}].question`}
                                     value={faq.question}
@@ -602,7 +589,6 @@ export default function CreateAgentForm(props: {
                                     }
                                 />
                                 <Textarea
-                                    required
                                     placeholder="FAQ Answer"
                                     name={`faqs[${i}].answer`}
                                     value={faq.answer}
