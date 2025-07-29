@@ -4,7 +4,7 @@ export default function EmptyState(props: {
   actionButtonLabel?: string;
   onActionButtonClick?: () => void;
   isActionButtonDisabled?: boolean;
-  actionButtonVariant?: "secondary";
+  actionButtonVariant?: "secondary" | "outline";
 }) {
   return (
     <>
