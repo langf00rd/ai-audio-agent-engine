@@ -21,10 +21,11 @@ import { User } from "@/lib/types";
 import { cookies } from "next/headers";
 import SignOutButton from "../buttons/sign-out";
 import { Logo } from "../logo";
+import { Badge } from "../ui/badge";
 
 const items = [
     {
-        title: "Agents",
+        title: "Your Agents",
         url: ROUTES.agent.index,
         icon: Bot,
     },
@@ -41,7 +42,7 @@ export async function AppSidebar() {
     ) as User;
     return (
         <Sidebar collapsible="icon" className="border-r border-neutral-100">
-            <SidebarHeader className="h-20 p-4 bg-white">
+            <SidebarHeader className="h-20 p-4 px-8 border-b border-neutral-100  bg-white flex items-start">
                 <Logo />
             </SidebarHeader>
             <SidebarContent className="bg-white px-4">
@@ -52,7 +53,7 @@ export async function AppSidebar() {
                                 <SidebarMenuItem key={item.title}>
                                     <SidebarMenuButton asChild>
                                         <a href={item.url}>
-                                            <item.icon />
+                                            <item.icon className="opacity-60" />
                                             <span className="text-[17px]">
                                                 {item.title}
                                             </span>
@@ -66,6 +67,11 @@ export async function AppSidebar() {
             </SidebarContent>
             <SidebarFooter className="bg-white">
                 <SidebarMenu>
+                    {/* <SidebarMenuItem className="border-t border-neutral-100 flex items-center justify-center h-[60px]">
+                        <Badge className="w-full py-3" variant="secondary">
+                            FREE PLAN
+                        </Badge>
+                    </SidebarMenuItem> */}
                     <SidebarMenuItem>
                         <DropdownMenu>
                             <DropdownMenuTrigger asChild>
