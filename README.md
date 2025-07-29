@@ -37,3 +37,9 @@ pnpm dev
 ```bash
 pm2 start pnpm --  start:prod
 ```
+
+## install postgres
+
+```bash
+sudo apt install postgresql
+```
