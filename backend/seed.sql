@@ -72,7 +72,6 @@ CREATE TABLE IF NOT EXISTS summarized_conversations (
 -- ANALYTICS (per user activity/events)
 CREATE TABLE IF NOT EXISTS analytics (
   id BIGSERIAL PRIMARY KEY,
-  user_id BIGINT REFERENCES users(id) ON DELETE CASCADE,
   event_type TEXT NOT NULL,
   metadata JSONB DEFAULT '{}'::jsonb,
   created_at TIMESTAMPTZ DEFAULT NOW()
