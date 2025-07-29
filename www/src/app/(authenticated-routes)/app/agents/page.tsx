@@ -55,7 +55,11 @@ export default function AgentsPage() {
       ) : (
         <div className="space-y-2 grid md:grid-cols-2 gap-2">
           {agents?.data.map((agent, index) => (
-            <Link key-={index} href={`${ROUTES.agent.index}/${agent.id}`}>
+            <Link
+              key={index}
+              key-={index}
+              href={`${ROUTES.agent.index}/${agent.id}`}
+            >
               <Card>
                 <CardContent className="space-y-2">
                   <div className="flex items-center justify-between">

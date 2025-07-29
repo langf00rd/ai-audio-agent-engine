@@ -38,8 +38,11 @@ export default function AgentConversations() {
         <Loader />
       ) : (
         <div className="gap-3 grid md:grid-cols-2">
-          {sessionConversations?.data.map((a) => (
-            <Link href={`${ROUTES.agent.index}/${id}/sessions/${a.session_id}`}>
+          {sessionConversations?.data.map((a, index) => (
+            <Link
+              key={index}
+              href={`${ROUTES.agent.index}/${id}/sessions/${a.session_id}`}
+            >
               <Card key={a.session_id} className="h-[120px]">
                 <CardContent className="flex flex-col justify-between h-full">
                   <p className="font-medium line-clamp-2">
