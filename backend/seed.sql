@@ -64,6 +64,8 @@ CREATE TABLE public.agents (
 -- create role
 -- CREATE ROLE <user> WITH LOGIN PASSWORD <password>; CREATE DATABASE main OWNER <user>;
 -- grant permissions
+-- GRANT SELECT, INSERT, UPDATE, DELETE ON TABLE public.users TO <user>;
+-- GRANT SELECT, INSERT, UPDATE, DELETE ON TABLE public.analytics TO <user>;
 -- GRANT SELECT, INSERT, UPDATE, DELETE ON TABLE public.agents TO <user>;
--- GRANT USAGE, SELECT ON SEQUENCE agents_id_seq TO <user>;
 -- GRANT SELECT, INSERT, UPDATE, DELETE ON TABLE public.tagged_conversations TO <user>;
+-- GRANT USAGE, SELECT ON SEQUENCE agents_id_seq TO <user>;
