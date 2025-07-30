@@ -20,9 +20,8 @@ export default function CreateBusinessPage() {
       return createBusiness(payload);
     },
     onSuccess: (data) => {
-      console.log("success", data);
       toast("business created");
-      Cookie.set(COOKIE_KEYS.business, JSON.stringify(data.data));
+      Cookie.set(COOKIE_KEYS.business, JSON.stringify([data.data]));
       window.location.href = ROUTES.app.index;
     },
     onError: (err) => {

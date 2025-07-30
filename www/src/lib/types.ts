@@ -10,6 +10,7 @@ export interface User {
   token: string;
   first_name: string;
   last_name: string;
+  businesses: Business[];
 }
 
 export interface Analytics<T> {

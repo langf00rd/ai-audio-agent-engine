@@ -17,15 +17,21 @@ import { useRouter } from "next/navigation";
 
 export default function AgentsPage() {
   const router = useRouter();
-  const business = getCookie<Business>(COOKIE_KEYS.business, { parse: true });
+  const business = getCookie<Business[]>(COOKIE_KEYS.business, {
+    parse: true,
+  }) || [
+    {
+      id: null,
+    },
+  ];
 
   const {
     data: agents,
     isFetching,
     error,
   } = useQuery<APIResponse<Agent[]>>({
-    queryKey: ["agents", business?.id],
-    queryFn: () => fetchAgents(`business_id=${business?.id}`),
+    queryKey: ["agents", business[0].id],
+    queryFn: () => fetchAgents(`business_id=${business[0].id}`),
   });
 
   if (error) return <ErrorText>{error.message}</ErrorText>;

@@ -1,5 +1,6 @@
 "use client";
 
+import { AgentAnalyticsChart } from "@/components/charts/agent";
 import EmptyState from "@/components/empty-state";
 import Loader from "@/components/loader";
 import StatCard from "@/components/stat-card";
@@ -24,8 +25,16 @@ import {
 import { Textarea } from "@/components/ui/textarea";
 import { ROUTES } from "@/lib/constants";
 import { fetchAgentById } from "@/lib/services/agent";
+import { fetchAgentAnalytics } from "@/lib/services/analytics";
 import { fetchAgentSessions } from "@/lib/services/sessions";
-import { Agent, APIResponse, Session } from "@/lib/types";
+import {
+  Agent,
+  AgentAnalyticsChartDuration,
+  AgentAnalyticsMetadata,
+  Analytics,
+  APIResponse,
+  Session,
+} from "@/lib/types";
 import { copyToClipboard } from "@/lib/utils";
 import { useQuery } from "@tanstack/react-query";
 import { ChevronRight, Code, Copy, Globe, Play, Settings2 } from "lucide-react";
@@ -37,12 +46,22 @@ export default function AgentInfo() {
   const params = useParams();
   const router = useRouter();
   const [domain, setDomain] = useState<string | null>(null);
-  // const [chartDayFilter, setChartDayFilter] =
-  //   useState<AgentAnalyticsChartDuration>(AgentAnalyticsChartDuration.DAY);
+  const [chartDayFilter, setChartDayFilter] =
+    useState<AgentAnalyticsChartDuration>(AgentAnalyticsChartDuration.DAY);
+
+  const embedScript = `<script async src="${domain}/embed.js" data-agent-id="${params.id}" type="text/javascript"></script>`;
 
   const { data: sessions } = useQuery<APIResponse<Session[]>>({
     queryKey: ["agent-session", params.id],
     queryFn: () => fetchAgentSessions(String(params.id)),
+    enabled: !!params.id,
+  });
+
+  const { data: analytics } = useQuery<
+    APIResponse<Analytics<AgentAnalyticsMetadata>[]>
+  >({
+    queryKey: ["agent-analytics", params.id],
+    queryFn: () => fetchAgentAnalytics(String(params.id)),
     enabled: !!params.id,
   });
 
@@ -54,56 +73,32 @@ export default function AgentInfo() {
     enabled: !!params.id,
   });
 
+  function getAnalytics() {
+    const interactions = analytics?.data.length;
+    const days = analytics?.data.map((d) =>
+      new Date(d.created_at).toLocaleString("en-US", {
+        weekday: "long",
+      }),
+    );
+    const dayCounts = days?.reduce(
+      (acc, day) => {
+        acc[day] = (acc[day] || 0) + 1;
+        return acc;
+      },
+      {} as Record<string, number>,
+    );
+    const mostCommonDay = Object.entries(dayCounts || {}).reduce(
+      (max, curr) => {
+        return curr[1] > max[1] ? curr : max;
+      },
+      ["", 0],
+    )[0];
+    return { interactions, mostCommonDay };
+  }
+
   useEffect(() => {
-    // async function handleFetchAgent() {
-    //   try {
-    //     setLoading(true);
-    //     const { data } = await fetchAgentById(String(params.id));
-    //     setAgent(data);
-    //   } catch (err) {
-    //     toast((err as Error).message);
-    //   } finally {
-    //     setLoading(false);
-    //   }
-    // }
-
-    // async function handleFetchAgentAnalytics() {
-    //   try {
-    //     setLoading(true);
-    //     const { data } = await fetchAgentAnalytics(String(params.id));
-    //     setAnalyticsRaw(data);
-    //     const totalInvocations = data.length;
-    //     const days = data.map((d) =>
-    //       new Date(d.created_at).toLocaleString("en-US", {
-    //         weekday: "long",
-    //       }),
-    //     );
-    //     const dayCounts = days.reduce(
-    //       (acc, day) => {
-    //         acc[day] = (acc[day] || 0) + 1;
-    //         return acc;
-    //       },
-    //       {} as Record<string, number>,
-    //     );
-    //     const mostCommonDay = Object.entries(dayCounts).reduce(
-    //       (max, curr) => {
-    //         return curr[1] > max[1] ? curr : max;
-    //       },
-    //       ["", 0],
-    //     )[0];
-    //     setAnalytics({ totalInvocations, mostCommonDay });
-    //   } catch (err) {
-    //     toast((err as Error).message);
-    //   } finally {
-    //     setLoading(false);
-    //   }
-    // }
-    // handleFetchAgentAnalytics();
-
     setDomain(window.location.origin);
   }, [params.id]);
-
-  const embedScript = `<script async src="${domain}/embed.js" data-agent-id="${params.id}" type="text/javascript"></script>`;
 
   if (isFetchingAgent) return <Loader />;
 
@@ -204,40 +199,47 @@ export default function AgentInfo() {
           value={Object.keys(sessions?.data || {}).length}
           route={`/app/agents/${params.id}/sessions`}
         />
-        {/*
-        <StatCard title="Total Calls" value={analytics?.totalInvocations} />
+        <StatCard
+          title="Total Interactions"
+          value={getAnalytics().interactions}
+        />
         <StatCard
           title="Highest traffic day"
-          value={analytics?.mostCommonDay}
-        /> */}
-        {/* <StatCard title="General intent" value="Interested" /> */}
-        {/* <StatCard title="Most inquired product/service" value="Interested" /> */}
+          value={getAnalytics().mostCommonDay}
+        />
         {/* <StatCard
           title="Conversations duration"
           value={getTotalConversationDuration(sessions?.data || [])}
         /> */}
+        {/* */}
+        {/* <StatCard title="General intent" value="Interested" /> */}
+        {/* <StatCard title="Most inquired product/service" value="Interested" /> */}
+        {/*  */}
         {/* <StatCard
           title="Most asked question"
           value="What is the lowest price of a purse?"
         /> */}
       </ul>
-      {/* <div>
+      <div>
         <div className="space-x-1 float-right">
           {Object.values(AgentAnalyticsChartDuration).map((a) => (
             <Button
               key={a}
               size="sm"
               onClick={() => setChartDayFilter(a)}
-              variant={chartDayFilter === a ? "default" : "outline"}
+              variant={chartDayFilter === a ? "outline" : "ghost"}
             >
               {a}
             </Button>
           ))}
         </div>
-        {analyticsRaw && (
-          <AgentAnalyticsChart groupBy={chartDayFilter} data={analyticsRaw} />
+        {analytics?.data && (
+          <AgentAnalyticsChart
+            groupBy={chartDayFilter}
+            data={analytics?.data}
+          />
         )}
-      </div> */}
+      </div>
     </main>
   );
 }
