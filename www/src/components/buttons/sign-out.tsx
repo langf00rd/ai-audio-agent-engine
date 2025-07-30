@@ -6,6 +6,8 @@ export default function SignOutButton() {
   function clearBrowserData() {
     Cookies.remove(COOKIE_KEYS.token);
     Cookies.remove(COOKIE_KEYS.user);
+    Cookies.remove(COOKIE_KEYS.business);
+    Cookies.remove(COOKIE_KEYS.currentBusiness);
     window.location.reload();
   }
   return <Button onClick={clearBrowserData}>Sign out</Button>;

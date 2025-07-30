@@ -6,25 +6,32 @@ import { ErrorText, H1 } from "@/components/typography";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { ROUTES } from "@/lib/constants";
+import { COOKIE_KEYS, ROUTES } from "@/lib/constants";
 import { fetchAgents } from "@/lib/services/agent";
-import { AgentConfig, APIResponse } from "@/lib/types";
-import { isoToReadableDate } from "@/lib/utils";
+import { Agent, APIResponse, Business } from "@/lib/types";
+import { getCookie, isoToReadableDate } from "@/lib/utils";
 import { useQuery } from "@tanstack/react-query";
-import { Calendar, Globe, Landmark, Plus, Search } from "lucide-react";
+import { Calendar, Globe, Plus, Search } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 
 export default function AgentsPage() {
   const router = useRouter();
+  const businesses = getCookie<Business[]>(COOKIE_KEYS.business, {
+    parse: true,
+  });
+
+  const currentBusiness = getCookie<Business>(COOKIE_KEYS.currentBusiness, {
+    parse: true,
+  });
 
   const {
     data: agents,
     isFetching,
     error,
-  } = useQuery<APIResponse<AgentConfig[]>>({
-    queryKey: ["agents"],
-    queryFn: fetchAgents,
+  } = useQuery<APIResponse<Agent[]>>({
+    queryKey: ["agents", currentBusiness?.id],
+    queryFn: () => fetchAgents(`business_id=${currentBusiness?.id}`),
   });
 
   if (error) return <ErrorText>{error.message}</ErrorText>;
@@ -71,17 +78,11 @@ export default function AgentsPage() {
                     )}
                   </div>
                   <p className="opacity-70 capitalize">{agent.description}</p>
-                  <div className="flex items-center capitalize justify-start gap-6">
-                    <div className="flex items-center gap-1">
-                      <Landmark size={14} className="opacity-30" />
-                      <p className="opacity-70">{agent.business_name}</p>
-                    </div>
-                    <div className="flex items-center gap-1">
-                      <Calendar size={14} className="opacity-30" />
-                      <p className="opacity-70">
-                        {isoToReadableDate(agent.created_at)}
-                      </p>
-                    </div>
+                  <div className="flex items-center gap-1">
+                    <Calendar size={14} className="opacity-30" />
+                    <p className="opacity-70">
+                      {isoToReadableDate(agent.created_at)}
+                    </p>
                   </div>
                 </CardContent>
               </Card>

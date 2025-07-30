@@ -16,11 +16,12 @@ import {
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
 import { COOKIE_KEYS, ROUTES } from "@/lib/constants";
-import { User } from "@/lib/types";
+import { Business, User } from "@/lib/types";
 import { Bot, Settings, User2 } from "lucide-react";
 import { cookies } from "next/headers";
 import SignOutButton from "../buttons/sign-out";
 import { Logo } from "../logo";
+import WorkspaceSwitcher from "./workspace-switcher";
 
 const items = [
   {
@@ -39,10 +40,36 @@ export async function AppSidebar() {
   const userCookie = JSON.parse(
     (await cookies()).get(COOKIE_KEYS.user)?.value as unknown as string,
   ) as User;
+  const businesses = JSON.parse(
+    (await cookies()).get(COOKIE_KEYS.business)?.value as unknown as string,
+  ) as Business[];
   return (
     <Sidebar collapsible="icon" className="border-r border-neutral-100">
-      <SidebarHeader className="h-20 p-4 px-8 border-b border-neutral-100  bg-white flex items-start">
+      <SidebarHeader className="h-[120px] p-4 px-8 border-b border-neutral-100  bg-white flex items-start">
         <Logo />
+        <WorkspaceSwitcher />
+        {/* <SidebarMenu>
+          <SidebarMenuItem>
+            <DropdownMenu>
+              <DropdownMenuTrigger
+                asChild
+                className="border border-neutral-100 w-full"
+              >
+                <SidebarMenuButton>
+                  Select Workspace
+                  <ChevronDown className="ml-auto" />
+                </SidebarMenuButton>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent>
+                {businesses.map((a) => (
+                  <DropdownMenuItem key={a.id}>
+                    <span>{a.name}</span>
+                  </DropdownMenuItem>
+                ))}
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </SidebarMenuItem>
+        </SidebarMenu> */}
       </SidebarHeader>
       <SidebarContent className="bg-white px-4">
         <SidebarGroup>
@@ -80,7 +107,7 @@ export async function AppSidebar() {
                     <p className="capitalize">
                       {userCookie.first_name} {userCookie.last_name}
                     </p>
-                    <p className="opacity-50 -mt-1">My workspace</p>
+                    <p className="opacity-50 -mt-1">{businesses[0].name}</p>
                   </div>
                 </SidebarMenuButton>
               </DropdownMenuTrigger>

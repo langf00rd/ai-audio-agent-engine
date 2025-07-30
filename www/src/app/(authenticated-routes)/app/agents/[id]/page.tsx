@@ -24,24 +24,23 @@ import {
 } from "@/components/ui/dialog";
 import { Textarea } from "@/components/ui/textarea";
 import { ROUTES } from "@/lib/constants";
-import { fetchAgentAnalytics, fetchAgentById } from "@/lib/services/agent";
-import { fetchAgentSessionConversations } from "@/lib/services/conversations";
+import { fetchAgentById } from "@/lib/services/agent";
+import { fetchAgentAnalytics } from "@/lib/services/analytics";
+import { fetchAgentSessions } from "@/lib/services/sessions";
 import {
-  AgentAnalytics,
+  Agent,
   AgentAnalyticsChartDuration,
   AgentAnalyticsMetadata,
-  AgentConfig,
   Analytics,
   APIResponse,
-  SessionConversation,
+  Session,
 } from "@/lib/types";
-import { copyToClipboard, getTotalConversationDuration } from "@/lib/utils";
+import { copyToClipboard } from "@/lib/utils";
 import { useQuery } from "@tanstack/react-query";
 import { ChevronRight, Code, Copy, Globe, Play, Settings2 } from "lucide-react";
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import { toast } from "sonner";
 
 export default function AgentInfo() {
   const params = useParams();
@@ -49,76 +48,61 @@ export default function AgentInfo() {
   const [domain, setDomain] = useState<string | null>(null);
   const [chartDayFilter, setChartDayFilter] =
     useState<AgentAnalyticsChartDuration>(AgentAnalyticsChartDuration.DAY);
-  const [agent, setAgent] = useState<AgentConfig | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [analytics, setAnalytics] = useState<AgentAnalytics | null>(null);
-  const [analyticsRaw, setAnalyticsRaw] = useState<
-    Analytics<AgentAnalyticsMetadata>[] | null
-  >(null);
-
-  const { data: sessionConversations } = useQuery<
-    APIResponse<SessionConversation[]>
-  >({
-    queryKey: ["agent-session-conversations", params.id],
-    queryFn: () => fetchAgentSessionConversations(String(params.id)),
-    enabled: !!params.id,
-  });
-
-  useEffect(() => {
-    async function handleFetchAgent() {
-      try {
-        setLoading(true);
-        const { data } = await fetchAgentById(String(params.id));
-        setAgent(data);
-      } catch (err) {
-        toast((err as Error).message);
-      } finally {
-        setLoading(false);
-      }
-    }
-
-    async function handleFetchAgentAnalytics() {
-      try {
-        setLoading(true);
-        const { data } = await fetchAgentAnalytics(String(params.id));
-        setAnalyticsRaw(data);
-        const totalInvocations = data.length;
-        const days = data.map((d) =>
-          new Date(d.created_at).toLocaleString("en-US", {
-            weekday: "long",
-          }),
-        );
-        const dayCounts = days.reduce(
-          (acc, day) => {
-            acc[day] = (acc[day] || 0) + 1;
-            return acc;
-          },
-          {} as Record<string, number>,
-        );
-        const mostCommonDay = Object.entries(dayCounts).reduce(
-          (max, curr) => {
-            return curr[1] > max[1] ? curr : max;
-          },
-          ["", 0],
-        )[0];
-        setAnalytics({ totalInvocations, mostCommonDay });
-      } catch (err) {
-        toast((err as Error).message);
-      } finally {
-        setLoading(false);
-      }
-    }
-
-    handleFetchAgent();
-    handleFetchAgentAnalytics();
-    setDomain(window.location.origin);
-  }, [params.id]);
 
   const embedScript = `<script async src="${domain}/embed.js" data-agent-id="${params.id}" type="text/javascript"></script>`;
 
-  if (loading) return <Loader />;
+  const { data: sessions } = useQuery<APIResponse<Session[]>>({
+    queryKey: ["agent-session", params.id],
+    queryFn: () => fetchAgentSessions(String(params.id)),
+    enabled: !!params.id,
+  });
 
-  if (!loading && !agent)
+  const { data: analytics } = useQuery<
+    APIResponse<Analytics<AgentAnalyticsMetadata>[]>
+  >({
+    queryKey: ["agent-analytics", params.id],
+    queryFn: () => fetchAgentAnalytics(String(params.id)),
+    enabled: !!params.id,
+  });
+
+  const { data: agent, isFetching: isFetchingAgent } = useQuery<
+    APIResponse<Agent>
+  >({
+    queryKey: ["agent-agent", params.id],
+    queryFn: () => fetchAgentById(String(params.id)),
+    enabled: !!params.id,
+  });
+
+  function getAnalytics() {
+    const interactions = analytics?.data.length;
+    const days = analytics?.data.map((d) =>
+      new Date(d.created_at).toLocaleString("en-US", {
+        weekday: "long",
+      }),
+    );
+    const dayCounts = days?.reduce(
+      (acc, day) => {
+        acc[day] = (acc[day] || 0) + 1;
+        return acc;
+      },
+      {} as Record<string, number>,
+    );
+    const mostCommonDay = Object.entries(dayCounts || {}).reduce(
+      (max, curr) => {
+        return curr[1] > max[1] ? curr : max;
+      },
+      ["", 0],
+    )[0];
+    return { interactions, mostCommonDay };
+  }
+
+  useEffect(() => {
+    setDomain(window.location.origin);
+  }, [params.id]);
+
+  if (isFetchingAgent) return <Loader />;
+
+  if (!isFetchingAgent && !agent)
     return (
       <EmptyState
         title="No agent found"
@@ -130,11 +114,13 @@ export default function AgentInfo() {
 
   return (
     <main className="space-y-10">
-      <BreadCrumbs agentName={agent?.name || ""} />
+      <BreadCrumbs agentName={agent?.data.name || ""} />
       <div className="space-y-4">
         <h1 className="text-2xl font-semibold capitalize flex items-center gap-2">
-          <H1>{agent?.name}</H1>
-          {agent?.is_public && <Globe size={16} className="text-primary" />}
+          <H1>{agent?.data.name}</H1>
+          {agent?.data.is_public && (
+            <Globe size={16} className="text-primary" />
+          )}
         </h1>
         <div className="gap-2 flex items-center flex-wrap">
           <Link href={`${ROUTES.agent.index}/${params.id}/configure`}>
@@ -151,7 +137,7 @@ export default function AgentInfo() {
               </Button>
             </DialogTrigger>
             <DialogContent>
-              {agent?.is_public ? (
+              {agent?.data.is_public ? (
                 <>
                   <DialogHeader>
                     <DialogTitle>Embed this agent on your website</DialogTitle>
@@ -198,7 +184,7 @@ export default function AgentInfo() {
             </DialogContent>
           </Dialog>
           <Link
-            href={`${ROUTES.agent.index}/${params.id}/play?agent_name=${agent?.name}`}
+            href={`${ROUTES.agent.index}/${params.id}/play?agent_name=${agent?.data.name}`}
           >
             <Button>
               <Play />
@@ -209,21 +195,26 @@ export default function AgentInfo() {
       </div>
       <ul className="grid grid-cols-2 md:grid-cols-4 gap-2">
         <StatCard
-          title="Conversation Sessions"
-          value={Object.keys(sessionConversations?.data || {}).length}
+          title="Created Sessions"
+          value={Object.keys(sessions?.data || {}).length}
           route={`/app/agents/${params.id}/sessions`}
         />
-        <StatCard title="Total Calls" value={analytics?.totalInvocations} />
+        <StatCard
+          title="Total Interactions"
+          value={getAnalytics().interactions}
+        />
         <StatCard
           title="Highest traffic day"
-          value={analytics?.mostCommonDay}
+          value={getAnalytics().mostCommonDay}
         />
+        {/* <StatCard
+          title="Conversations duration"
+          value={getTotalConversationDuration(sessions?.data || [])}
+        /> */}
+        {/* */}
         {/* <StatCard title="General intent" value="Interested" /> */}
         {/* <StatCard title="Most inquired product/service" value="Interested" /> */}
-        <StatCard
-          title="Conversations duration"
-          value={getTotalConversationDuration(sessionConversations?.data || [])}
-        />
+        {/*  */}
         {/* <StatCard
           title="Most asked question"
           value="What is the lowest price of a purse?"
@@ -236,14 +227,17 @@ export default function AgentInfo() {
               key={a}
               size="sm"
               onClick={() => setChartDayFilter(a)}
-              variant={chartDayFilter === a ? "default" : "outline"}
+              variant={chartDayFilter === a ? "outline" : "ghost"}
             >
               {a}
             </Button>
           ))}
         </div>
-        {analyticsRaw && (
-          <AgentAnalyticsChart groupBy={chartDayFilter} data={analyticsRaw} />
+        {analytics?.data && (
+          <AgentAnalyticsChart
+            groupBy={chartDayFilter}
+            data={analytics?.data}
+          />
         )}
       </div>
     </main>
