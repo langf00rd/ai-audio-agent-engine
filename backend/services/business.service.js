@@ -34,3 +34,21 @@ export async function createBusinessService(payload) {
     };
   }
 }
+
+export async function getBusinessesService(payload) {
+  try {
+    const { user_id } = payload;
+    let query, values;
+    if (user_id) {
+      query = `SELECT * FROM businesses WHERE user_id = $1`;
+      values = [user_id];
+    }
+    const result = await pool.query(query, values);
+    return { data: result.rows, status: 200 };
+  } catch (err) {
+    return {
+      error: err.message,
+      status: 500,
+    };
+  }
+}

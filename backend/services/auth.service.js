@@ -1,6 +1,7 @@
 import { compare, hash } from "bcrypt";
 import jwt from "jsonwebtoken";
 import { pool } from "../config/pg.js";
+import { getBusinessesService } from "./business.service.js";
 
 export async function signUpService(payload) {
   try {
@@ -23,7 +24,6 @@ export async function signUpService(payload) {
 }
 
 export async function signInService(payload) {
-  console.log("sogning in", payload);
   try {
     const { data, status } = await getUserByEmail(payload.email);
     console.log("data, status", data, status);
@@ -39,10 +39,16 @@ export async function signInService(payload) {
       expiresIn: "7d",
     });
     delete data.password; // remove hashed password from response
+
+    const businesses = await getBusinessesService({ user_id: data.id });
+
+    if (businesses.error) return businesses;
+
     return {
       data: {
         ...data,
         token,
+        businesses: businesses.data,
       },
       status,
     };

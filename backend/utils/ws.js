@@ -1,20 +1,21 @@
+import { SynthesizeSpeechCommand } from "@aws-sdk/client-polly";
 import { streamText } from "ai";
 import { AssemblyAI } from "assemblyai";
 import dotenv from "dotenv";
 import ffmpeg from "fluent-ffmpeg";
 import { PassThrough, Readable } from "stream";
 import { chatModel } from "../config/ai.js";
-import { getAgentByIDService } from "../services/agent.service.js";
-import {
-  createConversationHistory,
-  getConversationHistory,
-} from "../services/ai.service.js";
-import { generateSystemPrompt, parseConversationSessionHistory } from "./ai.js";
-import { minifyJSONForLLM } from "./index.js";
 import { polly } from "../config/tts.js";
-import { SynthesizeSpeechCommand } from "@aws-sdk/client-polly";
-import { CONVERSATION_SYSTEM_PROMPT } from "./prompts.js";
+import { getAgentByIDService } from "../services/agent.service.js";
+import { trackAgentUsageService } from "../services/analytics.service.js";
+import {
+  createConversationService,
+  getConversationsService,
+} from "../services/conversation.service.js";
 import { createSessionService } from "../services/sessions.service.js";
+import { parseConversationSessionHistory } from "./ai.js";
+import { minifyJSONForLLM } from "./index.js";
+import { CONVERSATION_SYSTEM_PROMPT } from "./prompts.js";
 
 dotenv.config({ path: ".env" });
 
@@ -34,6 +35,14 @@ export async function handleWebSocketConnection(ws, agentId) {
       agent_id: agentId,
     });
     if (sessionResponse.error) throw new Error(sessionResponse.error);
+    const analyticsResponse = await trackAgentUsageService({
+      type: "AGENT_USAGE",
+      metadata: {
+        agent_id: agentId,
+        session_id: sessionId,
+      },
+    });
+    if (analyticsResponse.error) throw new Error(analyticsResponse.error);
     transcriberClient = transcriber;
     transcriberSessionId = sessionId;
   }
@@ -44,7 +53,6 @@ export async function handleWebSocketConnection(ws, agentId) {
         agent,
         transcriberSessionId,
       });
-
       transcriberClient.on("turn", async (turn) => {
         if (turn.end_of_turn) {
           try {
@@ -77,12 +85,12 @@ export async function handleWebSocketConnection(ws, agentId) {
                 audio: audioBuffer.toString("base64"),
               }),
             );
-            createConversationHistory(
-              transcriberSessionId,
-              agentId,
-              turn.transcript,
-              llmResponse,
-            );
+            createConversationService({
+              session_id: transcriberSessionId,
+              agent_id: agentId,
+              user_input: turn.transcript,
+              llm_response: llmResponse,
+            });
           } catch (err) {
             console.log("LLM ERR", err);
           }
@@ -129,7 +137,9 @@ async function handleGetAgent(agentId) {
 }
 
 async function handleGetConversationHistory(sessionId) {
-  const conversationHistory = await getConversationHistory(sessionId);
+  const conversationHistory = await getConversationsService({
+    session_id: sessionId,
+  });
   return conversationHistory
     ? parseConversationSessionHistory(conversationHistory.slice(-3))
     : [];

@@ -3,8 +3,7 @@ import {
   trackAgentUsageService,
 } from "../services/analytics.service.js";
 
-export async function analyticsController(req, res) {
-  console.log(req.query);
+export async function createAnalyticsController(req, res) {
   let response = { error: "pass a valid type", status: 500 };
   if (req.body.type === "AGENT_USAGE") {
     response = await trackAgentUsageService(req.body);
@@ -17,7 +16,7 @@ export async function analyticsController(req, res) {
 }
 
 export async function getAnalyticsController(req, res) {
-  let response = { error: "no agent id passed", status: 500 };
+  let response;
   if (req.query.agent_id) {
     response = await getAnalyticsByAgentId(req.query.agent_id);
   }
