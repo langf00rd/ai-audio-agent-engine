@@ -11,7 +11,6 @@ export async function createSessionService(payload) {
       status: 200,
     };
   } catch (error) {
-    console.error("create session", error);
     return {
       error: error.message,
       status: 500,
@@ -23,7 +22,8 @@ export async function updateSessionService(payload) {
   const { id, agent_id } = payload;
   const query = `
     UPDATE sessions
-    SET agent_id = $2
+    SET agent_id = $2,
+        end_dt = NOW()
     WHERE id = $1
     RETURNING *;
   `;
@@ -41,7 +41,6 @@ export async function updateSessionService(payload) {
       status: 200,
     };
   } catch (error) {
-    console.error("update session", error);
     return {
       error: error.message,
       status: 500,
@@ -50,11 +49,11 @@ export async function updateSessionService(payload) {
 }
 
 export async function getSessionsService(payload) {
-  const { session_id, agent_id } = payload;
+  const { id, agent_id } = payload;
   let query, values;
-  if (session_id) {
+  if (id) {
     query = `SELECT * FROM sessions WHERE id = $1 ORDER BY start_dt DESC;`;
-    values = [session_id];
+    values = [id];
   }
   if (agent_id) {
     query = `SELECT * FROM sessions WHERE agent_id = $1 ORDER BY start_dt DESC;`;
@@ -67,7 +66,6 @@ export async function getSessionsService(payload) {
       status: 200,
     };
   } catch (error) {
-    console.error("get sessions by agent_id", error);
     return {
       error: error.message,
       status: 500,

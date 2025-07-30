@@ -13,9 +13,10 @@ import {
   getConversationsService,
 } from "../services/conversation.service.js";
 import { createSessionService } from "../services/sessions.service.js";
-import { parseConversationSessionHistory } from "./ai.js";
-import { minifyJSONForLLM } from "./index.js";
+import { minifyJSONForLLM, parseConversationSessionHistory } from "./index.js";
 import { CONVERSATION_SYSTEM_PROMPT } from "./prompts.js";
+import { getBusinessesService } from "../services/business.service.js";
+import { MAX_CONVERSATION_CONTEXT } from "./constants.js";
 
 dotenv.config({ path: ".env" });
 
@@ -26,17 +27,23 @@ export async function handleWebSocketConnection(ws, agentId) {
   let agent;
   let transcriberClient;
   let transcriberSessionId;
+  let business;
 
   async function init() {
-    agent = minifyJSONForLLM(await handleGetAgent(agentId));
+    const _agent = await handleGetAgent(agentId);
+    agent = minifyJSONForLLM(_agent);
     const { transcriber, sessionId } = await initTranscriber();
+    const _business = await getBusinessesService({
+      id: _agent.business_id,
+    });
+    business = minifyJSONForLLM(_business.data);
     const sessionResponse = await createSessionService({
       id: sessionId,
       agent_id: agentId,
     });
     if (sessionResponse.error) throw new Error(sessionResponse.error);
     const analyticsResponse = await trackAgentUsageService({
-      type: "AGENT_USAGE",
+      event_type: "AGENT_USAGE",
       metadata: {
         agent_id: agentId,
         session_id: sessionId,
@@ -61,7 +68,7 @@ export async function handleWebSocketConnection(ws, agentId) {
             const result = streamText({
               model: chatModel,
               system: CONVERSATION_SYSTEM_PROMPT,
-              prompt: `conversation history: ${JSON.stringify(conversationHistory)}. role info: ${JSON.stringify(agent)}`,
+              prompt: `past conversations: ${JSON.stringify(conversationHistory)}. about business: ${JSON.stringify(business)}. about you: ${JSON.stringify(agent)}. customer message: ${turn.transcript}`,
             });
             let llmResponse = "";
             const reader = result.baseStream.getReader();
@@ -78,6 +85,12 @@ export async function handleWebSocketConnection(ws, agentId) {
               }
               if (done) break;
             }
+            createConversationService({
+              session_id: transcriberSessionId,
+              agent_id: agentId,
+              user_input: turn.transcript,
+              llm_response: llmResponse,
+            });
             const audioBuffer = await ttsService(llmResponse);
             ws.send(
               JSON.stringify({
@@ -85,12 +98,6 @@ export async function handleWebSocketConnection(ws, agentId) {
                 audio: audioBuffer.toString("base64"),
               }),
             );
-            createConversationService({
-              session_id: transcriberSessionId,
-              agent_id: agentId,
-              user_input: turn.transcript,
-              llm_response: llmResponse,
-            });
           } catch (err) {
             console.log("LLM ERR", err);
           }
@@ -140,9 +147,14 @@ async function handleGetConversationHistory(sessionId) {
   const conversationHistory = await getConversationsService({
     session_id: sessionId,
   });
-  return conversationHistory
-    ? parseConversationSessionHistory(conversationHistory.slice(-3))
-    : [];
+  if (conversationHistory.data.length < 1) return [];
+  if (conversationHistory.data.length <= MAX_CONVERSATION_CONTEXT) {
+    return parseConversationSessionHistory(conversationHistory.data);
+  } else {
+    return parseConversationSessionHistory(
+      conversationHistory.data.slice(-MAX_CONVERSATION_CONTEXT),
+    );
+  }
 }
 
 async function initTranscriber() {
@@ -176,7 +188,7 @@ async function ttsService(text) {
     }
     return Buffer.concat(chunks);
   } catch (err) {
-    console.error("Polly TTS error:", err);
+    console.error("polly tts error:", err);
     throw err;
   }
 }

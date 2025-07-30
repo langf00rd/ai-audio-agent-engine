@@ -5,7 +5,7 @@ import {
 
 export async function createAnalyticsController(req, res) {
   let response = { error: "pass a valid type", status: 500 };
-  if (req.body.type === "AGENT_USAGE") {
+  if (req.body.event_type === "AGENT_USAGE") {
     response = await trackAgentUsageService(req.body);
   }
   res.status(response.status).send({

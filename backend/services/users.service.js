@@ -21,7 +21,6 @@ export async function createUserService(payload) {
   const { email, password, first_name, last_name } = payload;
 
   const userExists = await checkUserWithEmailExists(email);
-  console.log("userExists", userExists);
   if (userExists.data.id) {
     return {
       status: 400,
@@ -38,7 +37,6 @@ export async function createUserService(payload) {
       status: 200,
     };
   } catch (error) {
-    console.error("create business", error);
     return {
       error: error.message,
       status: 500,

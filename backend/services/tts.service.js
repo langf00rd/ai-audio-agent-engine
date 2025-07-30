@@ -18,7 +18,6 @@ export async function ttsService(text, res) {
       AudioStream.pipe(res);
     } else res.status(404).json({ error: "no audio stream" });
   } catch (err) {
-    console.error("polly error:", err);
     res.status(500).json({ error: err.message });
   }
 }

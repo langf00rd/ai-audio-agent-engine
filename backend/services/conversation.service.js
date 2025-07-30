@@ -2,14 +2,16 @@ import { generateText } from "ai";
 import { chatModel } from "../config/ai.js";
 import { pool } from "../config/pg.js";
 import { CONVERSATION_TAGGING_SYSTEM_PROMPT } from "../utils/prompts.js";
+import { updateSessionService } from "./sessions.service.js";
 
 export async function createConversationService(payload) {
   const { session_id, agent_id, user_input, llm_response } = payload;
   try {
     const result = await pool.query(
-      `INSERT INTO conversations ( session_id,agent_id,user_input,llm_response) VALUES ($1,$2,$3,$4) RETURNING *;`,
+      `INSERT INTO conversations (session_id,agent_id,user_input,llm_response) VALUES ($1,$2,$3,$4) RETURNING *;`,
       [session_id, agent_id, user_input, llm_response],
     );
+    await updateSessionService({ id: session_id, agent_id });
     return { data: result.rows[0], status: 200 };
   } catch (err) {
     return { error: err.message, status: 500 };
@@ -21,7 +23,7 @@ export async function getConversationsService(queryParams) {
   try {
     let query, values;
     if (session_id) {
-      query = `SELECT * FROM conversations WHERE session_id = $1 ORDER BY created_at DESC`;
+      query = `SELECT * FROM conversations WHERE session_id = $1 ORDER BY created_at ASC`;
       values = [session_id];
     } else {
       query = `SELECT * FROM conversations ORDER BY created_at ASC`;
@@ -33,7 +35,6 @@ export async function getConversationsService(queryParams) {
       status: 200,
     };
   } catch (error) {
-    console.error("get conversations", error);
     return {
       error: error.message,
       status: 500,
@@ -96,7 +97,6 @@ export async function createAnalyzedConversationsService(payload) {
       status: 200,
     };
   } catch (error) {
-    console.error("create analyzed conversation", error);
     return {
       error: error.message,
       status: 500,
@@ -109,25 +109,22 @@ export async function analyzeConversationsService(sessionId) {
     const sessionConversations = await getConversationsService({
       session_id: sessionId,
     });
-
+    if (sessionConversations.error) return sessionConversations;
     if (sessionConversations.data.length < 1) {
       return {
         status: 404,
         error: "no conversations no analyze",
       };
     }
-
     const analyzedConversations = await getAnalyzedConversationsService({
       session_id: sessionId,
     });
-
-    if (analyzedConversations.data.length > 1) {
+    if (analyzedConversations.data?.length > 1) {
       return {
         status: 404,
         error: "conversation already analyzed",
       };
     }
-
     const formattedConversationHistory = sessionConversations.data.map((a) => {
       return {
         user: a.user_input,
@@ -135,31 +132,23 @@ export async function analyzeConversationsService(sessionId) {
         created_at: a.created_at,
       };
     });
-
     const result = await generateText({
       model: chatModel,
       system: CONVERSATION_TAGGING_SYSTEM_PROMPT,
       prompt: `conversations: ${JSON.stringify(formattedConversationHistory)}`,
     });
-
     const parsedResult = JSON.parse(result.text);
-
-    console.log("result", parsedResult);
-
     const response = await createAnalyzedConversationsService({
       ...parsedResult,
       session_id: sessionId,
     });
-
     if (response.error) return response;
-
     return {
       message: "conversation analyzed",
       data: parsedResult,
       status: 200,
     };
   } catch (error) {
-    console.error("get conversations", error);
     return {
       error: error.message,
       status: 500,

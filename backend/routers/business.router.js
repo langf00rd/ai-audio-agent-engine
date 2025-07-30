@@ -1,4 +1,8 @@
 import express from "express";
-import { createBusinessController } from "../controller/business.controller.js";
+import {
+  createBusinessController,
+  getBusinessController,
+} from "../controller/business.controller.js";
 export const businessRouter = express.Router();
 businessRouter.post("/", createBusinessController);
+businessRouter.get("/", getBusinessController);

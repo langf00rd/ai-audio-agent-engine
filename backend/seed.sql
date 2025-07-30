@@ -87,6 +87,8 @@ CREATE TABLE IF NOT EXISTS analytics (
 -- GRANT SELECT, INSERT, UPDATE, DELETE ON TABLE conversations TO <user>;
 -- GRANT SELECT, INSERT, UPDATE, DELETE ON TABLE analyzed_conversations TO <user>;
 -- GRANT USAGE, SELECT ON SEQUENCE businesses_id_seq TO <user>;
+-- GRANT USAGE, SELECT ON SEQUENCE users_id_seq TO <user>;
 -- GRANT USAGE, SELECT ON SEQUENCE agents_id_seq TO <user>;
 -- GRANT USAGE, SELECT ON SEQUENCE conversations_id_seq TO <user>;
 -- GRANT USAGE, SELECT ON SEQUENCE analyzed_conversations_id_seq TO <user>;
+-- GRANT USAGE, SELECT ON SEQUENCE analytics_id_seq TO <user>;

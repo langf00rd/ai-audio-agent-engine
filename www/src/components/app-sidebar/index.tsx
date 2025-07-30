@@ -17,10 +17,11 @@ import {
 } from "@/components/ui/sidebar";
 import { COOKIE_KEYS, ROUTES } from "@/lib/constants";
 import { Business, User } from "@/lib/types";
-import { Bot, ChevronDown, Settings, User2 } from "lucide-react";
+import { Bot, Settings, User2 } from "lucide-react";
 import { cookies } from "next/headers";
 import SignOutButton from "../buttons/sign-out";
 import { Logo } from "../logo";
+import WorkspaceSwitcher from "./workspace-switcher";
 
 const items = [
   {
@@ -44,9 +45,10 @@ export async function AppSidebar() {
   ) as Business[];
   return (
     <Sidebar collapsible="icon" className="border-r border-neutral-100">
-      <SidebarHeader className="h-[140px] p-4 px-8 border-b border-neutral-100  bg-white flex items-start">
+      <SidebarHeader className="h-[120px] p-4 px-8 border-b border-neutral-100  bg-white flex items-start">
         <Logo />
-        <SidebarMenu>
+        <WorkspaceSwitcher />
+        {/* <SidebarMenu>
           <SidebarMenuItem>
             <DropdownMenu>
               <DropdownMenuTrigger
@@ -67,7 +69,7 @@ export async function AppSidebar() {
               </DropdownMenuContent>
             </DropdownMenu>
           </SidebarMenuItem>
-        </SidebarMenu>
+        </SidebarMenu> */}
       </SidebarHeader>
       <SidebarContent className="bg-white px-4">
         <SidebarGroup>
@@ -105,7 +107,7 @@ export async function AppSidebar() {
                     <p className="capitalize">
                       {userCookie.first_name} {userCookie.last_name}
                     </p>
-                    <p className="opacity-50 -mt-1">My workspace</p>
+                    <p className="opacity-50 -mt-1">{businesses[0].name}</p>
                   </div>
                 </SidebarMenuButton>
               </DropdownMenuTrigger>

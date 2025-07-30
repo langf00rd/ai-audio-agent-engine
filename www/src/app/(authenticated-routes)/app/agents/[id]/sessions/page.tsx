@@ -15,8 +15,9 @@ import { Card, CardContent, CardTitle } from "@/components/ui/card";
 import { ROUTES } from "@/lib/constants";
 import { fetchAgentSessions } from "@/lib/services/sessions";
 import { APIResponse, Session } from "@/lib/types";
-import { isoToReadableDate } from "@/lib/utils";
+import { getDurationString, isoToReadableDate } from "@/lib/utils";
 import { useQuery } from "@tanstack/react-query";
+import { Hourglass } from "lucide-react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
 
@@ -42,9 +43,17 @@ export default function AgentConversations() {
             >
               <Card key={a.id} className="h-[120px]">
                 <CardContent className="flex flex-col justify-between h-full">
-                  <CardTitle className="font-normal">
-                  {index}  {isoToReadableDate(a.start_dt)}
+                  <CardTitle className="font-semibold text-md">
+                    {isoToReadableDate(a.start_dt)}
                   </CardTitle>
+                  {a.end_dt ? (
+                    <div className="flex items-center gap-1">
+                      <Hourglass size={12} />
+                      <p>{getDurationString(a.start_dt, a.end_dt)}</p>
+                    </div>
+                  ) : (
+                    <>0 secs</>
+                  )}
                   {/* <p className="font-medium line-clamp-2">
                     <span className="opacity-50">Customer</span>:{" "}
                     {a.messages[0].user}...{" "}

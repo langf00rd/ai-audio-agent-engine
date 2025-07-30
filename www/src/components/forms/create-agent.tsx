@@ -70,16 +70,19 @@ export default function CreateAgentForm(props: {
       return result;
     };
 
-    const business =
-      getCookie<Business[]>(COOKIE_KEYS.business, {
-        parse: true,
-      }) || [];
+    const business = getCookie<Business[]>(COOKIE_KEYS.business, {
+      parse: true,
+    });
+
+    const currentBusiness = getCookie<Business>(COOKIE_KEYS.currentBusiness, {
+      parse: true,
+    });
 
     const data = {
       name: form.get("name") as string,
       description: form.get("description") as string,
       custom_reactions: extractKV("custom_reactions"),
-      business_id: business[0].id,
+      business_id: currentBusiness?.id,
     } as Agent;
 
     if (props.data) handleCreateOrUpdateAgent("UPDATE", data);

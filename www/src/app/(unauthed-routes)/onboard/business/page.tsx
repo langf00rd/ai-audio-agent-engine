@@ -11,10 +11,13 @@ import { User } from "@/lib/types";
 import { getCookie } from "@/lib/utils";
 import { useMutation } from "@tanstack/react-query";
 import Cookie from "js-cookie";
+import { useSearchParams } from "next/navigation";
 import { FormEvent } from "react";
 import { toast } from "sonner";
 
 export default function CreateBusinessPage() {
+  const searchParams = useSearchParams();
+
   const mutation = useMutation({
     mutationFn: (payload: Record<string, unknown>) => {
       return createBusiness(payload);
@@ -22,7 +25,8 @@ export default function CreateBusinessPage() {
     onSuccess: (data) => {
       toast("business created");
       Cookie.set(COOKIE_KEYS.business, JSON.stringify([data.data]));
-      window.location.href = ROUTES.app.index;
+      Cookie.set(COOKIE_KEYS.currentBusiness, JSON.stringify(data.data));
+      window.location.href = searchParams.get("redirect") || ROUTES.app.index;
     },
     onError: (err) => {
       toast(err.message);

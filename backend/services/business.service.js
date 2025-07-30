@@ -27,7 +27,6 @@ export async function createBusinessService(payload) {
       status: 200,
     };
   } catch (error) {
-    console.error("create business", error);
     return {
       error: error.message,
       status: 500,
@@ -37,11 +36,15 @@ export async function createBusinessService(payload) {
 
 export async function getBusinessesService(payload) {
   try {
-    const { user_id } = payload;
+    const { user_id, id } = payload;
     let query, values;
     if (user_id) {
       query = `SELECT * FROM businesses WHERE user_id = $1`;
       values = [user_id];
+    }
+    if (id) {
+      query = `SELECT * FROM businesses WHERE id = $1`;
+      values = [id];
     }
     const result = await pool.query(query, values);
     return { data: result.rows, status: 200 };

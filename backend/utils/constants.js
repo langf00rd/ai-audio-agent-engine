@@ -38,3 +38,5 @@ export const conversationNextSteps = {
 export const QEUES = {
   conversationTagging: "conversation-tagging",
 };
+
+export const MAX_CONVERSATION_CONTEXT = 3;

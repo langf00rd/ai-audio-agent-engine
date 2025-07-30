@@ -84,7 +84,7 @@ export interface ConversationTag {
 
 // v2
 export interface Business {
-  id: number;
+  id: number | string;
   user_id: number;
   name: string;
   slogan: string;

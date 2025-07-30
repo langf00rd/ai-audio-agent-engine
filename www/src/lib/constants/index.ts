@@ -29,6 +29,7 @@ export enum COOKIE_KEYS {
   token = "token",
   user = "user",
   business = "business",
+  currentBusiness = "current_business",
 }
 export const AUDIO_INPUT_SILENCE_THRESHOLD_DURATION = 2000;
 export const DAYS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];

@@ -18,7 +18,6 @@ export async function signUpService(payload) {
       status: 200,
     };
   } catch (err) {
-    console.log(err);
     return { error: err.message, status: 500 };
   }
 }
@@ -26,7 +25,6 @@ export async function signUpService(payload) {
 export async function signInService(payload) {
   try {
     const { data, status } = await getUserByEmail(payload.email);
-    console.log("data, status", data, status);
     if (!data) return { error: "wrong credentials", status: 401 };
     const isMatch = await compare(payload.password, data.password);
     if (!isMatch) {

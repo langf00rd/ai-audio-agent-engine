@@ -1,7 +1,6 @@
 import { pool } from "../config/pg.js";
 
 export async function createAgentService(userId, payload) {
-  console.log("createAgentService", userId, payload);
   const { name, description, custom_reactions, business_id } = payload;
   // TODO:check if business with id exists
   const query = `INSERT INTO agents (name,description,custom_reactions,business_id) VALUES ($1,$2,$3,$4) RETURNING *;`;
@@ -13,7 +12,6 @@ export async function createAgentService(userId, payload) {
       status: 200,
     };
   } catch (error) {
-    console.error("create agent", error);
     return {
       error: error.message,
       status: 500,
@@ -48,7 +46,6 @@ export async function updateAgentService(agentId, payload) {
       status: 200,
     };
   } catch (error) {
-    console.log(error);
     return {
       error: error.message,
       status: 500,
@@ -64,7 +61,6 @@ export async function getAgentsService({ businessId }) {
     );
     return { data: result.rows, status: 200 };
   } catch (error) {
-    console.error(`Error fetching agents for user:`, error);
     return {
       error: error.message,
       status: 500,
