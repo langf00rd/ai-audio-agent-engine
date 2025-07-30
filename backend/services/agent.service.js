@@ -64,7 +64,7 @@ export async function getAgentsService({ businessId }) {
     );
     return { data: result.rows, status: 200 };
   } catch (error) {
-    console.error(`Error fetching agents for user ${userId}:`, error);
+    console.error(`Error fetching agents for user:`, error);
     return {
       error: error.message,
       status: 500,

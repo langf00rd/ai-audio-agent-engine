@@ -23,6 +23,7 @@ import { businessRouter } from "./routers/business.router.js";
 import { usersRouter } from "./routers/users.router.js";
 import { handleWebSocketConnection } from "./utils/ws.js";
 import { sessionsRouter } from "./routers/sessions.router.js";
+import { conversationsRouter } from "./routers/conversations.router.js";
 
 const PORT = 8000;
 const app = express();
@@ -63,14 +64,16 @@ app.use("/api/users", usersRouter);
 app.use("/api/auth", authRouter);
 app.use("/api/agents", agentsRouter);
 app.use("/api/sessions", sessionsRouter);
+app.use("/api/conversations", conversationsRouter);
 
 app.get("/", (_, res) => res.send(`SERVER IS UP`));
 
 router.post("/utils/tts", ttsController);
 router.post("/analytics", analyticsController);
 router.get("/analytics", getAnalyticsController);
-router.get("/conversations", getConversationsController);
-router.post("/conversations/tagging/:sessionId", createConvoTaggingController);
-router.get("/conversations/tagging/:sessionId", getConvoTaggingController);
+
+// router.get("/conversations", getConversationsController);
+// router.post("/conversations/tagging/:sessionId", createConvoTaggingController);
+// router.get("/conversations/tagging/:sessionId", getConvoTaggingController);
 
 server.listen(PORT, () => console.log(`API RUNNING ON ${PORT}`));

@@ -29,7 +29,10 @@ export async function handleWebSocketConnection(ws, agentId) {
   async function init() {
     agent = minifyJSONForLLM(await handleGetAgent(agentId));
     const { transcriber, sessionId } = await initTranscriber();
-    const sessionResponse = await createSessionService({ agentId, sessionId });
+    const sessionResponse = await createSessionService({
+      id: sessionId,
+      agent_id: agentId,
+    });
     if (sessionResponse.error) throw new Error(sessionResponse.error);
     transcriberClient = transcriber;
     transcriberSessionId = sessionId;
@@ -47,7 +50,6 @@ export async function handleWebSocketConnection(ws, agentId) {
           try {
             const conversationHistory =
               await handleGetConversationHistory(transcriberSessionId);
-            console.log("conversationHistory", conversationHistory);
             const result = streamText({
               model: chatModel,
               system: CONVERSATION_SYSTEM_PROMPT,

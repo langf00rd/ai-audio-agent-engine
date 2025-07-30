@@ -47,7 +47,7 @@ CREATE TABLE IF NOT EXISTS sessions (
 );
 
 -- CONVERSATION HISTORY (raw messages in JSONB, grouped per session)
-CREATE TABLE IF NOT EXISTS conversation_history (
+CREATE TABLE IF NOT EXISTS conversations (
   id BIGSERIAL PRIMARY KEY,
   session_id UUID NOT NULL REFERENCES sessions(id) ON DELETE CASCADE,
   agent_id BIGINT REFERENCES agents(id) ON DELETE SET NULL,
@@ -58,7 +58,7 @@ CREATE TABLE IF NOT EXISTS conversation_history (
 );
 
 -- SUMMARIZED CONVERSATIONS (agent-generated insights)
-CREATE TABLE IF NOT EXISTS summarized_conversations (
+CREATE TABLE IF NOT EXISTS analyzed_conversations (
   id BIGSERIAL PRIMARY KEY,
   session_id UUID NOT NULL REFERENCES sessions(id) ON DELETE CASCADE,
   summary TEXT,
@@ -79,13 +79,14 @@ CREATE TABLE IF NOT EXISTS analytics (
   created_at TIMESTAMPTZ DEFAULT NOW()
 );
 
+-- GRANT SELECT, INSERT, UPDATE, DELETE ON TABLE users TO <user>;
 -- GRANT SELECT, INSERT, UPDATE, DELETE ON TABLE businesses TO <user>;
 -- GRANT SELECT, INSERT, UPDATE, DELETE ON TABLE agents TO <user>;
 -- GRANT SELECT, INSERT, UPDATE, DELETE ON TABLE analytics TO <user>;
 -- GRANT SELECT, INSERT, UPDATE, DELETE ON TABLE sessions TO <user>;
--- GRANT SELECT, INSERT, UPDATE, DELETE ON TABLE conversation_history TO <user>;
--- GRANT SELECT, INSERT, UPDATE, DELETE ON TABLE summarized_conversations TO <user>;
--- GRANT SELECT, INSERT, UPDATE, DELETE ON TABLE users TO <user>;
+-- GRANT SELECT, INSERT, UPDATE, DELETE ON TABLE conversations TO <user>;
+-- GRANT SELECT, INSERT, UPDATE, DELETE ON TABLE analyzed_conversations TO <user>;
 -- GRANT USAGE, SELECT ON SEQUENCE businesses_id_seq TO <user>;
 -- GRANT USAGE, SELECT ON SEQUENCE agents_id_seq TO <user>;
--- GRANT USAGE, SELECT ON SEQUENCE conversation_history_id_seq TO <user>;
+-- GRANT USAGE, SELECT ON SEQUENCE conversations_id_seq TO <user>;
+-- GRANT USAGE, SELECT ON SEQUENCE analyzed_conversations_id_seq TO <user>;
