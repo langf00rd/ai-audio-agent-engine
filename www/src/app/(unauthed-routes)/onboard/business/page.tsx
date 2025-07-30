@@ -16,7 +16,7 @@ import { toast } from "sonner";
 
 export default function CreateBusinessPage() {
   const mutation = useMutation({
-    mutationFn: (payload: Record<string, any>) => {
+    mutationFn: (payload: Record<string, unknown>) => {
       return createBusiness(payload);
     },
     onSuccess: (data) => {
@@ -26,7 +26,7 @@ export default function CreateBusinessPage() {
       window.location.href = ROUTES.app.index;
     },
     onError: (err) => {
-      toast(err);
+      toast(err.message);
     },
   });
 
@@ -48,7 +48,7 @@ export default function CreateBusinessPage() {
   return (
     <div className="space-y-8">
       <div className="space-y-1">
-        <H1 className="text-center">Let's setup your business</H1>
+        <H1 className="text-center">Let&apos;s setup your business</H1>
         <p className="text-center opacity-70">
           Your agents will also need this information to know how to communicate
           with your customers

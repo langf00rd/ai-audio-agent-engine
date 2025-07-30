@@ -1,30 +1,47 @@
 import { API_BASE_URL } from "../constants";
-import { APIResponse, ConversationTag, SessionConversation } from "../types";
+import {
+  AnalyzedConversation,
+  APIResponse,
+  Conversation,
+  ConversationTag,
+} from "../types";
 
-export async function fetchAgentSessionConversations(agentId: string | number) {
-    const response = await fetch(
-        `${API_BASE_URL}/conversations?agent_id=${agentId}&order_by=session`,
-    );
-    const result = await response.json();
-    if (result.error) throw new Error(result.error);
-    return result as APIResponse<SessionConversation[]>;
+export async function fetchSessionConversations(sessionId: string | number) {
+  const response = await fetch(
+    `${API_BASE_URL}/conversations?session_id=${sessionId}`,
+  );
+  const result = await response.json();
+  if (result.error) throw new Error(result.error);
+  return result as APIResponse<Conversation[]>;
 }
 
-export async function fetchAgentTaggedConversations(sessionId: string) {
-    const response = await fetch(
-        `${API_BASE_URL}/conversations/tagging/${sessionId}`,
-    );
-    const result = await response.json();
-    if (result.error) throw new Error(result.error);
-    return result as APIResponse<ConversationTag>;
+export async function fetchAnalyzedConversation(sessionId: string) {
+  const response = await fetch(
+    `${API_BASE_URL}/conversations/analyze/${sessionId}`,
+  );
+  const result = await response.json();
+  if (result.error) throw new Error(result.error);
+  return result as APIResponse<AnalyzedConversation>;
+}
+
+export async function analyzeConversation(sessionId: string) {
+  const response = await fetch(
+    `${API_BASE_URL}/conversations/analyze/${sessionId}`,
+    {
+      method: "POST",
+    },
+  );
+  const result = await response.json();
+  if (result.error) throw new Error(result.error);
+  return result as APIResponse<AnalyzedConversation>;
 }
 
 export async function taggedConversation(sessionId: string) {
-    const response = await fetch(
-        `${API_BASE_URL}/conversations/tagging/${sessionId}`,
-        { method: "POST" },
-    );
-    const result = await response.json();
-    if (result.error) throw new Error(result.error);
-    return result as APIResponse<ConversationTag>;
+  const response = await fetch(
+    `${API_BASE_URL}/conversations/tagging/${sessionId}`,
+    { method: "POST" },
+  );
+  const result = await response.json();
+  if (result.error) throw new Error(result.error);
+  return result as APIResponse<ConversationTag>;
 }

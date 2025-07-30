@@ -32,7 +32,7 @@ export async function fetchAgentAnalytics(agentId: string | number) {
   return result as APIResponse<Analytics<AgentAnalyticsMetadata>[]>;
 }
 
-export async function createAgent(data: Record<string, any>) {
+export async function createAgent(data: Record<string, unknown> | Agent) {
   const response = await fetch(`${API_BASE_URL}/agents`, {
     method: "POST",
     headers: {

@@ -5,7 +5,7 @@ import { createAgent, updateAgent } from "../agent";
 
 export function useAgents() {
   const createAgentMutation = useMutation({
-    mutationFn: (payload: Record<string, any>) => {
+    mutationFn: (payload: Record<string, unknown> | Agent) => {
       return createAgent(payload);
     },
     onError: (err) => {
@@ -17,7 +17,7 @@ export function useAgents() {
     mutationFn: (payload: Agent) => {
       return updateAgent(payload);
     },
-    onSuccess: (data) => {
+    onSuccess: () => {
       toast("agent created");
     },
     onError: (err) => {

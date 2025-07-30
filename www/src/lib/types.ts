@@ -30,22 +30,6 @@ export interface AgentAnalytics {
   mostCommonDay: string;
 }
 
-export interface AgentConfig {
-  id: number;
-  name: string;
-  description: string;
-  business_name: string;
-  business_slogan: string;
-  brand_voice: string;
-  support_contact: Record<string, string>;
-  custom_interactions: Record<string, string>;
-  service: AgentService[];
-  faqs: AgentFAQ[];
-  other_info?: string;
-  is_public: boolean;
-  created_at: Date;
-}
-
 export interface AgentService {
   name: string;
   description: string;
@@ -71,15 +55,6 @@ export interface KV {
 export enum AgentAnalyticsChartDuration {
   DAY = "day",
   MONTH = "month",
-}
-
-export interface Conversation {
-  id: number;
-  session_id: string;
-  agent_id: string;
-  user: string;
-  llm: string;
-  created_at: Date;
 }
 
 export interface SessionConversation {
@@ -130,4 +105,39 @@ export interface Agent {
   is_public?: boolean;
   created_at: Date;
   updated_at?: Date;
+}
+
+export interface Session {
+  id: string;
+  agent_id: number | string;
+  start_dt: Date;
+  end_dt: Date | null;
+}
+
+export interface Conversation {
+  id: string | number;
+  session_id: string;
+  agent_id: string | number;
+  user_input: string;
+  llm_response: string;
+  is_analyzed: boolean;
+  created_at: Date;
+}
+
+export interface AnalyzedConversation {
+  id: string | number;
+  session_id: string | null;
+  summary: string | null;
+  intent: string | null;
+  lead_quality: string | null;
+  next_step: string | null;
+  confidence: number | null;
+  metadata: Record<string, unknown>;
+  customer: {
+    name: string | null;
+    email: string | null;
+    phone: string | null;
+    location: string | null;
+  } | null;
+  created_at: Date;
 }

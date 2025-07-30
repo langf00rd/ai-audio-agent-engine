@@ -1,6 +1,6 @@
 import { cn } from "@/lib/utils";
 import { CircleAlert } from "lucide-react";
-import { PropsWithChildren } from "react";
+import { PropsWithChildren, ReactNode } from "react";
 
 export function ErrorText(props: PropsWithChildren) {
   return (
@@ -11,7 +11,7 @@ export function ErrorText(props: PropsWithChildren) {
   );
 }
 
-export function H1(props: { children: string; className?: string }) {
+export function H1(props: { children: ReactNode; className?: string }) {
   return (
     <h1
       className={cn(

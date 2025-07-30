@@ -16,7 +16,7 @@ import { Switch } from "@/components/ui/switch";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ROUTES } from "@/lib/constants";
 import { fetchAgentById, updateAgent } from "@/lib/services/agent";
-import { AgentConfig } from "@/lib/types";
+import { Agent } from "@/lib/types";
 import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
@@ -26,13 +26,13 @@ const tabs = ["General", "Sharing & Embedding", "Knowledge base"];
 export default function ConfigureAgent() {
   const params = useParams();
   const [loading, setLoading] = useState(true);
-  const [agent, setAgent] = useState<AgentConfig | null>(null);
+  const [agent, setAgent] = useState<Agent | null>(null);
 
   async function handleUpdateAgent() {
     if (!agent) return toast("no agent to update");
     try {
       setLoading(true);
-      await updateAgent(agent as AgentConfig);
+      await updateAgent(agent);
       toast("agent updated");
     } catch (err) {
       toast((err as Error).message);

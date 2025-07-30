@@ -1,7 +1,7 @@
 import { API_BASE_URL } from "../constants";
 import { APIResponse, Business } from "../types";
 
-export async function createBusiness(payload: Record<string, any>) {
+export async function createBusiness(payload: Record<string, unknown>) {
   const response = await fetch(`${API_BASE_URL}/businesses`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },

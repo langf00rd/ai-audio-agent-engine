@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { useWebSocket } from "@/hooks/use-web-socket";
 import { WEB_SOCKET_URL } from "@/lib/constants";
 import { fetchAgentById } from "@/lib/services/agent";
-import { AgentConfig } from "@/lib/types";
+import { Agent } from "@/lib/types";
 import { MicIcon, PhoneIcon, PhoneOffIcon } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
@@ -12,7 +12,7 @@ import EmptyState from "./empty-state";
 import { ErrorText } from "./typography";
 
 export default function AgentChat(props: { isEmbed?: boolean; id: string }) {
-  const [agent, setAgent] = useState<AgentConfig | null>(null);
+  const [agent, setAgent] = useState<Agent | null>(null);
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const silenceTimerRef = useRef<NodeJS.Timeout | null>(null);
   const [isListening, setIsListening] = useState(false);
