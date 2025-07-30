@@ -165,7 +165,7 @@
 
 body {
     font-family: var(--font-default-sans);
-    background-color: #fefdf6;
+    background-color: #fcfcfc;
     color: var(--primary);
 }
 
@@ -173,4 +173,11 @@ body {
     font-family: var(--font-heading-bold-sans);
     color: var(--primary);
     @apply tracking-tighter;
+}
+
+form {
+    @apply space-y-[30px];
+    fieldset {
+        @apply space-y-[2px];
+    }
 }

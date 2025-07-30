@@ -51,6 +51,7 @@ export function useWebSocket(props: {
       webSocketRef.current?.close();
       props.onConnectionClose?.();
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return { webSocketRef, connected, isConnecting, connect };

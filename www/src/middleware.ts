@@ -9,8 +9,14 @@ export async function middleware(request: NextRequest) {
   const isHomePagePath = fromPath === "/";
   if (!isHomePagePath) {
     const authCookie = (await cookies()).get(COOKIE_KEYS.token)?.value;
+    const businesses = (await cookies()).get(COOKIE_KEYS.business);
     if (!authCookie) {
       const redirectTo = new URL(ROUTES.auth.signIn, request.url);
+      redirectTo.searchParams.set("redirect", fromPath);
+      return NextResponse.redirect(redirectTo);
+    }
+    if (!businesses) {
+      const redirectTo = new URL(ROUTES.onboard.business, request.url);
       redirectTo.searchParams.set("redirect", fromPath);
       return NextResponse.redirect(redirectTo);
     }
@@ -20,6 +26,6 @@ export async function middleware(request: NextRequest) {
 
 export const config = {
   matcher: [
-    "/((?!api|_next/static|demo.html|auth/sign-in|embed|auth/sign-up|_next/image|favicon.ico).*)",
+    "/((?!api|_next/static|demo.html|onboard/*|auth/*|embed|_next/image|favicon.ico).*)",
   ],
 };

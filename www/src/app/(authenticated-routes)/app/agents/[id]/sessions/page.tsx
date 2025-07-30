@@ -11,23 +11,21 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
-import { Card, CardContent } from "@/components/ui/card";
+import { Card, CardContent, CardTitle } from "@/components/ui/card";
 import { ROUTES } from "@/lib/constants";
-import { fetchAgentSessionConversations } from "@/lib/services/conversations";
-import { APIResponse, SessionConversation } from "@/lib/types";
+import { fetchAgentSessions } from "@/lib/services/sessions";
+import { APIResponse, Session } from "@/lib/types";
 import { getDurationString, isoToReadableDate } from "@/lib/utils";
 import { useQuery } from "@tanstack/react-query";
-import { Calendar, Hourglass } from "lucide-react";
+import { Hourglass } from "lucide-react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
 
 export default function AgentConversations() {
   const { id } = useParams();
-  const { data: sessionConversations, isFetching } = useQuery<
-    APIResponse<SessionConversation[]>
-  >({
-    queryKey: ["agent-session-conversations", id],
-    queryFn: () => fetchAgentSessionConversations(String(id)),
+  const { data: sessions, isFetching } = useQuery<APIResponse<Session[]>>({
+    queryKey: ["agent-sessions", id],
+    queryFn: () => fetchAgentSessions(String(id)),
     enabled: !!id,
   });
   return (
@@ -38,21 +36,31 @@ export default function AgentConversations() {
         <Loader />
       ) : (
         <div className="gap-3 grid md:grid-cols-2">
-          {sessionConversations?.data.map((a, index) => (
+          {sessions?.data.map((a, index) => (
             <Link
               key={index}
-              href={`${ROUTES.agent.index}/${id}/sessions/${a.session_id}`}
+              href={`${ROUTES.agent.index}/${id}/sessions/${a.id}`}
             >
-              <Card key={a.session_id} className="h-[120px]">
+              <Card key={a.id} className="h-[120px]">
                 <CardContent className="flex flex-col justify-between h-full">
-                  <p className="font-medium line-clamp-2">
+                  <CardTitle className="font-semibold text-md">
+                    {isoToReadableDate(a.start_dt)}
+                  </CardTitle>
+                  {a.end_dt ? (
+                    <div className="flex items-center gap-1">
+                      <Hourglass size={12} />
+                      <p>{getDurationString(a.start_dt, a.end_dt)}</p>
+                    </div>
+                  ) : (
+                    <>0 secs</>
+                  )}
+                  {/* <p className="font-medium line-clamp-2">
                     <span className="opacity-50">Customer</span>:{" "}
                     {a.messages[0].user}...{" "}
                     <span className="text-neutral-400">Agent</span>:{" "}
                     {a.messages[0].llm}
-                  </p>
-                  <div className="flex items-center gap-6 text-neutral-400 text-sm">
-                    <p> {a.messages.length} Messages</p>
+                  </p> */}
+                  {/* <div className="flex items-center gap-6 text-neutral-400 text-sm">
                     <div className="flex items-center gap-1">
                       <Calendar size={12} />
                       <p>{isoToReadableDate(a.start_dt)}</p>
@@ -61,14 +69,14 @@ export default function AgentConversations() {
                       <Hourglass size={12} />
                       <p>{getDurationString(a.start_dt, a.end_dt)}</p>
                     </div>
-                  </div>
+                  </div> */}
                 </CardContent>
               </Card>
             </Link>
           ))}
         </div>
       )}
-      {Number(sessionConversations?.data.length) < 1 && (
+      {Number(sessions?.data.length) < 1 && (
         <EmptyState title="No conversations found" />
       )}
     </div>

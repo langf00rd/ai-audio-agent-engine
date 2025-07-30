@@ -14,6 +14,9 @@ export const ROUTES = {
     index: "/app/agents",
     create: "/app/agents/create",
   },
+  onboard: {
+    business: "/onboard/business",
+  },
   auth: {
     signIn: "/auth/sign-in",
     signUp: "/auth/sign-up",
@@ -22,10 +25,12 @@ export const ROUTES = {
   blog: "#",
   contact: "#",
 };
-export const COOKIE_KEYS = {
-  token: "tk",
-  user: "user",
-};
+export enum COOKIE_KEYS {
+  token = "token",
+  user = "user",
+  business = "business",
+  currentBusiness = "current_business",
+}
 export const AUDIO_INPUT_SILENCE_THRESHOLD_DURATION = 2000;
 export const DAYS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
 export const MONTHS = [

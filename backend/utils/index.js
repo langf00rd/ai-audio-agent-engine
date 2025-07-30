@@ -48,3 +48,14 @@ export function minifyJSONForLLM(obj) {
   );
   return JSON.stringify(clean);
 }
+
+/**
+ * parses conversation session history to a format consumeable by llm
+ * @param {{llm_response:string,user_input:string}[]} history - conversation session history array
+ * @returns formatted conversation history for llm
+ */
+export function parseConversationSessionHistory(history = []) {
+  return history.map((a) => {
+    return { llm: a.llm_response, user: a.user_input };
+  });
+}

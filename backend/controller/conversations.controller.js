@@ -1,31 +1,30 @@
 import {
-    getTaggedConversationService,
-    taggingService,
-} from "../services/ai.service.js";
-import { getConversationsService } from "../services/conversations.service.js";
-import { groupConversationsBySession } from "../utils/index.js";
+  analyzeConversationsService,
+  createConversationService,
+  getAnalyzedConversationsService,
+  getConversationsService,
+} from "../services/conversation.service.js";
+
+export async function createConversationController(req, res) {
+  const { data, error, status } = await createConversationService(req.body);
+  res.status(status).send({ data, error });
+}
 
 export async function getConversationsController(req, res) {
-    let response;
-    const { agent_id, order_by } = req.query;
-    if (agent_id) response = await getConversationsService({ agent_id });
-    if (order_by === "session") {
-        response.data = groupConversationsBySession(response.data || []);
-    }
-    res.status(response.status).send({
-        data: response.data,
-        error: response.error,
-    });
+  const { data, error, status } = await getConversationsService(req.query);
+  res.status(status).send({ data, error });
 }
 
-export async function createConvoTaggingController(req, res) {
-    const { data, error, status } = await taggingService(req.params.sessionId);
-    res.status(status).send({ data, error });
+export async function analyzeConversationsController(req, res) {
+  const { data, error, status } = await analyzeConversationsService(
+    req.params.sessionId,
+  );
+  res.status(status).send({ data, error });
 }
 
-export async function getConvoTaggingController(req, res) {
-    const { data, error, status } = await getTaggedConversationService(
-        req.params.sessionId,
-    );
-    res.status(status).send({ data, error });
+export async function getAnalyzedConversationsController(req, res) {
+  const { data, error, status } = await getAnalyzedConversationsService({
+    session_id: req.params.sessionId,
+  });
+  res.status(status).send({ data, error });
 }

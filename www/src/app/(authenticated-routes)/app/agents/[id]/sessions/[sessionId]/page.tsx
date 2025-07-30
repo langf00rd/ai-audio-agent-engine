@@ -6,24 +6,22 @@ import Loader from "@/components/loader";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
-  fetchAgentSessionConversations,
-  fetchAgentTaggedConversations,
-  taggedConversation,
+  fetchAnalyzedConversation,
+  fetchSessionConversations,
 } from "@/lib/services/conversations";
-import { APIResponse, ConversationTag, SessionConversation } from "@/lib/types";
+import { useConversation } from "@/lib/services/mutations/conversation";
+import { AnalyzedConversation, APIResponse, Conversation } from "@/lib/types";
 import { useQuery } from "@tanstack/react-query";
 import { useParams } from "next/navigation";
-import { useState } from "react";
-import { toast } from "sonner";
 
 export default function SessionDetailsPage() {
   const { id, sessionId } = useParams();
-  const { data: sessionConversations, isFetching } = useQuery<
-    APIResponse<SessionConversation[]>
+  const { data: conversations, isFetching } = useQuery<
+    APIResponse<Conversation[]>
   >({
-    queryKey: ["agent-session-conversations", id],
-    queryFn: () => fetchAgentSessionConversations(String(id)),
-    enabled: !!id,
+    queryKey: ["agent-conversations", sessionId],
+    queryFn: () => fetchSessionConversations(String(sessionId)),
+    enabled: !!sessionId,
   });
   return (
     <div className="space-y-8">
@@ -42,20 +40,20 @@ export default function SessionDetailsPage() {
             </TabsList>
             <TabsContent value="Conversation">
               <ul className="space-y-10">
-                {sessionConversations?.data
-                  .find((a) => a.session_id === sessionId)
-                  ?.messages.map((a) => (
-                    <li key={a.id} className="space-y-4">
-                      <div>
-                        {a.user && <p className="text-neutral-500">User</p>}
-                        <p className="text-xl leading-[1.6]">{a.user}</p>
-                      </div>
-                      <div>
-                        {a.llm && <p className="text-neutral-500">Agent</p>}
-                        <p className="text-xl leading-[1.6]">{a.llm}</p>
-                      </div>
-                    </li>
-                  ))}
+                {conversations?.data.map((a) => (
+                  <li key={a.id} className="space-y-4">
+                    <div>
+                      {a.user_input && <p className="text-neutral-500">User</p>}
+                      <p className="text-xl leading-[1.6]">{a.user_input}</p>
+                    </div>
+                    <div>
+                      {a.llm_response && (
+                        <p className="text-neutral-500">Agent</p>
+                      )}
+                      <p className="text-xl leading-[1.6]">{a.llm_response}</p>
+                    </div>
+                  </li>
+                ))}
               </ul>
             </TabsContent>
             <TabsContent value="Analytics">
@@ -69,25 +67,28 @@ export default function SessionDetailsPage() {
 }
 
 function ConversationAnalytics(props: { sessionId: string }) {
-  const [isLoading, setIsLoading] = useState(false);
+  const { analyzeConversationMutation } = useConversation();
 
-  const { data, isFetching, error } = useQuery<APIResponse<ConversationTag>>({
-    queryKey: ["agent-session-tag", props.sessionId],
-    queryFn: () => fetchAgentTaggedConversations(String(props.sessionId)),
+  const { data, isFetching, error } = useQuery<
+    APIResponse<AnalyzedConversation>
+  >({
+    queryKey: ["analyzed-conversation", props.sessionId],
+    queryFn: () => fetchAnalyzedConversation(String(props.sessionId)),
     enabled: !!props.sessionId,
   });
 
-  async function handleTagConversation() {
-    try {
-      setIsLoading(true);
-      await taggedConversation(props.sessionId);
-      window.location.reload();
-    } catch (err) {
-      toast((err as Error).message);
-    } finally {
-      setIsLoading(false);
-    }
-  }
+  // const [isLoading, setIsLoading] = useState(false);
+  // async function handleTagConversation() {
+  //   try {
+  //     setIsLoading(true);
+  //     await analyzeConversation(props.sessionId);
+  //     window.location.reload();
+  //   } catch (err) {
+  //     toast((err as Error).message);
+  //   } finally {
+  //     setIsLoading(false);
+  //   }
+  // }
 
   if (isFetching) return <Loader />;
 
@@ -95,9 +96,15 @@ function ConversationAnalytics(props: { sessionId: string }) {
     return (
       <EmptyState
         title="Huh, this conversation has not been analyzed yet"
-        onActionButtonClick={handleTagConversation}
-        isActionButtonDisabled={isLoading}
-        actionButtonLabel={isLoading ? "Generating..." : "Analyze conversation"}
+        isActionButtonDisabled={analyzeConversationMutation.isPending}
+        actionButtonLabel={
+          analyzeConversationMutation.isPending
+            ? "Analyzing..."
+            : "Analyze conversation"
+        }
+        onActionButtonClick={() =>
+          analyzeConversationMutation.mutate(props.sessionId)
+        }
       />
     );
   }
@@ -108,19 +115,19 @@ function ConversationAnalytics(props: { sessionId: string }) {
         <h2 className="font-medium text-md">Customer</h2>
         <div>
           <p className="text-sm text-neutral-600">Name</p>
-          <p>{data?.data.user_info.name || "--"}</p>
+          <p>{data?.data.customer?.name || "--"}</p>
         </div>
         <div>
           <p className="text-sm text-neutral-600">Email</p>
-          <p>{data?.data.user_info.email || "--"}</p>
+          <p>{data?.data.customer?.email || "--"}</p>
         </div>
         <div>
           <p className="text-sm text-neutral-600">Phone</p>
-          <p>{data?.data.user_info.email || "--"}</p>
+          <p>{data?.data.customer?.email || "--"}</p>
         </div>
         <div>
           <p className="text-sm text-neutral-600">Location</p>
-          <p>{data?.data.user_info.location || "--"}</p>
+          <p>{data?.data.customer?.location || "--"}</p>
         </div>
       </div>
       <div className="space-y-4">
