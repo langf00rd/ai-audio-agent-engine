@@ -5,7 +5,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
   return (
     <SidebarProvider>
       <AppSidebar />
-      <div className="bg-[#fcfcfc] w-full h-full min-h-screen">
+      <div className="w-full h-full min-h-screen">
         <main className="p-5 space-y-5 w-full max-w-[1000px] mx-auto">
           {/* <BackButton /> */}
           {children}

@@ -40,7 +40,7 @@ CREATE TABLE IF NOT EXISTS agents (
 
 -- SESSIONS (belongs to an agent)
 CREATE TABLE IF NOT EXISTS sessions (
-  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  id UUID PRIMARY KEY,
   agent_id BIGINT NOT NULL REFERENCES agents(id) ON DELETE CASCADE,
   start_dt TIMESTAMPTZ DEFAULT NOW(),
   end_dt TIMESTAMPTZ
@@ -50,7 +50,9 @@ CREATE TABLE IF NOT EXISTS sessions (
 CREATE TABLE IF NOT EXISTS conversation_history (
   id BIGSERIAL PRIMARY KEY,
   session_id UUID NOT NULL REFERENCES sessions(id) ON DELETE CASCADE,
-  messages JSONB, -- e.g., [{ "user": "text", "llm": "response" }]
+  agent_id BIGINT REFERENCES agents(id) ON DELETE SET NULL,
+  user_input TEXT,
+  llm_response TEXT,
   is_analyzed BOOLEAN DEFAULT FALSE,
   created_at TIMESTAMPTZ DEFAULT NOW()
 );
@@ -76,3 +78,14 @@ CREATE TABLE IF NOT EXISTS analytics (
   metadata JSONB DEFAULT '{}'::jsonb,
   created_at TIMESTAMPTZ DEFAULT NOW()
 );
+
+-- GRANT SELECT, INSERT, UPDATE, DELETE ON TABLE businesses TO <user>;
+-- GRANT SELECT, INSERT, UPDATE, DELETE ON TABLE agents TO <user>;
+-- GRANT SELECT, INSERT, UPDATE, DELETE ON TABLE analytics TO <user>;
+-- GRANT SELECT, INSERT, UPDATE, DELETE ON TABLE sessions TO <user>;
+-- GRANT SELECT, INSERT, UPDATE, DELETE ON TABLE conversation_history TO <user>;
+-- GRANT SELECT, INSERT, UPDATE, DELETE ON TABLE summarized_conversations TO <user>;
+-- GRANT SELECT, INSERT, UPDATE, DELETE ON TABLE users TO <user>;
+-- GRANT USAGE, SELECT ON SEQUENCE businesses_id_seq TO <user>;
+-- GRANT USAGE, SELECT ON SEQUENCE agents_id_seq TO <user>;
+-- GRANT USAGE, SELECT ON SEQUENCE conversation_history_id_seq TO <user>;

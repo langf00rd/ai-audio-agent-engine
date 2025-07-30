@@ -8,27 +8,21 @@ import { parse } from "url";
 import { WebSocketServer } from "ws";
 import { initDb } from "./config/sqlite.js";
 import {
-    createAgent,
-    getAgentByID,
-    getAgents,
-    updateAgent,
-} from "./controller/agent.controller.js";
-import { aiChatController } from "./controller/ai.controller.js";
-import {
-    analyticsController,
-    getAnalyticsController,
+  analyticsController,
+  getAnalyticsController,
 } from "./controller/analytics.controller.js";
 import {
-    signInController,
-    signUpController,
-} from "./controller/auth.controller.js";
-import {
-    createConvoTaggingController,
-    getConversationsController,
-    getConvoTaggingController,
+  createConvoTaggingController,
+  getConversationsController,
+  getConvoTaggingController,
 } from "./controller/conversations.controller.js";
 import { ttsController } from "./controller/tts.controller.js";
+import { agentsRouter } from "./routers/agents.router.js";
+import { authRouter } from "./routers/auth.router.js";
+import { businessRouter } from "./routers/business.router.js";
+import { usersRouter } from "./routers/users.router.js";
 import { handleWebSocketConnection } from "./utils/ws.js";
+import { sessionsRouter } from "./routers/sessions.router.js";
 
 const PORT = 8000;
 const app = express();
@@ -41,37 +35,37 @@ dotenv.config({ path: ".env" });
 app.use(cors());
 app.use(bodyParser.json());
 app.use(
-    bodyParser.urlencoded({
-        extended: true,
-    }),
+  bodyParser.urlencoded({
+    extended: true,
+  }),
 );
 
 // init sqlite db
 (async () => {
-    try {
-        await initDb();
-        console.log("[SQLITE] DB INITIALIZED");
-    } catch (err) {
-        console.log("[SQLITE] ERROR", err);
-    }
+  try {
+    await initDb();
+    console.log("[SQLITE] DB INITIALIZED");
+  } catch (err) {
+    console.log("[SQLITE] ERROR", err);
+  }
 })();
 
 wss.on("connection", async (ws, req) => {
-    const { query } = parse(req.url);
-    const params = querystring.parse(query);
-    console.log("[web socket] client connected", params);
-    handleWebSocketConnection(ws, params.agentId);
+  const { query } = parse(req.url);
+  const params = querystring.parse(query);
+  console.log("[web socket] client connected", params);
+  handleWebSocketConnection(ws, params.agentId);
 });
 
 app.use("/api", router); // all routes under /api
+app.use("/api/businesses", businessRouter);
+app.use("/api/users", usersRouter);
+app.use("/api/auth", authRouter);
+app.use("/api/agents", agentsRouter);
+app.use("/api/sessions", sessionsRouter);
+
 app.get("/", (_, res) => res.send(`SERVER IS UP`));
-router.post("/agents", createAgent);
-router.put("/agents/:id", updateAgent);
-router.get("/agents", getAgents);
-router.get("/agents/:id", getAgentByID);
-// router.post("/ai", aiChatController);
-router.post("/auth/sign-up", signUpController);
-router.post("/auth/sign-in", signInController);
+
 router.post("/utils/tts", ttsController);
 router.post("/analytics", analyticsController);
 router.get("/analytics", getAnalyticsController);

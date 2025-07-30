@@ -1,6 +1,8 @@
 import { clsx, type ClassValue } from "clsx";
+import Cookie from "js-cookie";
 import { toast } from "sonner";
 import { twMerge } from "tailwind-merge";
+import { COOKIE_KEYS } from "./constants";
 import { SessionConversation } from "./types";
 
 export function cn(...inputs: ClassValue[]) {
@@ -80,4 +82,17 @@ export function formatNumber(num: number) {
     return (num / 1_000).toFixed(1).replace(/\.0$/, "") + "K";
   }
   return num.toString();
+}
+
+export function getCookie<T>(
+  key: COOKIE_KEYS,
+  opts?: {
+    parse?: boolean;
+  },
+) {
+  if (!key) throw new Error("key is required");
+  const data = Cookie.get(String(key));
+  if (!data) return null;
+  if (opts?.parse) return JSON.parse(data) as T;
+  return data as T;
 }

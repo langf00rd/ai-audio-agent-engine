@@ -1,3 +1,4 @@
+import { cn } from "@/lib/utils";
 import { CircleAlert } from "lucide-react";
 import { PropsWithChildren } from "react";
 
@@ -10,9 +11,14 @@ export function ErrorText(props: PropsWithChildren) {
   );
 }
 
-export function H1(props: PropsWithChildren) {
+export function H1(props: { children: string; className?: string }) {
   return (
-    <h1 className="md:text-[1.4rem] capitalize text-xl font-semibold">
+    <h1
+      className={cn(
+        "md:text-[1.4rem] capitalize text-xl font-semibold",
+        props.className,
+      )}
+    >
       {props.children}
     </h1>
   );

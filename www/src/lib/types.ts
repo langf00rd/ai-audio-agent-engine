@@ -105,3 +105,29 @@ export interface ConversationTag {
   next_step: string;
   confidence: number;
 }
+
+// v2
+export interface Business {
+  id: number;
+  user_id: number;
+  name: string;
+  slogan: string;
+  industry: string;
+  description: string;
+  website: string;
+  contact_info: {
+    phone: string;
+    email: string;
+  };
+}
+
+export interface Agent {
+  id?: number;
+  business_id: number;
+  name: string;
+  description?: string;
+  custom_reactions?: Record<string, string>;
+  is_public?: boolean;
+  created_at: Date;
+  updated_at?: Date;
+}
