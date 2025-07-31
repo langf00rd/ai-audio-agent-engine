@@ -3,6 +3,7 @@
 import EmptyState from "@/components/empty-state";
 import CreateAgentForm from "@/components/forms/create-agent";
 import Loader from "@/components/loader";
+import { ErrorText } from "@/components/typography";
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -14,47 +15,30 @@ import {
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useAgents } from "@/hooks/use-agent";
 import { ROUTES } from "@/lib/constants";
-import { fetchAgentById, updateAgent } from "@/lib/services/agent";
-import { Agent } from "@/lib/types";
+import { fetchAgentById } from "@/lib/services/agent";
+import { Agent, APIResponse } from "@/lib/types";
+import { useQuery } from "@tanstack/react-query";
 import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
-import { toast } from "sonner";
 
 const tabs = ["General", "Sharing & Embedding", "Knowledge base"];
 
 export default function ConfigureAgent() {
   const params = useParams();
-  const [loading, setLoading] = useState(true);
+  const { updateAgentMutation } = useAgents();
   const [agent, setAgent] = useState<Agent | null>(null);
-
-  async function handleUpdateAgent() {
-    if (!agent) return toast("no agent to update");
-    try {
-      setLoading(true);
-      await updateAgent(agent);
-      toast("agent updated");
-    } catch (err) {
-      toast((err as Error).message);
-    } finally {
-      setLoading(false);
-    }
-  }
+  const { data, isFetching, error } = useQuery<APIResponse<Agent>>({
+    queryKey: ["agent", params.id],
+    queryFn: () => fetchAgentById(String(params.id)),
+  });
 
   useEffect(() => {
-    async function handleFetchAgent() {
-      try {
-        setLoading(true);
-        const { data } = await fetchAgentById(String(params.id));
-        setAgent(data);
-      } catch (err) {
-        alert(err);
-      } finally {
-        setLoading(false);
-      }
-    }
-    handleFetchAgent();
-  }, [params.id]);
+    if (data?.data) setAgent(data?.data);
+  }, [data?.data]);
+
+  if (error) return <ErrorText>{error.message}</ErrorText>;
 
   return (
     <>
@@ -67,16 +51,16 @@ export default function ConfigureAgent() {
             </TabsTrigger>
           ))}
         </TabsList>
-        <TabsContent value={tabs[0]} className="py-6">
-          {loading && <Loader />}
+        <TabsContent value={tabs[0]} className="max-w-[500px]">
+          {isFetching && <Loader />}
           {agent && (
             <CreateAgentForm
-              onSubmitSuccess={() => toast("agent updated successfully")}
+              className="max-w-[500px]"
               data={{ ...agent, id: Number(params.id) }}
             />
           )}
         </TabsContent>
-        <TabsContent value={tabs[1]} className="py-6">
+        <TabsContent value={tabs[1]} className="max-w-[500px]">
           <div className="space-y-8">
             <div className="flex items-center justify-between gap-2">
               <div className="flex-[3] space-y-1">
@@ -101,8 +85,13 @@ export default function ConfigureAgent() {
                 />
               </div>
             </div>
-            <Button onClick={handleUpdateAgent} disabled={loading}>
-              {loading ? "Saving..." : "Save changes"}
+            <Button
+              disabled={isFetching}
+              onClick={() =>
+                updateAgentMutation.mutate(agent as Partial<Agent>)
+              }
+            >
+              {isFetching ? "Saving..." : "Save changes"}
             </Button>
           </div>
         </TabsContent>

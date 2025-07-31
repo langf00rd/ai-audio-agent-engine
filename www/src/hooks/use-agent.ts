@@ -1,7 +1,7 @@
 import { Agent } from "@/lib/types";
 import { useMutation } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { createAgent, updateAgent } from "../agent";
+import { createAgent, updateAgent } from "../lib/services/agent";
 
 export function useAgents() {
   const createAgentMutation = useMutation({
@@ -14,11 +14,11 @@ export function useAgents() {
   });
 
   const updateAgentMutation = useMutation({
-    mutationFn: (payload: Agent) => {
+    mutationFn: (payload: Partial<Agent>) => {
       return updateAgent(payload);
     },
     onSuccess: () => {
-      toast("agent created");
+      toast("agent updated");
     },
     onError: (err) => {
       toast(err.message);

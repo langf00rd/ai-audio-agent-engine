@@ -48,3 +48,65 @@ export const MONTHS = [
   "Nov",
   "Dec",
 ];
+
+export const BUSINESS_FORM_STEPS = [
+  {
+    step: 0,
+    title: "Company Identity",
+    description: "Start by telling us the essentials about your business.",
+    fields: [
+      {
+        label: "Name",
+        value: "name",
+        type: "text",
+      },
+      {
+        label: "Slogan",
+        value: "slogan",
+        type: "text",
+      },
+      {
+        label: "Industry",
+        value: "industry",
+        inputType: "select",
+        options: ["Technology", "Retail", "Finance", "Healthcare", "Education"],
+      },
+    ],
+  },
+  {
+    step: 1,
+    title: "Business Details",
+    description:
+      "Help us understand what your company does and where to find you online.",
+    fields: [
+      {
+        label: "Description",
+        value: "description",
+        type: "text",
+        inputType: "textarea",
+      },
+      {
+        label: "Website",
+        value: "website",
+        type: "url",
+      },
+    ],
+  },
+  {
+    step: 2,
+    title: "Contact Info",
+    description: "How can we or your customers reach you?",
+    fields: [
+      {
+        label: "Phone",
+        value: "contact_info_phone",
+        type: "tel",
+      },
+      {
+        label: "Email",
+        value: "contact_info_email",
+        type: "email",
+      },
+    ],
+  },
+];

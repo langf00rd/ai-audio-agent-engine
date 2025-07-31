@@ -3,14 +3,13 @@
 "use client";
 
 import { Label } from "@/components/ui/label";
+import { useAgents } from "@/hooks/use-agent";
 import { COOKIE_KEYS } from "@/lib/constants";
-import { useAgents } from "@/lib/services/mutations/agent";
 import { Agent, Business, KV } from "@/lib/types";
-import { getCookie } from "@/lib/utils";
+import { cn, getCookie } from "@/lib/utils";
 import { X } from "lucide-react";
 import { FormEvent, useEffect, useState } from "react";
 import { Button } from "../ui/button";
-import { Card, CardContent, CardTitle } from "../ui/card";
 import { Input } from "../ui/input";
 import { Textarea } from "../ui/textarea";
 
@@ -18,12 +17,12 @@ export default function CreateAgentForm(props: {
   data?: Agent;
   onSubmitSuccess?: (data: Agent) => void;
   onSubmitError?: (err: string) => void;
+  className?: string;
 }) {
   const { createAgentMutation, updateAgentMutation } = useAgents();
   const [isLoading, setIsLoading] = useState(false);
   const [customReactions, setCustomReactions] = useState<KV[]>([
-    { key: "on_rejection", value: "" },
-    { key: "on_complaint", value: "" },
+    { key: "on rejection", value: "" },
   ]);
 
   const handleKVChange = (
@@ -114,103 +113,97 @@ export default function CreateAgentForm(props: {
             key,
             value,
           }))
-        : [
-            { key: "on_rejection", value: "" },
-            { key: "on_complaint", value: "" },
-          ],
+        : [{ key: "on rejection", value: "" }],
     );
   }, [props.data]);
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-5">
+    <form onSubmit={handleSubmit} className={cn("space-y-20", props.className)}>
       {/* agen metadata */}
-      <Card>
-        <CardContent className="space-y-4">
-          <CardTitle>Agent Metadata</CardTitle>
-          <fieldset className="space-y-1">
-            <Label>Name</Label>
-            <Input
-              defaultValue={props.data?.name ?? ""}
-              placeholder="Jenny from Acme"
-              required
-              name="name"
-            />
-          </fieldset>
-          <fieldset className="space-y-1">
-            <Label>Description</Label>
-            <Textarea
-              defaultValue={props.data?.description ?? ""}
-              name="description"
-            />
-          </fieldset>
-        </CardContent>
-      </Card>
+      <div className="space-y-4">
+        {/* <CardTitle>Agent Metadata</CardTitle> */}
+        <fieldset className="space-y-1">
+          <Label>Name</Label>
+          <Input
+            defaultValue={props.data?.name ?? ""}
+            placeholder="Jenny from Acme"
+            required
+            name="name"
+          />
+        </fieldset>
+        <fieldset className="space-y-1">
+          <Label>Description</Label>
+          <Textarea
+            defaultValue={props.data?.description ?? ""}
+            name="description"
+            placeholder="Introduce visitors to our company and get them to try our services"
+          />
+        </fieldset>
+      </div>
       {/* custom reactions */}
-      <Card>
-        <CardContent className="space-y-4">
-          <div className="flex items-center justify-between">
-            <CardTitle>Custom Reactions</CardTitle>
-            <Button
-              size="sm"
-              type="button"
-              variant="outline"
-              onClick={() => addKV(setCustomReactions, customReactions)}
-            >
-              + Add Another
-            </Button>
+      <div className="space-y-4">
+        <div className="flex items-center justify-between">
+          <div className="space-y-1">
+            <h2 className="font-medium">Custom Reactions</h2>
+            <p className="max-w-[90%] text-sm opacity-60">
+              Choose how your sales agent should respond in an event of adverse
+              customer interaction
+            </p>
           </div>
-          <div className="space-y-8">
-            {customReactions.map((item, i) => (
-              <div key={i} className="flex gap-2">
-                <Input
-                  placeholder="on_rejection"
-                  value={item.key}
-                  name={`custom_reactions[${i}].key`}
-                  onChange={(e) =>
-                    handleKVChange(
-                      setCustomReactions,
-                      customReactions,
-                      i,
-                      "key",
-                      e.target.value,
-                    )
-                  }
-                />
-                <Input
-                  placeholder="Say something polite"
-                  value={item.value}
-                  name={`custom_reactions[${i}].value`}
-                  onChange={(e) =>
-                    handleKVChange(
-                      setCustomReactions,
-                      customReactions,
-                      i,
-                      "value",
-                      e.target.value,
-                    )
-                  }
-                />
-                <Button
-                  type="button"
-                  variant="destructive-secondary"
-                  onClick={() =>
-                    removeKV(setCustomReactions, customReactions, i)
-                  }
-                >
-                  <X />
-                </Button>
-              </div>
-            ))}
-          </div>
-        </CardContent>
-      </Card>
+          <Button
+            size="sm"
+            type="button"
+            variant="outline"
+            onClick={() => addKV(setCustomReactions, customReactions)}
+          >
+            + Add Another
+          </Button>
+        </div>
+        <div className="space-y-8">
+          {customReactions.map((item, i) => (
+            <div key={i} className="flex gap-2">
+              <Input
+                placeholder="on rejection"
+                value={item.key}
+                name={`custom_reactions[${i}].key`}
+                onChange={(e) =>
+                  handleKVChange(
+                    setCustomReactions,
+                    customReactions,
+                    i,
+                    "key",
+                    e.target.value,
+                  )
+                }
+              />
+              <Input
+                placeholder="Say something polite"
+                value={item.value}
+                name={`custom_reactions[${i}].value`}
+                onChange={(e) =>
+                  handleKVChange(
+                    setCustomReactions,
+                    customReactions,
+                    i,
+                    "value",
+                    e.target.value,
+                  )
+                }
+              />
+              <Button
+                type="button"
+                variant="destructive-secondary"
+                onClick={() => removeKV(setCustomReactions, customReactions, i)}
+              >
+                <X />
+              </Button>
+            </div>
+          ))}
+        </div>
+      </div>
       <div className="sticky bottom-0 py-2">
         <Button type="submit" disabled={isLoading}>
-          {isLoading
-            ? "Saving..."
-            : props.data
-              ? "Update Agent"
-              : "Create Agent"}
+          {isLoading ? "Submitting..." : props.data ? "Update" : "Create"}
         </Button>
       </div>
     </form>

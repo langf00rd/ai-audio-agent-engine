@@ -46,7 +46,7 @@ export async function createAgent(data: Record<string, unknown> | Agent) {
   return result as APIResponse<Agent>;
 }
 
-export async function updateAgent(data: Agent) {
+export async function updateAgent(data: Partial<Agent>) {
   const response = await fetch(`${API_BASE_URL}/agents/${data.id}`, {
     method: "PUT",
     headers: { "Content-Type": "application/json" },
