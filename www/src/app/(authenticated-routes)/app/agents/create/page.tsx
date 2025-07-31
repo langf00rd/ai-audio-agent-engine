@@ -9,12 +9,14 @@ import { toast } from "sonner";
 export default function CreateAgentPage() {
   const router = useRouter();
   return (
-    <main className="space-y-10">
+    <main className="space-y-10 pt-10">
       <div className="text-center space-y-1">
         <h1 className="text-xl md:text-2xl font-semibold">
           Create an agent for your business
         </h1>
-        <p>Start by provide basic information about this agent</p>
+        <p className="text-center opacity-70">
+          Start by provide basic information about this agent
+        </p>
       </div>
       <motion.div
         initial={{

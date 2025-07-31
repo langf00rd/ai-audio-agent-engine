@@ -22,6 +22,7 @@ import { cookies } from "next/headers";
 import Link from "next/link";
 import SignOutButton from "../buttons/sign-out";
 import { Logo } from "../logo";
+import { Badge } from "../ui/badge";
 import { Button } from "../ui/button";
 import WorkspaceSwitcher from "./workspace-switcher";
 
@@ -79,26 +80,24 @@ export async function AppSidebar() {
           </SidebarGroupContent>
         </SidebarGroup>
       </SidebarContent>
-      <SidebarFooter className="bg-white">
+      <SidebarFooter className="bg-white px-0">
         <SidebarMenu>
-          {/* <SidebarMenuItem className="border-t border-neutral-100 flex items-center justify-center h-[60px]">
-                        <Badge className="w-full py-3" variant="secondary">
-                            FREE PLAN
-                        </Badge>
-                    </SidebarMenuItem> */}
           <SidebarMenuItem>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <SidebarMenuButton className="rounded-none h-[100px] border-neutral-100 cursor-pointer border-t">
-                  <div className="bg-neutral-100 flex items-center justify-center w-10 h-10 rounded-full">
-                    <User2 size={16} />
+                <SidebarMenuButton className="rounded-none px-4 flex items-center justify-between h-[100px] border-neutral-100 cursor-pointer border-t">
+                  <div className="flex items-center gap-4">
+                    <div className="bg-neutral-100 flex items-center justify-center w-10 h-10 rounded-full">
+                      <User2 size={16} />
+                    </div>
+                    <div className="space-y-1">
+                      <p className="capitalize">
+                        {userCookie.first_name} {userCookie.last_name}
+                      </p>
+                      <p className="opacity-50 -mt-1">{businesses[0].name}</p>
+                    </div>
                   </div>
-                  <div>
-                    <p className="capitalize">
-                      {userCookie.first_name} {userCookie.last_name}
-                    </p>
-                    <p className="opacity-50 -mt-1">{businesses[0].name}</p>
-                  </div>
+                  <Badge>FREE</Badge>
                 </SidebarMenuButton>
               </DropdownMenuTrigger>
               <DropdownMenuContent side="right">

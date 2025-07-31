@@ -71,6 +71,7 @@ export default function ConfigureAgent() {
           {loading && <Loader />}
           {agent && (
             <CreateAgentForm
+              className="max-w-[500px]"
               onSubmitSuccess={() => toast("agent updated successfully")}
               data={{ ...agent, id: Number(params.id) }}
             />
