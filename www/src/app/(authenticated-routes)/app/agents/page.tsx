@@ -17,9 +17,6 @@ import { useRouter } from "next/navigation";
 
 export default function AgentsPage() {
   const router = useRouter();
-  const businesses = getCookie<Business[]>(COOKIE_KEYS.business, {
-    parse: true,
-  });
 
   const currentBusiness = getCookie<Business>(COOKIE_KEYS.currentBusiness, {
     parse: true,
