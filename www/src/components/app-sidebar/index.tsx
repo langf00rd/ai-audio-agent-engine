@@ -17,10 +17,12 @@ import {
 } from "@/components/ui/sidebar";
 import { COOKIE_KEYS, ROUTES } from "@/lib/constants";
 import { Business, User } from "@/lib/types";
-import { LibraryBig, Settings2, User2 } from "lucide-react";
+import { LibraryBig, PlusIcon, Settings2, User2 } from "lucide-react";
 import { cookies } from "next/headers";
+import Link from "next/link";
 import SignOutButton from "../buttons/sign-out";
 import { Logo } from "../logo";
+import { Button } from "../ui/button";
 import WorkspaceSwitcher from "./workspace-switcher";
 
 const items = [
@@ -50,29 +52,14 @@ export async function AppSidebar() {
     >
       <SidebarHeader className="h-[140px] p-4 px-8 border-b border-neutral-100  bg-white flex items-start">
         <Logo />
-        <WorkspaceSwitcher />
-        {/* <SidebarMenu>
-          <SidebarMenuItem>
-            <DropdownMenu>
-              <DropdownMenuTrigger
-                asChild
-                className="border border-neutral-100 w-full"
-              >
-                <SidebarMenuButton>
-                  Select Workspace
-                  <ChevronDown className="ml-auto" />
-                </SidebarMenuButton>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent>
-                {businesses.map((a) => (
-                  <DropdownMenuItem key={a.id}>
-                    <span>{a.name}</span>
-                  </DropdownMenuItem>
-                ))}
-              </DropdownMenuContent>
-            </DropdownMenu>
-          </SidebarMenuItem>
-        </SidebarMenu> */}
+        <div className="flex items-center w-full gap-2">
+          <WorkspaceSwitcher />
+          <Link href={ROUTES.onboard.business} title="create business">
+            <Button size="icon" variant="outline">
+              <PlusIcon />
+            </Button>
+          </Link>
+        </div>
       </SidebarHeader>
       <SidebarContent className="bg-white px-4">
         <SidebarGroup>
