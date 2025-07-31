@@ -4,4 +4,4 @@ const openrouter = createOpenRouter({
   apiKey: process.env.OPENROUTER_API_KEY,
 });
 
-export const chatModel = openrouter.chat("anthropic/claude-3.5-sonnet");
+export const chatModel = openrouter.chat("openai/gpt-4.1-mini");

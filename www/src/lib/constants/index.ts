@@ -9,6 +9,7 @@ export const ROUTES = {
       index: "/app/agents",
       create: "/app/agents/create",
     },
+    settings: "/app/settings",
   },
   agent: {
     index: "/app/agents",

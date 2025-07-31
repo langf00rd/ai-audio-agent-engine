@@ -17,7 +17,7 @@ import {
 } from "@/components/ui/sidebar";
 import { COOKIE_KEYS, ROUTES } from "@/lib/constants";
 import { Business, User } from "@/lib/types";
-import { Bot, Settings, User2 } from "lucide-react";
+import { LibraryBig, Settings2, User2 } from "lucide-react";
 import { cookies } from "next/headers";
 import SignOutButton from "../buttons/sign-out";
 import { Logo } from "../logo";
@@ -27,12 +27,12 @@ const items = [
   {
     title: "Your Agents",
     url: ROUTES.agent.index,
-    icon: Bot,
+    icon: LibraryBig,
   },
   {
     title: "Settings",
-    url: "#",
-    icon: Settings,
+    url: ROUTES.app.settings,
+    icon: Settings2,
   },
 ];
 
@@ -44,8 +44,11 @@ export async function AppSidebar() {
     (await cookies()).get(COOKIE_KEYS.business)?.value as unknown as string,
   ) as Business[];
   return (
-    <Sidebar collapsible="icon" className="border-r border-neutral-100">
-      <SidebarHeader className="h-[120px] p-4 px-8 border-b border-neutral-100  bg-white flex items-start">
+    <Sidebar
+      collapsible="icon"
+      className="border-r border-neutral-100 w-[20vw]"
+    >
+      <SidebarHeader className="h-[140px] p-4 px-8 border-b border-neutral-100  bg-white flex items-start">
         <Logo />
         <WorkspaceSwitcher />
         {/* <SidebarMenu>
@@ -80,7 +83,7 @@ export async function AppSidebar() {
                   <SidebarMenuButton asChild>
                     <a href={item.url}>
                       <item.icon className="opacity-60" />
-                      <span className="text-[17px]">{item.title}</span>
+                      <span className="text-[16px]">{item.title}</span>
                     </a>
                   </SidebarMenuButton>
                 </SidebarMenuItem>

@@ -29,7 +29,7 @@ export default function WorkspaceSwitcher() {
 
   return (
     <Select onValueChange={handleChangeWorkspace}>
-      <SelectTrigger className="w-[180px]">
+      <SelectTrigger className="w-full">
         <SelectValue placeholder={currentBusiness?.name} />
       </SelectTrigger>
       <SelectContent>

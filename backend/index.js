@@ -33,10 +33,14 @@ app.use(
 );
 
 wss.on("connection", async (ws, req) => {
-  const { query } = parse(req.url);
-  const params = querystring.parse(query);
-  console.log("[web socket] client connected", params);
-  handleWebSocketConnection(ws, params.agentId);
+  try {
+    const { query } = parse(req.url);
+    const params = querystring.parse(query);
+    console.log("[web socket] client connected", params);
+    handleWebSocketConnection(ws, params.agentId);
+  } catch (err) {
+    console.log("SOCKET CONNECTION ERROR", err);
+  }
 });
 
 app.use("/api", router); // all routes under /api
