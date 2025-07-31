@@ -12,45 +12,26 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
-import { COOKIE_KEYS, ROUTES } from "@/lib/constants";
-import { createBusiness } from "@/lib/services/business";
+import useBusiness from "@/hooks/use-business";
+import { BUSINESS_FORM_STEPS, COOKIE_KEYS } from "@/lib/constants";
 import { User } from "@/lib/types";
 import { getCookie } from "@/lib/utils";
-import { useMutation } from "@tanstack/react-query";
-import Cookie from "js-cookie";
 import { ArrowRight } from "lucide-react";
 import { motion } from "motion/react";
-import { useSearchParams } from "next/navigation";
 import { FormEvent, useRef, useState } from "react";
 import { toast } from "sonner";
 
 export default function CreateBusinessPage() {
   const formRef = useRef<HTMLFormElement>(null);
-  const searchParams = useSearchParams();
+  const { createBusinessMutation } = useBusiness();
   const [formData, setFormData] = useState<Record<string, string>>({});
   const [step, setStep] = useState(0);
-
-  const mutation = useMutation({
-    mutationFn: (payload: Record<string, unknown>) => {
-      console.log("payload", payload);
-      return createBusiness(payload);
-    },
-    onSuccess: (data) => {
-      toast("business created");
-      Cookie.set(COOKIE_KEYS.business, JSON.stringify([data.data]));
-      Cookie.set(COOKIE_KEYS.currentBusiness, JSON.stringify(data.data));
-      window.location.href = searchParams.get("redirect") || ROUTES.app.index;
-    },
-    onError: (err) => {
-      toast(err.message);
-    },
-  });
 
   function handleCreateBusiness(evt: FormEvent) {
     evt.preventDefault();
     const user = getCookie<User>(COOKIE_KEYS.user, { parse: true });
     if (!user) toast("please login to create a business");
-    mutation.mutate({
+    createBusinessMutation.mutate({
       ...formData,
       user_id: user?.id,
       contact_info: {
@@ -60,7 +41,7 @@ export default function CreateBusinessPage() {
     });
   }
 
-  const formStepToDisplay = FORM_STEPS.find((a) => a.step === step);
+  const formStepToDisplay = BUSINESS_FORM_STEPS.find((a) => a.step === step);
 
   function stepForward() {
     setStep((prev) => prev + 1);
@@ -155,13 +136,15 @@ export default function CreateBusinessPage() {
           </fieldset>
         ))}
         <div className="flex items-center justify-end">
-          {step === FORM_STEPS.length - 1 ? (
+          {step === BUSINESS_FORM_STEPS.length - 1 ? (
             <Button
               type="button"
-              disabled={mutation.isPending}
+              disabled={createBusinessMutation.isPending}
               onClick={() => formRef.current?.requestSubmit()}
             >
-              {mutation.isPending ? "Creating..." : "Create My Business"}
+              {createBusinessMutation.isPending
+                ? "Creating..."
+                : "Create My Business"}
             </Button>
           ) : (
             <Button type="button" onClick={stepForward}>
@@ -173,65 +156,3 @@ export default function CreateBusinessPage() {
     </div>
   );
 }
-
-const FORM_STEPS = [
-  {
-    step: 0,
-    title: "Company Identity",
-    description: "Start by telling us the essentials about your business.",
-    fields: [
-      {
-        label: "Name",
-        value: "name",
-        type: "text",
-      },
-      {
-        label: "Slogan",
-        value: "slogan",
-        type: "text",
-      },
-      {
-        label: "Industry",
-        value: "industry",
-        inputType: "select",
-        options: ["Technology", "Retail", "Finance", "Healthcare", "Education"],
-      },
-    ],
-  },
-  {
-    step: 1,
-    title: "Business Details",
-    description:
-      "Help us understand what your company does and where to find you online.",
-    fields: [
-      {
-        label: "Description",
-        value: "description",
-        type: "text",
-        inputType: "textarea",
-      },
-      {
-        label: "Website",
-        value: "website",
-        type: "url",
-      },
-    ],
-  },
-  {
-    step: 2,
-    title: "Contact Info",
-    description: "How can we or your customers reach you?",
-    fields: [
-      {
-        label: "Phone",
-        value: "contact_info_phone",
-        type: "tel",
-      },
-      {
-        label: "Email",
-        value: "contact_info_email",
-        type: "email",
-      },
-    ],
-  },
-];

@@ -3,8 +3,8 @@
 "use client";
 
 import { Label } from "@/components/ui/label";
+import { useAgents } from "@/hooks/use-agent";
 import { COOKIE_KEYS } from "@/lib/constants";
-import { useAgents } from "@/lib/services/mutations/agent";
 import { Agent, Business, KV } from "@/lib/types";
 import { cn, getCookie } from "@/lib/utils";
 import { X } from "lucide-react";

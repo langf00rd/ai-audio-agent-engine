@@ -56,10 +56,4 @@ app.get("/", (_, res) => res.send(`SERVER IS UP`));
 
 router.post("/utils/tts", ttsController);
 
-// router.post("/analytics", analyticsController);
-// router.get("/analytics", getAnalyticsController);
-// router.get("/conversations", getConversationsController);
-// router.post("/conversations/tagging/:sessionId", createConvoTaggingController);
-// router.get("/conversations/tagging/:sessionId", getConvoTaggingController);
-
 server.listen(PORT, () => console.log(`API RUNNING ON ${PORT}`));

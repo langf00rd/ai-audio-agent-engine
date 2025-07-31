@@ -9,7 +9,7 @@ import { toast } from "sonner";
 export default function CreateAgentPage() {
   const router = useRouter();
   return (
-    <main className="space-y-10 pt-10">
+    <main className="space-y-10 max-w-[500px] mx-auto pt-10">
       <div className="text-center space-y-1">
         <h1 className="text-xl md:text-2xl font-semibold">
           Create an agent for your business

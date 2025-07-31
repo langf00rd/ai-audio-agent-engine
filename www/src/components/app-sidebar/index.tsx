@@ -43,9 +43,10 @@ export async function AppSidebar() {
   const userCookie = JSON.parse(
     (await cookies()).get(COOKIE_KEYS.user)?.value as unknown as string,
   ) as User;
-  const businesses = JSON.parse(
-    (await cookies()).get(COOKIE_KEYS.business)?.value as unknown as string,
-  ) as Business[];
+  const currentBusiness = JSON.parse(
+    (await cookies()).get(COOKIE_KEYS.currentBusiness)
+      ?.value as unknown as string,
+  ) as Business;
   return (
     <Sidebar
       collapsible="icon"
@@ -94,7 +95,7 @@ export async function AppSidebar() {
                       <p className="capitalize">
                         {userCookie.first_name} {userCookie.last_name}
                       </p>
-                      <p className="opacity-50 -mt-1">{businesses[0].name}</p>
+                      <p className="opacity-50 -mt-1">{currentBusiness.name}</p>
                     </div>
                   </div>
                   <Badge>FREE</Badge>
