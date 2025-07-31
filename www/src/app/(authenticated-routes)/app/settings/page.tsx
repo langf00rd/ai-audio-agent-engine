@@ -20,24 +20,65 @@ import { Business } from "@/lib/types";
 import { getCookie } from "@/lib/utils";
 import { useState } from "react";
 
+const TABS = ["Your account", "Business"];
+
 export default function SettingsPage() {
   const { updateBusinessMutation } = useBusiness();
   const currentBusiness = getCookie<Business>(COOKIE_KEYS.currentBusiness, {
     parse: true,
   });
-  const [formData, setFormData] = useState<
-    Record<string, Record<string, string | Record<string, string>> | string>
-  >(
-    (currentBusiness as unknown as Record<
-      string,
-      Record<string, string | Record<string, string>>
-    >) || {},
+
+  const [formData, setFormData] = useState<Business>(
+    (currentBusiness as Business) || {
+      name: "",
+      industry: "",
+      description: "",
+      contact_info: {
+        phone: "",
+        email: "",
+      },
+    },
   );
+
+  // Helper to safely update both flat and nested fields
+  const updateNestedField = (fieldPath: string, value: string) => {
+    setFormData((prev) => {
+      const updated = { ...prev };
+
+      if (fieldPath.startsWith("contact_info_")) {
+        const key = fieldPath.replace("contact_info_", "");
+        return {
+          ...updated,
+          contact_info: {
+            ...updated.contact_info,
+            [key]: value,
+          },
+        };
+      }
+
+      return {
+        ...updated,
+        [fieldPath]: value,
+      };
+    });
+  };
+
+  // Helper to safely get field value from nested structure
+  const getFieldValue = (fieldPath: string): string => {
+    if (fieldPath.startsWith("contact_info_")) {
+      const key = fieldPath.replace("contact_info_", "");
+      return (
+        formData.contact_info?.[key as keyof typeof formData.contact_info] || ""
+      );
+    }
+
+    return (formData[fieldPath as keyof Business] as string) || "";
+  };
 
   return (
     <div className="space-y-4">
       <H1>Settings</H1>
-      <Tabs defaultValue={TABS[0]}>
+      <Tabs defaultValue={TABS[1]}>
         <TabsList>
           {TABS.map((a) => (
             <TabsTrigger key={a} value={a}>
@@ -45,45 +86,43 @@ export default function SettingsPage() {
             </TabsTrigger>
           ))}
         </TabsList>
+
         <TabsContent value={TABS[0]}>
           <EmptyState title="Coming soon..." />
         </TabsContent>
+
         <TabsContent value={TABS[1]} className="max-w-[500px]">
           <form
             onSubmit={(evt) => {
               evt.preventDefault();
-              updateBusinessMutation.mutate(formData as unknown as Business);
+              updateBusinessMutation.mutate(formData);
             }}
           >
-            {BUSINESS_FORM_STEPS.map((a) => (
-              <div key={a.title} className="space-y-4 pb-6">
+            {BUSINESS_FORM_STEPS.map((step) => (
+              <div key={step.title} className="space-y-4 pb-6">
                 <div>
-                  <h3 className="font-semibold">{a.title}</h3>
-                  <p className="opacity-65">{a.description}</p>
+                  <h3 className="font-semibold">{step.title}</h3>
+                  <p className="opacity-65">{step.description}</p>
                 </div>
-                {a.fields.map((field) => (
-                  <fieldset key={field.label}>
+
+                {step.fields.map((field) => (
+                  <fieldset key={field.label} className="space-y-2">
                     <Label htmlFor={field.value}>{field.label}</Label>
+
                     {field.inputType === "textarea" ? (
                       <Textarea
+                        id={field.value}
                         name={field.value}
-                        defaultValue={formData[field.value] as string}
-                        onChange={(e) => {
-                          setFormData((prev) => ({
-                            ...prev,
-                            [field.value]: e.target.value,
-                          }));
-                        }}
+                        value={getFieldValue(field.value)}
+                        onChange={(e) =>
+                          updateNestedField(field.value, e.target.value)
+                        }
                       />
                     ) : field.inputType === "select" ? (
                       <Select
-                        name={field.value}
-                        defaultValue={formData[field.value] as string}
+                        value={getFieldValue(field.value)}
                         onValueChange={(val) =>
-                          setFormData((prev) => ({
-                            ...prev,
-                            [field.value]: val,
-                          }))
+                          updateNestedField(field.value, val)
                         }
                       >
                         <SelectTrigger>
@@ -100,40 +139,25 @@ export default function SettingsPage() {
                         </SelectContent>
                       </Select>
                     ) : (
-                      <>
-                        <Input
-                          name={field.value}
-                          type={field.type || "text"}
-                          defaultValue={
-                            field.value === "contact_info_phone"
-                              ? ((
-                                  formData.contact_info as Business["contact_info"]
-                                ).phone as string)
-                              : field.value === "contact_info_email"
-                                ? ((
-                                    formData.contact_info as Business["contact_info"]
-                                  ).email as string)
-                                : (formData[field.value] as string)
-                          }
-                          onChange={(e) =>
-                            setFormData((prev) => ({
-                              ...prev,
-                              [field.value]: e.target.value,
-                            }))
-                          }
-                        />
-                      </>
+                      <Input
+                        id={field.value}
+                        name={field.value}
+                        type={field.type || "text"}
+                        value={getFieldValue(field.value)}
+                        onChange={(e) =>
+                          updateNestedField(field.value, e.target.value)
+                        }
+                      />
                     )}
                   </fieldset>
                 ))}
               </div>
             ))}
-            <Button>Update</Button>
+
+            <Button type="submit">Update</Button>
           </form>
         </TabsContent>
       </Tabs>
     </div>
   );
 }
-
-const TABS = ["Your account", "Business"];
