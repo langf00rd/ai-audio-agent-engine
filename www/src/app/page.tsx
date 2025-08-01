@@ -3,6 +3,7 @@
 import { Logo } from "@/components/logo";
 import { Button } from "@/components/ui/button";
 import { Building, Check, Mail, PlusIcon, Search } from "lucide-react";
+import Image from "next/image";
 import Link from "next/link";
 import { ROUTES } from "../lib/constants";
 
@@ -46,20 +47,23 @@ export default function Home() {
           </Link>
         </div>
       </header>
-      <section className="md:fixed md:w-screen items-center justify-center flex py-20 md:h-[calc(100vh-70px)] px-5">
+      <section className="md:fixed flex-col md:w-screen items-center justify-center flex py-20 space-y-20 px-5">
         <div className="text-center space-y-10">
-          <h1 className="text-[1.6rem] md:text-[4rem] w-full max-w-[1000px] mx-auto leading-[1.2] bold-heading">
-            Turn Website Visitors Into Paying Clients{" "}
-            <span className="bold-heading italic opacity-70">
-              Automatically
-            </span>
-          </h1>
-          <p className="text-neutral-600 max-w-[800px] mx-auto leading-[1.7] md:text-[20px]">
-            Create and embed your own AI Sales Agent that talks to website
-            visitors, captures leads, qualifies them, and follows up via
-            WhatsApp, email, or SMS to close the deal.
-            <br />
-            No coding. No sales team. Just 24/7 autonomous selling.
+          <div className="space-y-1">
+            <p className="opacity-55">
+              /tuː/ • noun • Pronounced &ldquo;Two&rdquo;
+            </p>
+            <h1 className="text-[1.6rem] md:text-[2.8rem] w-full max-w-[600px] mx-auto leading-[1.2] bold-heading">
+              Turn Website Visitors Into Paying Clients{" "}
+              <span className="bold-heading italic opacity-70">
+                Automatically
+              </span>
+            </h1>
+          </div>
+          <p className="text-neutral-600 max-w-[700px] mx-auto leading-[1.7] md:text-[20px]">
+            Your Toow AI sales agent talks to visitors, captures leads, and
+            follows up across WhatsApp, email, and SMS, so you can focus on
+            closing deals, not chasing them
           </p>
           <div className="flex items-center flex-col md:flex-row justify-center gap-4">
             <Link
@@ -81,6 +85,15 @@ export default function Home() {
               </Button>
             </Link>
           </div>
+        </div>
+        <div className="border border-neutral-100 hidden md:block rounded-[30px] bg-white/60 p-[10px]">
+          <Image
+            src="/dashboard.png"
+            className="rounded-[20px] border border-neutral-100 shadow"
+            alt="screenshot of toow ai sales agent analytics page"
+            width={1000}
+            height={1000}
+          />
         </div>
       </section>
       <section className="md:relative px-5 md:min-h-screen flex flex-col gap-[100px] items-center justify-center md:top-[100vh] bg-primary text-white py-20">

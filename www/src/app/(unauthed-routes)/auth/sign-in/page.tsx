@@ -23,21 +23,22 @@ export default function SignInPage() {
     try {
       setIsLoading(true);
       const response = await signIn(email, password);
-      console.log("response", response.data.businesses);
+      const businesses = response.data.businesses.map((a) => {
+        return {
+          id: a.id,
+          name: a.name,
+        };
+      });
       Cookie.set(COOKIE_KEYS.token, response.data.token);
       Cookie.set(
         COOKIE_KEYS.user,
         JSON.stringify({ ...response.data, businesses: [] }),
       );
-      Cookie.set(
-        COOKIE_KEYS.business,
-        JSON.stringify(response.data.businesses),
-      );
+      Cookie.set(COOKIE_KEYS.business, JSON.stringify(businesses));
       Cookie.set(
         COOKIE_KEYS.currentBusiness,
         JSON.stringify(response.data.businesses[0]),
       );
-      console.log("response", response);
       window.location.href = searchParams.get("redirect") || ROUTES.agent.index;
     } catch (err) {
       toast((err as Error).message, {
