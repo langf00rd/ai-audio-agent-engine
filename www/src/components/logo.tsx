@@ -1,7 +1,7 @@
 export function Logo() {
   return (
     <div className="flex items-center justify-center gap-1">
-      <h2 className="text-[28px] bold-heading text-primary">TOOW</h2>
+      <h2 className="text-xl md:text-[28px] bold-heading text-primary">TOOW</h2>
     </div>
   );
   // return <Image src="/logo.png" alt="toow logo" width={120} height={0} />;

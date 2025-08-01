@@ -25,7 +25,7 @@ const routes = [
 export default function Home() {
   return (
     <div className="bg-[#fefdf6]">
-      <header className="h-[70px] px-5 sticky top-0">
+      <header className="h-[70px] px-10 sticky top-0">
         <div className="h-full w-full items-center justify-between container mx-auto flex">
           <Logo />
           <nav className="h-full hidden md:block">
@@ -47,8 +47,8 @@ export default function Home() {
           </Link>
         </div>
       </header>
-      <section className="md:fixed flex-col md:w-screen items-center justify-center flex py-20 space-y-20 px-5">
-        <div className="text-center space-y-10">
+      <section className="md:fixed flex-col md:w-screen items-center justify-center flex py-20 space-y-20 px-10">
+        <div className="text-center md:space-y-10 space-y-4">
           <div className="space-y-1">
             <p className="opacity-55">
               /tuː/ • noun • Pronounced &ldquo;Two&rdquo;
@@ -70,7 +70,7 @@ export default function Home() {
               href={ROUTES.app.agents.index}
               className="block md:w-max w-full max-w-[260px]"
             >
-              <Button size="lg" className="w-full">
+              <Button className="w-full">
                 <PlusIcon />
                 Create your sales agent
               </Button>
@@ -80,7 +80,7 @@ export default function Home() {
               target="_blank"
               className="block md:w-max w-full max-w-[260px]"
             >
-              <Button size="lg" className="w-full" variant="outline">
+              <Button className="w-full" variant="outline">
                 See live demo
               </Button>
             </Link>
@@ -96,7 +96,7 @@ export default function Home() {
           />
         </div>
       </section>
-      <section className="md:relative px-5 md:min-h-screen flex flex-col gap-[100px] items-center justify-center md:top-[100vh] bg-primary text-white py-20">
+      <section className="md:relative px-10 md:min-h-screen flex flex-col gap-[100px] items-center justify-center md:top-[100vh] bg-primary text-white py-20">
         <h1 className="text-2xl max-w-xl text-center md:font-semibold md:text-[2.6rem]">
           All You Need to Run Your Business On{" "}
           <span className="bold-heading text-white! italic opacity-70">
