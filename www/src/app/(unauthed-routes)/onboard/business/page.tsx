@@ -1,6 +1,5 @@
 "use client";
 
-import { H1 } from "@/components/typography";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -60,12 +59,14 @@ export default function CreateBusinessPage() {
           transition={{
             type: "tween",
           }}
-          className="space-y-1"
+          className="space-y-2"
         >
-          <span>
-            <H1 className="text-center">{formStepToDisplay!.title}</H1>
+          <span className="block">
+            <h1 className="text-center font-medium text-2xl md:text-3xl">
+              {formStepToDisplay!.title}
+            </h1>
           </span>
-          <p className="text-center opacity-70">
+          <p className="text-center text-xl opacity-70">
             {formStepToDisplay!.description}
           </p>
         </motion.div>
