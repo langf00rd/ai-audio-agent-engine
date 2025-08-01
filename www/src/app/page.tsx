@@ -1,5 +1,6 @@
 "use client";
 
+import DashboardImage from "@/components/images/dashboard.svg";
 import { Logo } from "@/components/logo";
 import { Button } from "@/components/ui/button";
 import { Building, Check, Mail, PlusIcon, Search } from "lucide-react";
@@ -88,7 +89,7 @@ export default function Home() {
         </div>
         <div className="border border-neutral-100 hidden md:block rounded-[30px] bg-white/60 p-[10px]">
           <Image
-            src="/dashboard.png"
+            src={DashboardImage}
             className="rounded-[20px] border border-neutral-100 shadow"
             alt="screenshot of toow ai sales agent analytics page"
             width={1000}
