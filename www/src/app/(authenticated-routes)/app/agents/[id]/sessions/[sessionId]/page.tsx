@@ -38,7 +38,7 @@ export default function SessionDetailsPage() {
                 </TabsTrigger>
               ))}
             </TabsList>
-            <TabsContent value="Conversation">
+            <TabsContent value="Conversation" className="max-w-[500px]">
               <ul className="space-y-10">
                 {conversations?.data.map((a) => (
                   <li key={a.id} className="space-y-4">

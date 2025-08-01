@@ -11,7 +11,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <div className="justify-center pt-20 flex min-h-screen">
+    <div className="justify-center pt-32 flex min-h-screen">
       <div className="w-full max-w-[400px]">
         <Suspense>{children}</Suspense>
       </div>

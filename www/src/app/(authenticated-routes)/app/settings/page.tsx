@@ -40,7 +40,6 @@ export default function SettingsPage() {
     },
   );
 
-  // Helper to safely update both flat and nested fields
   const updateNestedField = (fieldPath: string, value: string) => {
     setFormData((prev) => {
       const updated = { ...prev };
@@ -86,11 +85,9 @@ export default function SettingsPage() {
             </TabsTrigger>
           ))}
         </TabsList>
-
         <TabsContent value={TABS[0]}>
           <EmptyState title="Coming soon..." />
         </TabsContent>
-
         <TabsContent value={TABS[1]} className="max-w-[500px]">
           <form
             onSubmit={(evt) => {
@@ -153,8 +150,9 @@ export default function SettingsPage() {
                 ))}
               </div>
             ))}
-
-            <Button type="submit">Update</Button>
+            <Button disabled={updateBusinessMutation.isPending} type="submit">
+              {updateBusinessMutation.isPending ? "Updating..." : "Update"}
+            </Button>
           </form>
         </TabsContent>
       </Tabs>
