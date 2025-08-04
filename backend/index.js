@@ -24,14 +24,8 @@ const wss = new WebSocketServer({ server, path: "/ws" });
 
 dotenv.config({ path: ".env" });
 
-app.use(
-    cors({
-        origin: "https://www.toow.io",
-        credentials: true,
-        methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-        allowedHeaders: ["Content-Type", "Authorization"],
-    }),
-);
+// TODO:have a list of allowed domains and allow cors on them
+app.use(cors());
 app.use(bodyParser.json());
 app.use(
   bodyParser.urlencoded({
