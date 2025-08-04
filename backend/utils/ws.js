@@ -5,7 +5,7 @@ import dotenv from "dotenv";
 import ffmpeg from "fluent-ffmpeg";
 import { PassThrough, Readable } from "stream";
 import { chatModel } from "../config/ai.js";
-import { polly } from "../config/tts.js";
+import { elevenLabs, polly } from "../config/tts.js";
 import { getAgentByIDService } from "../services/agent.service.js";
 import { trackAgentUsageService } from "../services/analytics.service.js";
 import {
@@ -65,17 +65,20 @@ export async function handleWebSocketConnection(ws, agentId) {
           try {
             const conversationHistory =
               await handleGetConversationHistory(transcriberSessionId);
+
             const result = streamText({
               model: chatModel,
               system: CONVERSATION_SYSTEM_PROMPT,
               prompt: `past conversations: ${JSON.stringify(conversationHistory)}. about business: ${JSON.stringify(business)}. about you: ${JSON.stringify(agent)}. customer message: ${turn.transcript}`,
             });
+
             let llmResponse = "";
             const reader = result.baseStream.getReader();
+
             while (true) {
               const { value, done } = await reader.read();
               if (value?.part?.type === "text") {
-                llmResponse += value?.part?.text;
+                llmResponse += value.part.text;
                 ws.send(
                   JSON.stringify({
                     type: "LLM_RESPONSE",
@@ -85,19 +88,37 @@ export async function handleWebSocketConnection(ws, agentId) {
               }
               if (done) break;
             }
+
+            // send entire string to ElevenLabs after LLM completes
+            const stream = await elevenLabs.client.textToSpeech.stream(
+              elevenLabs.voiceId,
+              {
+                text: llmResponse,
+                modelId: elevenLabs.modelId,
+                voiceSettings: {
+                  stability: 0.3,
+                  similarityBoost: 0.75,
+                },
+              },
+            );
+
+            for await (const audioChunk of stream) {
+              ws.send(
+                JSON.stringify({
+                  type: "TTS_AUDIO_STREAM",
+                  audio: audioChunk.toString("base64"),
+                }),
+              );
+            }
+
+            ws.send(JSON.stringify({ type: "TTS_AUDIO_DONE" }));
+
             createConversationService({
               session_id: transcriberSessionId,
               agent_id: agentId,
               user_input: turn.transcript,
               llm_response: llmResponse,
             });
-            const audioBuffer = await ttsService(llmResponse);
-            ws.send(
-              JSON.stringify({
-                type: "TTS_AUDIO",
-                audio: audioBuffer.toString("base64"),
-              }),
-            );
           } catch (err) {
             console.log("LLM ERR", err);
           }
