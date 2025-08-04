@@ -162,3 +162,5 @@ export const BUSINESS_FORM_STEPS = [
     ],
   },
 ];
+
+export const AUDIO_INPUT_TIME_SLICE = 100; // time to send audio chunks

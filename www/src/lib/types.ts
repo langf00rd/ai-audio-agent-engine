@@ -142,3 +142,9 @@ export interface AnalyzedConversation {
   } | null;
   created_at: Date;
 }
+
+export enum WebSocketResponseType {
+  TTS_AUDIO_STREAM = "TTS_AUDIO_STREAM",
+  TTS_AUDIO_STREAM_END = "TTS_AUDIO_STREAM_END",
+  ERROR = "ERROR",
+}

@@ -8,15 +8,15 @@ import { chatModel } from "../config/ai.js";
 import { elevenLabs, polly } from "../config/tts.js";
 import { getAgentByIDService } from "../services/agent.service.js";
 import { trackAgentUsageService } from "../services/analytics.service.js";
+import { getBusinessesService } from "../services/business.service.js";
 import {
   createConversationService,
   getConversationsService,
 } from "../services/conversation.service.js";
 import { createSessionService } from "../services/sessions.service.js";
+import { MAX_CONVERSATION_CONTEXT } from "./constants.js";
 import { minifyJSONForLLM, parseConversationSessionHistory } from "./index.js";
 import { CONVERSATION_SYSTEM_PROMPT } from "./prompts.js";
-import { getBusinessesService } from "../services/business.service.js";
-import { MAX_CONVERSATION_CONTEXT } from "./constants.js";
 
 dotenv.config({ path: ".env" });
 
@@ -89,12 +89,12 @@ export async function handleWebSocketConnection(ws, agentId) {
               if (done) break;
             }
 
-            // send entire string to ElevenLabs after LLM completes
-            const stream = await elevenLabs.client.textToSpeech.stream(
+            const stream = await elevenLabs.client.textToSpeech.convert(
               elevenLabs.voiceId,
               {
                 text: llmResponse,
                 modelId: elevenLabs.modelId,
+                output_format: "mp3_44100_64",
                 voiceSettings: {
                   stability: 0.3,
                   similarityBoost: 0.75,
@@ -103,15 +103,16 @@ export async function handleWebSocketConnection(ws, agentId) {
             );
 
             for await (const audioChunk of stream) {
+              const base64 = Buffer.from(audioChunk).toString("base64");
               ws.send(
                 JSON.stringify({
                   type: "TTS_AUDIO_STREAM",
-                  audio: audioChunk.toString("base64"),
+                  audio: base64,
                 }),
               );
             }
 
-            ws.send(JSON.stringify({ type: "TTS_AUDIO_DONE" }));
+            ws.send(JSON.stringify({ type: "TTS_AUDIO_STREAM_END" }));
 
             createConversationService({
               session_id: transcriberSessionId,
