@@ -3,6 +3,8 @@ import { useRef } from "react";
 
 export default function useAudio(props: {
   onAudioAvailable: (evt: BlobEvent) => void;
+  onConnectionSuccess?: () => void;
+  onDisconnectionSuccess?: () => void;
 }) {
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
 
@@ -18,6 +20,7 @@ export default function useAudio(props: {
       props.onAudioAvailable(evt);
     };
     mediaRecorder.start(AUDIO_INPUT_TIME_SLICE);
+    props.onConnectionSuccess?.();
   }
 
   async function disconnectBrowserAudio() {
@@ -25,6 +28,7 @@ export default function useAudio(props: {
     if (!mediaRecorder) return;
     mediaRecorder.stop();
     mediaRecorderRef.current = null;
+    props.onDisconnectionSuccess?.();
   }
 
   return { connectBrowserAudio, disconnectBrowserAudio };

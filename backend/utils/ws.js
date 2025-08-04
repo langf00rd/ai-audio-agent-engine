@@ -14,7 +14,10 @@ import {
   getConversationsService,
 } from "../services/conversation.service.js";
 import { createSessionService } from "../services/sessions.service.js";
-import { MAX_CONVERSATION_CONTEXT } from "./constants.js";
+import {
+  MAX_CONVERSATION_CONTEXT,
+  WebSocketResponseType,
+} from "./constants.js";
 import { minifyJSONForLLM, parseConversationSessionHistory } from "./index.js";
 import { CONVERSATION_SYSTEM_PROMPT } from "./prompts.js";
 
@@ -60,6 +63,13 @@ export async function handleWebSocketConnection(ws, agentId) {
         agent,
         transcriberSessionId,
       });
+
+      ws.send(
+        JSON.stringify({
+          type: WebSocketResponseType.AGENT_SERVICES_READY,
+        }),
+      );
+
       transcriberClient.on("turn", async (turn) => {
         if (turn.end_of_turn) {
           try {
@@ -81,7 +91,7 @@ export async function handleWebSocketConnection(ws, agentId) {
                 llmResponse += value.part.text;
                 ws.send(
                   JSON.stringify({
-                    type: "LLM_RESPONSE",
+                    type: WebSocketResponseType.LLM_RESPONSE,
                     llm_response: value.part.text,
                   }),
                 );
@@ -106,13 +116,17 @@ export async function handleWebSocketConnection(ws, agentId) {
               const base64 = Buffer.from(audioChunk).toString("base64");
               ws.send(
                 JSON.stringify({
-                  type: "TTS_AUDIO_STREAM",
+                  type: WebSocketResponseType.TTS_AUDIO_STREAM,
                   audio: base64,
                 }),
               );
             }
 
-            ws.send(JSON.stringify({ type: "TTS_AUDIO_STREAM_END" }));
+            ws.send(
+              JSON.stringify({
+                type: WebSocketResponseType.TTS_AUDIO_STREAM_END,
+              }),
+            );
 
             createConversationService({
               session_id: transcriberSessionId,
@@ -122,6 +136,11 @@ export async function handleWebSocketConnection(ws, agentId) {
             });
           } catch (err) {
             console.log("LLM ERR", err);
+            ws.send(
+              JSON.stringify({
+                type: WebSocketResponseType.LLM_PROCESSING_ERROR,
+              }),
+            );
           }
         }
       });
