@@ -24,7 +24,14 @@ const wss = new WebSocketServer({ server, path: "/ws" });
 
 dotenv.config({ path: ".env" });
 
-app.use(cors());
+app.use(
+    cors({
+        origin: "https://www.toow.io",
+        credentials: true,
+        methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+        allowedHeaders: ["Content-Type", "Authorization"],
+    }),
+);
 app.use(bodyParser.json());
 app.use(
   bodyParser.urlencoded({
