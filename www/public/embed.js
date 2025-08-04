@@ -2,8 +2,9 @@
   const currentScript = document.currentScript;
   const agentId = currentScript.getAttribute("data-agent-id");
   if (!agentId) return console.error("[embed] missing data-agent-id attribute");
-  const baseURL = "https://aivoiceagentthing.duckdns.org/embed";
+  const baseURL = "https://toow.io/embed";
   const iframe = document.createElement("iframe");
+  iframe.setAttribute("allow", "microphone; autoplay");
   iframe.src = `${baseURL}?agent_id=${encodeURIComponent(agentId)}&host=${new URL(currentScript.baseURI).host}`;
   Object.assign(iframe.style, {
     position: "fixed",
