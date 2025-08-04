@@ -7,21 +7,29 @@ export async function middleware(request: NextRequest) {
   const url = new URL(request.url);
   const fromPath = url.pathname;
   const isHomePagePath = fromPath === "/";
-  if (!isHomePagePath) {
-    const authCookie = (await cookies()).get(COOKIE_KEYS.token)?.value;
-    const businesses = (await cookies()).get(COOKIE_KEYS.business);
-    if (!authCookie) {
-      const redirectTo = new URL(ROUTES.auth.signIn, request.url);
-      redirectTo.searchParams.set("redirect", fromPath);
-      return NextResponse.redirect(redirectTo);
+
+  if (process.env.NODE_ENV === "development") {
+    if (!isHomePagePath) {
+      const authCookie = (await cookies()).get(COOKIE_KEYS.token)?.value;
+      const businesses = (await cookies()).get(COOKIE_KEYS.business);
+      if (!authCookie) {
+        const redirectTo = new URL(ROUTES.auth.signIn, request.url);
+        redirectTo.searchParams.set("redirect", fromPath);
+        return NextResponse.redirect(redirectTo);
+      }
+      if (!businesses) {
+        const redirectTo = new URL(ROUTES.onboard.business, request.url);
+        redirectTo.searchParams.set("redirect", fromPath);
+        return NextResponse.redirect(redirectTo);
+      }
     }
-    if (!businesses) {
-      const redirectTo = new URL(ROUTES.onboard.business, request.url);
-      redirectTo.searchParams.set("redirect", fromPath);
+    return NextResponse.next();
+  } else {
+    if (!isHomePagePath) {
+      const redirectTo = new URL("https://tally.so/r/w26ADj", request.url);
       return NextResponse.redirect(redirectTo);
     }
   }
-  return NextResponse.next();
 }
 
 export const config = {

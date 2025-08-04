@@ -5,18 +5,21 @@ import dotenv from "dotenv";
 import ffmpeg from "fluent-ffmpeg";
 import { PassThrough, Readable } from "stream";
 import { chatModel } from "../config/ai.js";
-import { polly } from "../config/tts.js";
+import { elevenLabs, polly } from "../config/tts.js";
 import { getAgentByIDService } from "../services/agent.service.js";
 import { trackAgentUsageService } from "../services/analytics.service.js";
+import { getBusinessesService } from "../services/business.service.js";
 import {
   createConversationService,
   getConversationsService,
 } from "../services/conversation.service.js";
 import { createSessionService } from "../services/sessions.service.js";
+import {
+  MAX_CONVERSATION_CONTEXT,
+  WebSocketResponseType,
+} from "./constants.js";
 import { minifyJSONForLLM, parseConversationSessionHistory } from "./index.js";
 import { CONVERSATION_SYSTEM_PROMPT } from "./prompts.js";
-import { getBusinessesService } from "../services/business.service.js";
-import { MAX_CONVERSATION_CONTEXT } from "./constants.js";
 
 dotenv.config({ path: ".env" });
 
@@ -60,46 +63,84 @@ export async function handleWebSocketConnection(ws, agentId) {
         agent,
         transcriberSessionId,
       });
+
+      ws.send(
+        JSON.stringify({
+          type: WebSocketResponseType.AGENT_SERVICES_READY,
+        }),
+      );
+
       transcriberClient.on("turn", async (turn) => {
         if (turn.end_of_turn) {
           try {
             const conversationHistory =
               await handleGetConversationHistory(transcriberSessionId);
+
             const result = streamText({
               model: chatModel,
               system: CONVERSATION_SYSTEM_PROMPT,
               prompt: `past conversations: ${JSON.stringify(conversationHistory)}. about business: ${JSON.stringify(business)}. about you: ${JSON.stringify(agent)}. customer message: ${turn.transcript}`,
             });
+
             let llmResponse = "";
             const reader = result.baseStream.getReader();
+
             while (true) {
               const { value, done } = await reader.read();
               if (value?.part?.type === "text") {
-                llmResponse += value?.part?.text;
+                llmResponse += value.part.text;
                 ws.send(
                   JSON.stringify({
-                    type: "LLM_RESPONSE",
+                    type: WebSocketResponseType.LLM_RESPONSE,
                     llm_response: value.part.text,
                   }),
                 );
               }
               if (done) break;
             }
+
+            const stream = await elevenLabs.client.textToSpeech.convert(
+              elevenLabs.voiceId,
+              {
+                text: llmResponse,
+                modelId: elevenLabs.modelId,
+                output_format: "mp3_44100_64",
+                voiceSettings: {
+                  stability: 0.3,
+                  similarityBoost: 0.75,
+                },
+              },
+            );
+
+            for await (const audioChunk of stream) {
+              const base64 = Buffer.from(audioChunk).toString("base64");
+              ws.send(
+                JSON.stringify({
+                  type: WebSocketResponseType.TTS_AUDIO_STREAM,
+                  audio: base64,
+                }),
+              );
+            }
+
+            ws.send(
+              JSON.stringify({
+                type: WebSocketResponseType.TTS_AUDIO_STREAM_END,
+              }),
+            );
+
             createConversationService({
               session_id: transcriberSessionId,
               agent_id: agentId,
               user_input: turn.transcript,
               llm_response: llmResponse,
             });
-            const audioBuffer = await ttsService(llmResponse);
-            ws.send(
-              JSON.stringify({
-                type: "TTS_AUDIO",
-                audio: audioBuffer.toString("base64"),
-              }),
-            );
           } catch (err) {
             console.log("LLM ERR", err);
+            ws.send(
+              JSON.stringify({
+                type: WebSocketResponseType.LLM_PROCESSING_ERROR,
+              }),
+            );
           }
         }
       });
