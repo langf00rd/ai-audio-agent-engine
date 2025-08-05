@@ -1,7 +1,11 @@
-import { generateText } from "ai";
+import { generateObject } from "ai";
 import { chatModel } from "../config/ai.js";
 import { pool } from "../config/pg.js";
-import { CONVERSATION_TAGGING_SYSTEM_PROMPT } from "../utils/prompts.js";
+import {
+  CONVERSATION_TAGGING_SYSTEM_PROMPT,
+  formatMessages,
+} from "../utils/prompts.js";
+import { analyzeConversationSchema } from "../utils/schema.js";
 import { updateSessionService } from "./sessions.service.js";
 
 export async function createConversationService(payload) {
@@ -116,36 +120,40 @@ export async function analyzeConversationsService(sessionId) {
         error: "no conversations no analyze",
       };
     }
+
     const analyzedConversations = await getAnalyzedConversationsService({
       session_id: sessionId,
     });
-    if (analyzedConversations.data?.length > 1) {
+
+    if (analyzedConversations.data) {
       return {
         status: 404,
         error: "conversation already analyzed",
+        data: analyzedConversations.data,
       };
     }
-    const formattedConversationHistory = sessionConversations.data.map((a) => {
-      return {
-        user: a.user_input,
-        llm: a.llm_response,
-        created_at: a.created_at,
-      };
-    });
-    const result = await generateText({
+
+    const { object } = await generateObject({
       model: chatModel,
-      system: CONVERSATION_TAGGING_SYSTEM_PROMPT,
-      prompt: `conversations: ${JSON.stringify(formattedConversationHistory)}`,
+      schema: analyzeConversationSchema,
+      messages: [
+        {
+          role: "system",
+          content: CONVERSATION_TAGGING_SYSTEM_PROMPT.trim(),
+        },
+        ...formatMessages(sessionConversations.data),
+      ],
     });
-    const parsedResult = JSON.parse(result.text);
+
     const response = await createAnalyzedConversationsService({
-      ...parsedResult,
+      ...object,
       session_id: sessionId,
     });
+
     if (response.error) return response;
+
     return {
-      message: "conversation analyzed",
-      data: parsedResult,
+      data: object,
       status: 200,
     };
   } catch (error) {
