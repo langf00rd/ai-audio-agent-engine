@@ -6,7 +6,7 @@ import {
 } from "./constants.js";
 
 export const analyzeConversationSchema = z.object({
-  user_info: z.object({
+  customer: z.object({
     name: z.string(),
     email: z.string(),
     phone: z.string(),

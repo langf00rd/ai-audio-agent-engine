@@ -110,44 +110,57 @@ function ConversationAnalytics(props: { sessionId: string }) {
   }
 
   return (
-    <div className="space-y-20">
-      <div className="space-y-4">
-        <h2 className="font-medium text-md">Customer</h2>
-        <div>
-          <p className="text-sm text-neutral-600">Name</p>
+    <div className="grid grid-cols-2 gap-8">
+      <div className="space-y-6">
+        <h2 className="font-semibold">Customer</h2>
+        <div className="space-y-1">
+          <p className="text-neutral-500">Name</p>
           <p>{data?.data.customer?.name || "--"}</p>
         </div>
-        <div>
-          <p className="text-sm text-neutral-600">Email</p>
+        <div className="space-y-1">
+          <p className="text-neutral-500">Email</p>
           <p>{data?.data.customer?.email || "--"}</p>
         </div>
-        <div>
-          <p className="text-sm text-neutral-600">Phone</p>
+        <div className="space-y-1">
+          <p className="text-neutral-500">Phone</p>
           <p>{data?.data.customer?.email || "--"}</p>
         </div>
-        <div>
-          <p className="text-sm text-neutral-600">Location</p>
+        <div className="space-y-1">
+          <p className="text-neutral-500">Location</p>
           <p>{data?.data.customer?.location || "--"}</p>
         </div>
       </div>
-      <div className="space-y-4">
-        <h2 className="font-medium text-md">Interaction</h2>
-        <div>
-          <p className="text-sm text-neutral-600">Intent</p>
+      <div className="space-y-6">
+        <h2 className="font-semibold">Interaction</h2>
+        <div className="space-y-1">
+          <p className="text-neutral-500">Intent</p>
           <Badge>{data?.data.intent || "--"}</Badge>
         </div>
-        <div>
-          <p className="text-sm text-neutral-600">Summary</p>
+        <div className="space-y-1">
+          <p className="text-neutral-500">Summary</p>
           <p>{data?.data.summary || "--"}</p>
         </div>
-        <div>
-          <p className="text-sm text-neutral-600">Lead Quality</p>
+        <div className="space-y-1">
+          <p className="text-neutral-500">Lead Quality</p>
           <Badge>{data?.data.lead_quality || "--"}</Badge>
         </div>
-        <div>
-          <p className="text-sm text-neutral-600">Next step</p>
+        <div className="space-y-1">
+          <p className="text-neutral-500">Next step</p>
           <p>{data?.data.next_step}</p>
         </div>
+      </div>
+      <div className="space-y-6">
+        <h2 className="font-semibold">Other Metadata</h2>
+        <ul className="space-y-6">
+          {Object.entries(data?.data?.metadata || {}).map(([key, value]) => (
+            <li key={key}>
+              <p className="text-neutral-500 capitalize">
+                {key.replaceAll("_", " ")}
+              </p>
+              <p className="capitalize">{String(value)}</p>
+            </li>
+          ))}
+        </ul>
       </div>
     </div>
   );

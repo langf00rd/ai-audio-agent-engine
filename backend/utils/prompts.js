@@ -11,7 +11,7 @@ Valid values for:
 - lead_quality: ${Object.values(leadQuality).join(" | ")}
 - next_step: ${Object.values(conversationNextSteps).join(" | ")}
 Metadata can be any key-value pair of relevant analyzed information
-Return format:{"user_info": {"name": string,"email": string,"phone": string,"location": string},"intent": string,"summary": string,"lead_quality": string,"next_step": string,"confidence": number (0 to 1),"metadata": object where all values are either strings or numbers only (no arrays, objects, or booleans)}`;
+Return format:{"customer": {"name": string,"email": string,"phone": string,"location": string},"intent": string,"summary": string,"lead_quality": string,"next_step": string,"confidence": number (0 to 1),"metadata": object where all values are either strings or numbers only (no arrays, objects, or booleans)}`;
 
 export const CONVERSATION_SYSTEM_PROMPT = `
   you are a friendly conversational sales agent for a business.
