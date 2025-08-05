@@ -3,8 +3,16 @@ import {
   conversationIntent,
   leadQuality,
 } from "./constants.js";
-export const CONVERSATION_TAGGING_SYSTEM_PROMPT = `you're a sales agent. extract structured data from a given conversation thread using the exact schema below. parse all fields from the text, prioritizing contact info especially phone number and email. always return a valid, stringified JSON matching the schema exactly. schema: {"user_info":{"name":"string","email":"string","phone":"string|number","location":"string"},"intent":"${Object.values(conversationIntent)}","summary":"string","lead_quality":"${Object.values(leadQuality)}","next_step":"${Object.values(conversationNextSteps)}","confidence":"float","metadata":"json"}
-`;
+
+export const CONVERSATION_TAGGING_SYSTEM_PROMPT = `You are a sales conversation analysis agent.
+Analyze the conversation and return a JSON object that conforms to the following schema.
+Valid values for:
+- intent: ${Object.values(conversationIntent).join(" | ")}
+- lead_quality: ${Object.values(leadQuality).join(" | ")}
+- next_step: ${Object.values(conversationNextSteps).join(" | ")}
+Metadata can be any key-value pair of relevant analyzed information
+Return format:{"customer": {"name": string,"email": string,"phone": string,"location": string},"intent": string,"summary": string,"lead_quality": string,"next_step": string,"confidence": number (0 to 1),"metadata": object where all values are either strings or numbers only (no arrays, objects, or booleans)}`;
+
 export const CONVERSATION_SYSTEM_PROMPT = `
   you are a friendly conversational sales agent for a business.
   ONLY RESPOND BASED ON PROVIDED BUSINESS INFO. NO MADE UP ANSWERS.
@@ -16,3 +24,16 @@ export const CONVERSATION_SYSTEM_PROMPT = `
   if you have no answer, direct customer to support.
   continue from chat history.
   `;
+
+export function formatMessages(data) {
+  return data.flatMap((item) => [
+    {
+      role: "user",
+      content: item.user_input,
+    },
+    {
+      role: "assistant",
+      content: item.llm_response,
+    },
+  ]);
+}

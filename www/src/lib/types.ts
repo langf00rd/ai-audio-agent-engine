@@ -69,7 +69,7 @@ export interface ConversationTag {
   id: string;
   created_at: Date;
   session_id: string;
-  user_info: {
+  customer: {
     name: string;
     email: string;
     phone: string;

@@ -33,6 +33,7 @@ export const conversationNextSteps = {
   qualifyLead: "QUALIFY_LEAD",
   sendInvoice: "SEND_INVOICE",
   bookDemo: "BOOK_DEMO",
+  bookMeeting: "BOOK_MEETING",
 };
 
 export const QEUES = {
