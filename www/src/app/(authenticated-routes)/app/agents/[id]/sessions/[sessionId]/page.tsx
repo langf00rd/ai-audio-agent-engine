@@ -110,7 +110,7 @@ function ConversationAnalytics(props: { sessionId: string }) {
   }
 
   return (
-    <div className="grid grid-cols-2 gap-8">
+    <div className="grid md:grid-cols-2 gap-8">
       <div className="space-y-6">
         <h2 className="font-semibold">Customer</h2>
         <div className="space-y-1">
