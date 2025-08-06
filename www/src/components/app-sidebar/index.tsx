@@ -17,7 +17,7 @@ import {
 } from "@/components/ui/sidebar";
 import { COOKIE_KEYS, ROUTES } from "@/lib/constants";
 import { Business, User } from "@/lib/types";
-import { LibraryBig, PlusIcon, Settings2, User2 } from "lucide-react";
+import { LibraryBig, PlusIcon, Settings2, User2, Users2 } from "lucide-react";
 import { cookies } from "next/headers";
 import Link from "next/link";
 import SignOutButton from "../buttons/sign-out";
@@ -36,6 +36,12 @@ const items = [
     title: "Settings",
     url: ROUTES.app.settings,
     icon: Settings2,
+  },
+  {
+    title: "Customers",
+    url: ROUTES.app.customers,
+    icon: Users2,
+    disabled: true,
   },
 ];
 
@@ -70,9 +76,13 @@ export async function AppSidebar() {
               {items.map((item) => (
                 <SidebarMenuItem key={item.title}>
                   <SidebarMenuButton asChild>
-                    <a href={item.url} className="group/menu-item">
+                    <a
+                      href={item.url}
+                      className={`${item.disabled && "opacity-50 cursor-not-allowed"}`}
+                    >
                       <item.icon className="opacity-60 group-hover/menu-item:rotate-45 transition-transform" />
                       <span className="text-[16px]">{item.title}</span>
+                      {item.disabled && <Badge className="ml-4">Soon</Badge>}
                     </a>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
