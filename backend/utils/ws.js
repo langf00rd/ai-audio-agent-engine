@@ -87,7 +87,10 @@ export async function handleWebSocketConnection(ws, agentId) {
 
             while (true) {
               const { value, done } = await reader.read();
-              if (value?.part?.type === "text") {
+              if (
+                value?.part?.type === "text" ||
+                value?.part?.type === "text-delta"
+              ) {
                 llmResponse += value.part.text;
                 ws.send(
                   JSON.stringify({

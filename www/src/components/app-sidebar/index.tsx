@@ -70,8 +70,8 @@ export async function AppSidebar() {
               {items.map((item) => (
                 <SidebarMenuItem key={item.title}>
                   <SidebarMenuButton asChild>
-                    <a href={item.url}>
-                      <item.icon className="opacity-60" />
+                    <a href={item.url} className="group/menu-item">
+                      <item.icon className="opacity-60 group-hover/menu-item:rotate-45 transition-transform" />
                       <span className="text-[16px]">{item.title}</span>
                     </a>
                   </SidebarMenuButton>
