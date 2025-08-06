@@ -17,8 +17,41 @@ export function copyToClipboard(text: string) {
 export function isoToReadableDate(
   dateString: Date | string,
   output?: "time" | "date-time" | "date",
+  relative?: boolean,
 ): string {
   const date = new Date(dateString);
+  const now = new Date();
+
+  if (relative) {
+    const diff = now.getTime() - date.getTime();
+    const seconds = Math.floor(diff / 1000);
+    const minutes = Math.floor(diff / 60000);
+    const hours = Math.floor(diff / 3600000);
+    const days = Math.floor(diff / 86400000);
+
+    if (seconds < 5) return "Just now";
+    if (seconds < 60) return `${seconds} secs ago`;
+    if (minutes < 60) return `${minutes} min${minutes > 1 ? "s" : ""} ago`;
+    if (hours < 24 && now.toDateString() === date.toDateString()) {
+      return `Today at ${date.toLocaleTimeString("en-GB", {
+        hour: "2-digit",
+        minute: "2-digit",
+        hour12: true,
+      })}`;
+    }
+    if (days === 1 || (hours < 48 && isYesterday(date, now)))
+      return "Yesterday";
+    if (days < 7) return `${days} day${days > 1 ? "s" : ""} ago`;
+
+    // fallback to default format if older than 7 days
+    return date.toLocaleDateString("en-GB", {
+      day: "2-digit",
+      month: "short",
+      year: "numeric",
+    });
+  }
+
+  // default behavior if `relative` is false
   if (output === "time") {
     return date.toLocaleTimeString("en-GB", {
       hour: "2-digit",
@@ -41,6 +74,12 @@ export function isoToReadableDate(
       year: "numeric",
     });
   }
+}
+
+function isYesterday(date: Date, now: Date): boolean {
+  const yesterday = new Date(now);
+  yesterday.setDate(now.getDate() - 1);
+  return date.toDateString() === yesterday.toDateString();
 }
 
 export function getDurationString(

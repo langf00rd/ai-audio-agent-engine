@@ -55,12 +55,11 @@ export default function AgentConversations() {
                         className={`size-2 rounded-full ${a.end_dt ? "bg-green-500" : "bg-red-500"}`}
                       />
                     </Badge>
-                    {/*{isoToReadableDate(a.start_dt)}*/}
                   </CardTitle>
                   <div className="text-primary/70">
                     <p className="flex items-center gap-1">
                       <Calendar size={12} />
-                      {isoToReadableDate(a.start_dt, "date")}
+                      {isoToReadableDate(a.start_dt, "date", true)}
                     </p>
                     <p className="flex items-center gap-1">
                       <Clock size={12} />
