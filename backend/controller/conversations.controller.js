@@ -25,6 +25,7 @@ export async function analyzeConversationsController(req, res) {
 export async function getAnalyzedConversationsController(req, res) {
   const { data, error, status } = await getAnalyzedConversationsService({
     session_id: req.params.sessionId,
+    ...req.query,
   });
   res.status(status).send({ data, error });
 }

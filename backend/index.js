@@ -15,6 +15,7 @@ import { conversationsRouter } from "./routers/conversations.router.js";
 import { sessionsRouter } from "./routers/sessions.router.js";
 import { usersRouter } from "./routers/users.router.js";
 import { handleWebSocketConnection } from "./utils/ws.js";
+import { providersRouter } from "./routers/providers.router.js";
 
 const PORT = 8000;
 const app = express();
@@ -52,6 +53,7 @@ app.use("/api/agents", agentsRouter);
 app.use("/api/sessions", sessionsRouter);
 app.use("/api/conversations", conversationsRouter);
 app.use("/api/analytics", analyticsRouter);
+app.use("/api/providers", providersRouter);
 
 app.get("/", (_, res) => res.send(`SERVER IS UP`));
 

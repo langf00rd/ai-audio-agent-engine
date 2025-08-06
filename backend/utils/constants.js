@@ -50,3 +50,11 @@ export const WebSocketResponseType = Object.freeze({
   LLM_PROCESSING_ERROR: "LLM_PROCESSING_ERROR",
   LLM_RESPONSE: "LLM_RESPONSE",
 });
+
+export const GOOGLE_SCOPES = {
+  auth: [
+    "https://www.googleapis.com/auth/gmail.readonly",
+    "https://www.googleapis.com/auth/gmail.send",
+    "https://www.googleapis.com/auth/userinfo.email",
+  ],
+};
