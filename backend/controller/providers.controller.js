@@ -1,4 +1,5 @@
 import {
+  googleProviderGetMailsService,
   googleProviderService,
   googleProviderTokensService,
 } from "../services/providers.service.js";
@@ -14,6 +15,14 @@ export async function googleProviderController(req, res) {
 export async function googleProviderTokensController(req, res) {
   const { data, error, status } = await googleProviderTokensService(
     req.query.code,
+  );
+  res.status(status).send({ data, error });
+}
+
+export async function googleProviderGetMailsController(req, res) {
+  const { data, error, status } = await googleProviderGetMailsService(
+    req.query.access_token,
+    req.query.refresh_token,
   );
   res.status(status).send({ data, error });
 }

@@ -12,10 +12,10 @@ import { analyticsRouter } from "./routers/analytics.router.js";
 import { authRouter } from "./routers/auth.router.js";
 import { businessRouter } from "./routers/business.router.js";
 import { conversationsRouter } from "./routers/conversations.router.js";
+import { providersRouter } from "./routers/providers.router.js";
 import { sessionsRouter } from "./routers/sessions.router.js";
 import { usersRouter } from "./routers/users.router.js";
 import { handleWebSocketConnection } from "./utils/ws.js";
-import { providersRouter } from "./routers/providers.router.js";
 
 const PORT = 8000;
 const app = express();
