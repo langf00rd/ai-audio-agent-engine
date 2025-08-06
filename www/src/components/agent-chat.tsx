@@ -35,6 +35,9 @@ export default function AgentChat(props: { isEmbed?: boolean; id: string }) {
       if (type === WebSocketResponseType.AGENT_SERVICES_READY) {
         setIsAgentServicesReady(true);
       }
+      if (type === WebSocketResponseType.LLM_PROCESSING_ERROR) {
+        toast("An error occured");
+      }
     },
   });
 
