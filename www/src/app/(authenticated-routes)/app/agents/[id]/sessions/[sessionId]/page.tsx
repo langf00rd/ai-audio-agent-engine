@@ -77,19 +77,6 @@ function ConversationAnalytics(props: { sessionId: string }) {
     enabled: !!props.sessionId,
   });
 
-  // const [isLoading, setIsLoading] = useState(false);
-  // async function handleTagConversation() {
-  //   try {
-  //     setIsLoading(true);
-  //     await analyzeConversation(props.sessionId);
-  //     window.location.reload();
-  //   } catch (err) {
-  //     toast((err as Error).message);
-  //   } finally {
-  //     setIsLoading(false);
-  //   }
-  // }
-
   if (isFetching) return <Loader />;
 
   if (error) {

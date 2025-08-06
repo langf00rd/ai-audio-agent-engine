@@ -14,14 +14,33 @@ export function copyToClipboard(text: string) {
   toast("copied to clipboard");
 }
 
-export function isoToReadableDate(dateString: Date): string {
+export function isoToReadableDate(
+  dateString: Date | string,
+  output?: "time" | "date-time" | "date",
+): string {
   const date = new Date(dateString);
-  const options: Intl.DateTimeFormatOptions = {
-    day: "2-digit",
-    month: "short",
-    year: "numeric",
-  };
-  return date.toLocaleDateString("en-GB", options);
+  if (output === "time") {
+    return date.toLocaleTimeString("en-GB", {
+      hour: "2-digit",
+      minute: "2-digit",
+      hour12: true,
+    });
+  } else if (output === "date-time") {
+    return date.toLocaleString("en-GB", {
+      day: "2-digit",
+      month: "short",
+      year: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+      second: "2-digit",
+    });
+  } else {
+    return date.toLocaleDateString("en-GB", {
+      day: "2-digit",
+      month: "short",
+      year: "numeric",
+    });
+  }
 }
 
 export function getDurationString(
