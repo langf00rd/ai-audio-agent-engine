@@ -52,7 +52,8 @@ export async function googleProviderGetMailsService(accessToken, refreshToken) {
 
     const res = await gmail.users.messages.list({
       userId: "me",
-      maxResults: 5,
+      // q: "from:example@gmail.com",
+      maxResults: 10,
     });
 
     const threadsMap = new Map();

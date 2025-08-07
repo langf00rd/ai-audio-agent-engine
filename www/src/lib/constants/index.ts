@@ -11,6 +11,7 @@ export const ROUTES = {
     },
     settings: "/app/settings",
     customers: "#",
+    inbox: "#",
   },
   agent: {
     index: "/app/agents",
