@@ -21,6 +21,7 @@ import {
   LibraryBig,
   Mail,
   PlusIcon,
+  Repeat2,
   Settings2,
   User2,
   Users2,
@@ -54,6 +55,12 @@ const items = [
     title: "Inbox",
     url: ROUTES.app.customers,
     icon: Mail,
+    disabled: true,
+  },
+  {
+    title: "Actions",
+    url: ROUTES.app.actions,
+    icon: Repeat2,
     disabled: true,
   },
 ];

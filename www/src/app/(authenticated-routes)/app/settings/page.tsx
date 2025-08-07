@@ -1,6 +1,8 @@
 "use client";
 
 import EmptyState from "@/components/empty-state";
+import GmailIcon from "@/components/images/gmail.svg";
+import SettingItem from "@/components/setting-item";
 import { H1 } from "@/components/typography";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -16,15 +18,23 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
 import useBusiness from "@/hooks/use-business";
 import { BUSINESS_FORM_STEPS, COOKIE_KEYS } from "@/lib/constants";
-import { Business } from "@/lib/types";
+import { useProviders } from "@/lib/services/mutations/providers";
+import { Business, User } from "@/lib/types";
 import { getCookie } from "@/lib/utils";
+import Image from "next/image";
 import { useState } from "react";
 
-const TABS = ["Your account", "Business"];
+const TABS = ["Your account", "Connections", "Business"];
 
 export default function SettingsPage() {
+  const { getGoogleProviderKeys } = useProviders();
   const { updateBusinessMutation } = useBusiness();
+
   const currentBusiness = getCookie<Business>(COOKIE_KEYS.currentBusiness, {
+    parse: true,
+  });
+
+  const user = getCookie<User>(COOKIE_KEYS.user, {
     parse: true,
   });
 
@@ -43,7 +53,6 @@ export default function SettingsPage() {
   const updateNestedField = (fieldPath: string, value: string) => {
     setFormData((prev) => {
       const updated = { ...prev };
-
       if (fieldPath.startsWith("contact_info_")) {
         const key = fieldPath.replace("contact_info_", "");
         return {
@@ -54,7 +63,6 @@ export default function SettingsPage() {
           },
         };
       }
-
       return {
         ...updated,
         [fieldPath]: value,
@@ -62,7 +70,7 @@ export default function SettingsPage() {
     });
   };
 
-  // Helper to safely get field value from nested structure
+  // helper to safely get field value from nested structure
   const getFieldValue = (fieldPath: string): string => {
     if (fieldPath.startsWith("contact_info_")) {
       const key = fieldPath.replace("contact_info_", "");
@@ -70,7 +78,6 @@ export default function SettingsPage() {
         formData.contact_info?.[key as keyof typeof formData.contact_info] || ""
       );
     }
-
     return (formData[fieldPath as keyof Business] as string) || "";
   };
 
@@ -88,7 +95,39 @@ export default function SettingsPage() {
         <TabsContent value={TABS[0]}>
           <EmptyState title="Coming soon..." />
         </TabsContent>
-        <TabsContent value={TABS[1]} className="max-w-[500px]">
+        <TabsContent value={TABS[1]}>
+          <SettingItem
+            title="Allow Agents to Follow Up Automatically"
+            description="Grants your agents permission to initiate follow-ups with customers using their provided contact details."
+          >
+            {user?.google_gmail_provider_connected ? (
+              <Button variant="outline" disabled>
+                <Image
+                  src={GmailIcon}
+                  alt="gmail icon"
+                  width={18}
+                  height={18}
+                />
+                Connected
+              </Button>
+            ) : (
+              <Button
+                variant="outline"
+                isLoading={getGoogleProviderKeys.isPending}
+                onClick={() => getGoogleProviderKeys.mutate()}
+              >
+                <Image
+                  src={GmailIcon}
+                  alt="gmail icon"
+                  width={18}
+                  height={18}
+                />
+                Connect
+              </Button>
+            )}
+          </SettingItem>
+        </TabsContent>
+        <TabsContent value={TABS[2]} className="max-w-[500px]">
           <form
             onSubmit={(evt) => {
               evt.preventDefault();
@@ -101,11 +140,9 @@ export default function SettingsPage() {
                   <h3 className="font-semibold">{step.title}</h3>
                   <p className="opacity-65">{step.description}</p>
                 </div>
-
                 {step.fields.map((field) => (
                   <fieldset key={field.label} className="space-y-2">
                     <Label htmlFor={field.value}>{field.label}</Label>
-
                     {field.inputType === "textarea" ? (
                       <Textarea
                         id={field.value}

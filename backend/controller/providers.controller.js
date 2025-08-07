@@ -3,6 +3,7 @@ import {
   googleProviderService,
   googleProviderTokensService,
 } from "../services/providers.service.js";
+import { decodeJWT } from "../utils/auth.js";
 import { GOOGLE_SCOPES } from "../utils/constants.js";
 
 export async function googleProviderController(req, res) {
@@ -13,16 +14,27 @@ export async function googleProviderController(req, res) {
 }
 
 export async function googleProviderTokensController(req, res) {
+  const authToken = req.headers.authorization;
+  if (!authToken) res.status(401).send({ error: "unauthorized" });
+  const userId = decodeJWT(authToken).userId;
+  if (!userId) res.status(401).send({ error: "unauthorized" });
   const { data, error, status } = await googleProviderTokensService(
     req.query.code,
+    userId,
   );
   res.status(status).send({ data, error });
+
+  // const { data, error, status } = await googleProviderTokensService(
+  //   req.query.code,
+  // );
+  // res.status(status).send({ data, error });
 }
 
 export async function googleProviderGetMailsController(req, res) {
-  const { data, error, status } = await googleProviderGetMailsService(
-    req.query.access_token,
-    req.query.refresh_token,
-  );
+  const authToken = req.headers.authorization;
+  if (!authToken) res.status(401).send({ error: "unauthorized" });
+  const userId = decodeJWT(authToken).userId;
+  if (!userId) res.status(401).send({ error: "unauthorized" });
+  const { data, error, status } = await googleProviderGetMailsService(userId);
   res.status(status).send({ data, error });
 }

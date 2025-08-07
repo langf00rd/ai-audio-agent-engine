@@ -24,7 +24,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
 
-const tabs = ["General", "Embedding & Follow-ups", "Knowledge base"];
+const tabs = ["General", "Embedding", "Knowledge base"];
 
 export default function ConfigureAgent() {
   const params = useParams();
@@ -78,14 +78,6 @@ export default function ConfigureAgent() {
                   });
                 }}
               />
-            </SettingItem>
-            <SettingItem
-              title="Automatically allow agent to follow-up with customers"
-              description="This will give the agent permission to communicate with customers via their provided communication information"
-            >
-              <Button disabled variant="outline">
-                Allow
-              </Button>
             </SettingItem>
             <Button
               disabled={isFetching}

@@ -11,6 +11,8 @@ export interface User {
   first_name: string;
   last_name: string;
   businesses: Business[];
+  google_gmail_provider_connected: boolean;
+  google_gmail_provider_connected_at: Date;
 }
 
 export interface Analytics<T> {

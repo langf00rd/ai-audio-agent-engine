@@ -1,5 +1,12 @@
 import { google } from "googleapis";
 import { oAuth2Client } from "../config/google.js";
+import {
+  createAuthTokenService,
+  getAuthTokenService,
+} from "./auth-tokens.service.js";
+import { compare, hash } from "bcrypt";
+import { pool } from "../config/pg.js";
+import { decrypt, encrypt } from "../utils/security.js";
 
 export async function googleProviderService(scope) {
   try {
@@ -20,16 +27,30 @@ export async function googleProviderService(scope) {
   }
 }
 
-export async function googleProviderTokensService(code) {
+export async function googleProviderTokensService(code, userId) {
   try {
     const { tokens } = await oAuth2Client.getToken(code);
-    oAuth2Client.setCredentials(tokens);
+
+    const { status, error } = await createAuthTokenService({
+      access_token: encrypt(tokens.access_token),
+      refresh_token: encrypt(tokens.refresh_token),
+      expires_at: new Date(tokens.expiry_date).toISOString(),
+      user_id: userId,
+      provider: "GOOGLE_GMAIL",
+    });
+
+    // update user google gmail provider connection status in DB
+    await pool.query(
+      `UPDATE users
+       SET google_gmail_provider_connected = TRUE,
+           google_gmail_provider_connected_at = NOW()
+       WHERE id = $1`,
+      [userId],
+    );
+
     return {
-      status: 200,
-      data: {
-        access_token: tokens.access_token,
-        refresh_token: tokens.refresh_token,
-      },
+      status,
+      error,
     };
   } catch (error) {
     return {
@@ -39,9 +60,23 @@ export async function googleProviderTokensService(code) {
   }
 }
 
-export async function googleProviderGetMailsService(accessToken, refreshToken) {
+export async function googleProviderGetMailsService(userId) {
   try {
-    // create a new temporal oauth2 client
+    const { data, error, status } = await getAuthTokenService({
+      user_id: userId,
+    });
+
+    if (error) {
+      return {
+        status,
+        error,
+      };
+    }
+
+    const accessToken = decrypt(data.access_token);
+    const refreshToken = decrypt(data.refresh_token);
+
+    // create a new temporal oauth2 client with user credentials
     const _oAuth2Client = oAuth2Client;
     _oAuth2Client.setCredentials({
       access_token: accessToken,
