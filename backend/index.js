@@ -12,6 +12,7 @@ import { analyticsRouter } from "./routers/analytics.router.js";
 import { authRouter } from "./routers/auth.router.js";
 import { businessRouter } from "./routers/business.router.js";
 import { conversationsRouter } from "./routers/conversations.router.js";
+import { providersRouter } from "./routers/providers.router.js";
 import { sessionsRouter } from "./routers/sessions.router.js";
 import { usersRouter } from "./routers/users.router.js";
 import { handleWebSocketConnection } from "./utils/ws.js";
@@ -52,6 +53,7 @@ app.use("/api/agents", agentsRouter);
 app.use("/api/sessions", sessionsRouter);
 app.use("/api/conversations", conversationsRouter);
 app.use("/api/analytics", analyticsRouter);
+app.use("/api/providers", providersRouter);
 
 app.get("/", (_, res) => res.send(`SERVER IS UP`));
 

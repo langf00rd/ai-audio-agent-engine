@@ -39,7 +39,9 @@ export function useAudioStream() {
         const queue = chunkQueueRef.current;
         if (queue.length > 0 && !sourceBuffer.updating) {
           const nextChunk = queue.shift();
-          if (nextChunk) sourceBuffer.appendBuffer(nextChunk);
+          if (nextChunk) {
+            sourceBuffer.appendBuffer(nextChunk as unknown as ArrayBuffer);
+          }
         }
       });
     });

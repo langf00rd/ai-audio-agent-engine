@@ -3,6 +3,7 @@
 import EmptyState from "@/components/empty-state";
 import CreateAgentForm from "@/components/forms/create-agent";
 import Loader from "@/components/loader";
+import SettingItem from "@/components/setting-item";
 import { ErrorText } from "@/components/typography";
 import {
   Breadcrumb,
@@ -23,7 +24,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
 
-const tabs = ["General", "Sharing & Embedding", "Knowledge base"];
+const tabs = ["General", "Embedding", "Knowledge base"];
 
 export default function ConfigureAgent() {
   const params = useParams();
@@ -60,31 +61,24 @@ export default function ConfigureAgent() {
             />
           )}
         </TabsContent>
-        <TabsContent value={tabs[1]} className="max-w-[500px]">
+        <TabsContent value={tabs[1]}>
           <div className="space-y-8">
-            <div className="flex items-center justify-between gap-2">
-              <div className="flex-[3] space-y-1">
-                <h3 className="font-medium">Make agent public</h3>
-                <p className="text-sm text-neutral-500">
-                  Allow others to interact with this agent by embedding it on
-                  your website. Your agent will remain privat unless this is
-                  turned on.
-                </p>
-              </div>
-              <div className="flex-1 flex items-center justify-end">
-                <Switch
-                  id="airplane-mode"
-                  checked={agent?.is_public}
-                  onCheckedChange={(state) => {
-                    if (!agent) return;
-                    setAgent({
-                      ...agent,
-                      is_public: state,
-                    });
-                  }}
-                />
-              </div>
-            </div>
+            <SettingItem
+              title="Make agent public"
+              description="Allow others to interact with this agent by embedding it on your website. Your agent will remain privat unless this is turned on."
+            >
+              <Switch
+                id="airplane-mode"
+                checked={agent?.is_public}
+                onCheckedChange={(state) => {
+                  if (!agent) return;
+                  setAgent({
+                    ...agent,
+                    is_public: state,
+                  });
+                }}
+              />
+            </SettingItem>
             <Button
               disabled={isFetching}
               onClick={() =>

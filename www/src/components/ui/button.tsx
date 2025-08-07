@@ -1,16 +1,16 @@
+import { cn } from "@/lib/utils";
 import { Slot } from "@radix-ui/react-slot";
 import { cva, type VariantProps } from "class-variance-authority";
+import { Loader2 } from "lucide-react";
 import * as React from "react";
 
-import { cn } from "@/lib/utils";
-
 const buttonVariants = cva(
-  "inline-flex items-center uppercase rounded-[14px] justify-center gap-2 whitespace-nowrap text-sm font-bold tracking-[-0.2px] cursor-pointer transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive",
+  "inline-flex items-center uppercase active:scale-[0.95] rounded-[14px] justify-center gap-2 whitespace-nowrap text-sm font-bold tracking-[-0.2px] cursor-pointer transition-all disabled:cursor-not-allowed disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive",
   {
     variants: {
       variant: {
         default:
-          "bg-gradient-to-b to-primary from-[#000] active:from-[#140c00] active:to-[#432601] transition-all border-2 border-black text-primary-foreground shadow-xs hover:bg-primary/90",
+          "bg-primary transition-all border-2 border-black text-primary-foreground shadow-xs hover:bg-primary/90",
         destructive:
           "bg-destructive text-white shadow-xs hover:bg-destructive/90 focus-visible:ring-destructive/20 dark:focus-visible:ring-destructive/40 dark:bg-destructive/60",
         "destructive-secondary":
@@ -42,19 +42,38 @@ function Button({
   variant,
   size,
   asChild = false,
+  isLoading = false,
+  disabled,
+  children,
   ...props
 }: React.ComponentProps<"button"> &
   VariantProps<typeof buttonVariants> & {
     asChild?: boolean;
+    isLoading?: boolean;
   }) {
   const Comp = asChild ? Slot : "button";
 
   return (
     <Comp
       data-slot="button"
-      className={cn(buttonVariants({ variant, size, className }))}
+      className={cn(buttonVariants({ variant, size, className }), "relative")}
+      disabled={disabled || isLoading}
       {...props}
-    />
+    >
+      {isLoading && (
+        <div className="absolute inset-0 flex items-center justify-center">
+          <Loader2 className="animate-spin" />
+        </div>
+      )}
+      <div
+        className={cn(
+          { invisible: isLoading },
+          "flex items-center justify-center gap-2",
+        )}
+      >
+        {children}
+      </div>
+    </Comp>
   );
 }
 

@@ -3,7 +3,9 @@
 import { SessionConversationsBreadCrumbs } from "@/components/breadcrumbs";
 import EmptyState from "@/components/empty-state";
 import Loader from "@/components/loader";
+import SettingItem from "@/components/setting-item";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   fetchAnalyzedConversation,
@@ -32,7 +34,7 @@ export default function SessionDetailsPage() {
         <>
           <Tabs defaultValue="Analytics">
             <TabsList>
-              {["Analytics", "Conversation"].map((a) => (
+              {["Analytics", "Conversation", "Actions"].map((a) => (
                 <TabsTrigger key={a} value={a}>
                   {a}
                 </TabsTrigger>
@@ -58,6 +60,14 @@ export default function SessionDetailsPage() {
             </TabsContent>
             <TabsContent value="Analytics">
               <ConversationAnalytics sessionId={String(sessionId)} />
+            </TabsContent>
+            <TabsContent value="Actions">
+              <SettingItem
+                title="Allow agent to follow-up with customer"
+                description="This will give the agent permission to communicate with the customer via their provided email address, using your email address"
+              >
+                <Button variant="outline">Give access</Button>
+              </SettingItem>
             </TabsContent>
           </Tabs>
         </>
@@ -99,7 +109,7 @@ function ConversationAnalytics(props: { sessionId: string }) {
   return (
     <div className="grid md:grid-cols-2 gap-8">
       <div className="space-y-6">
-        <h2 className="font-semibold">Customer</h2>
+        <h2 className="font-semibold">Customer Information</h2>
         <div className="space-y-1">
           <p className="text-neutral-500">Name</p>
           <p>{data?.data.customer?.name || "--"}</p>

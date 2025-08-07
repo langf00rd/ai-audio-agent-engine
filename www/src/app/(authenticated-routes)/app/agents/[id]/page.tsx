@@ -174,7 +174,7 @@ export default function AgentInfo() {
                     <ChevronRight size={12} />
                     <p>General</p>
                     <ChevronRight size={12} />
-                    <p>Make agent public</p>
+                    <p>Embedding</p>
                   </div>
                   <Link href={`${ROUTES.agent.index}/${params.id}/configure`}>
                     <Button>Or click here</Button>

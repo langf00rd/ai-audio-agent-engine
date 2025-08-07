@@ -10,3 +10,10 @@ export const pool = new Pool({
   port: process.env.DATABASE_PORT,
   database: process.env.DATABASE_NAME,
 });
+
+async function seed() {
+  // const client = await pool.connect();
+  //  await client.query(`CREATE TABLE abc`);
+}
+
+seed();

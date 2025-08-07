@@ -17,7 +17,15 @@ import {
 } from "@/components/ui/sidebar";
 import { COOKIE_KEYS, ROUTES } from "@/lib/constants";
 import { Business, User } from "@/lib/types";
-import { LibraryBig, PlusIcon, Settings2, User2 } from "lucide-react";
+import {
+  LibraryBig,
+  Mail,
+  PlusIcon,
+  Repeat2,
+  Settings2,
+  User2,
+  Users2,
+} from "lucide-react";
 import { cookies } from "next/headers";
 import Link from "next/link";
 import SignOutButton from "../buttons/sign-out";
@@ -37,6 +45,24 @@ const items = [
     url: ROUTES.app.settings,
     icon: Settings2,
   },
+  {
+    title: "Customers",
+    url: ROUTES.app.customers,
+    icon: Users2,
+    disabled: true,
+  },
+  {
+    title: "Inbox",
+    url: ROUTES.app.customers,
+    icon: Mail,
+    disabled: true,
+  },
+  {
+    title: "Actions",
+    url: ROUTES.app.actions,
+    icon: Repeat2,
+    disabled: true,
+  },
 ];
 
 export async function AppSidebar() {
@@ -50,7 +76,7 @@ export async function AppSidebar() {
   return (
     <Sidebar
       collapsible="icon"
-      className="border-r border-neutral-100 w-[20vw]"
+      className="border-r border-neutral-100 w-[18vw]"
     >
       <SidebarHeader className="h-[140px] p-4 px-8 border-b border-neutral-100  bg-white flex items-start">
         <Logo />
@@ -70,9 +96,15 @@ export async function AppSidebar() {
               {items.map((item) => (
                 <SidebarMenuItem key={item.title}>
                   <SidebarMenuButton asChild>
-                    <a href={item.url} className="group/menu-item">
-                      <item.icon className="opacity-60 group-hover/menu-item:rotate-45 transition-transform" />
+                    <a
+                      href={item.disabled ? "#" : item.url}
+                      className={`${item.disabled && "opacity-50 cursor-not-allowed"}`}
+                    >
+                      <item.icon className="opacity-60 group-hover/menu-item:rotate-[12deg] transition-transform" />
                       <span className="text-[16px]">{item.title}</span>
+                      {item.disabled && (
+                        <Badge className="ml-4 scale-[0.8]">Soon</Badge>
+                      )}
                     </a>
                   </SidebarMenuButton>
                 </SidebarMenuItem>

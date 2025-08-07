@@ -146,11 +146,17 @@ export function getCookie<T>(
   key: COOKIE_KEYS,
   opts?: {
     parse?: boolean;
+    dataType?: "boolean";
   },
 ) {
   if (!key) throw new Error("key is required");
   const data = Cookie.get(String(key));
   if (!data) return null;
-  if (opts?.parse) return JSON.parse(data) as T;
+  if (opts?.parse) {
+    if (opts?.dataType === "boolean") {
+      return (data === "true") as T; // strict boolean conversion
+    }
+    return JSON.parse(data) as T;
+  }
   return data as T;
 }

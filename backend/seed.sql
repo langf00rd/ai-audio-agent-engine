@@ -79,7 +79,26 @@ CREATE TABLE IF NOT EXISTS analytics (
   created_at TIMESTAMPTZ DEFAULT NOW()
 );
 
+-- AUTH TOKENS
+CREATE TABLE auth_tokens (
+    id BIGSERIAL PRIMARY KEY,
+    user_id BIGSERIAL REFERENCES users(id) ON DELETE CASCADE,
+    provider TEXT,
+    access_token TEXT NOT NULL,
+    refresh_token TEXT,
+    expires_at TIMESTAMPTZ,
+    created_at TIMESTAMPTZ DEFAULT NOW(),
+    updated_at TIMESTAMPTZ
+);
+
+ALTER TABLE users
+ADD COLUMN google_gmail_provider_connected BOOLEAN DEFAULT FALSE,
+ADD COLUMN google_gmail_provider_connected_at TIMESTAMPTZ;
+
+
+
 -- GRANT SELECT, INSERT, UPDATE, DELETE ON TABLE users TO <user>;
+-- GRANT SELECT, INSERT, UPDATE, DELETE ON TABLE auth_tokens TO <user>;
 -- GRANT SELECT, INSERT, UPDATE, DELETE ON TABLE businesses TO <user>;
 -- GRANT SELECT, INSERT, UPDATE, DELETE ON TABLE agents TO <user>;
 -- GRANT SELECT, INSERT, UPDATE, DELETE ON TABLE analytics TO <user>;
@@ -87,6 +106,7 @@ CREATE TABLE IF NOT EXISTS analytics (
 -- GRANT SELECT, INSERT, UPDATE, DELETE ON TABLE conversations TO <user>;
 -- GRANT SELECT, INSERT, UPDATE, DELETE ON TABLE analyzed_conversations TO <user>;
 -- GRANT USAGE, SELECT ON SEQUENCE businesses_id_seq TO <user>;
+-- GRANT USAGE, SELECT ON SEQUENCE auth_tokens_id_seq TO <user>;
 -- GRANT USAGE, SELECT ON SEQUENCE users_id_seq TO <user>;
 -- GRANT USAGE, SELECT ON SEQUENCE agents_id_seq TO <user>;
 -- GRANT USAGE, SELECT ON SEQUENCE conversations_id_seq TO <user>;
