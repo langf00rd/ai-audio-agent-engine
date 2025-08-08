@@ -11,8 +11,6 @@ export interface User {
   first_name: string;
   last_name: string;
   businesses: Business[];
-  google_gmail_provider_connected: boolean;
-  google_gmail_provider_connected_at: Date;
 }
 
 export interface Analytics<T> {
@@ -152,4 +150,16 @@ export enum WebSocketResponseType {
   LLM_RESPONSE = "LLM_RESPONSE",
   AGENT_SERVICES_READY = "AGENT_SERVICES_READY",
   LLM_PROCESSING_ERROR = "LLM_PROCESSING_ERROR",
+}
+
+export interface AuthToken {
+  id: string;
+  user_id: string;
+  provider: "GOOGLE_GMAIL";
+  access_token: string;
+  refresh_token: string;
+  expires_at: Date;
+  created_at: Date;
+  updated_at: null | Date;
+  business_id: string;
 }

@@ -20,14 +20,10 @@ export async function googleProviderTokensController(req, res) {
   if (!userId) res.status(401).send({ error: "unauthorized" });
   const { data, error, status } = await googleProviderTokensService(
     req.query.code,
+    req.query.businessId,
     userId,
   );
   res.status(status).send({ data, error });
-
-  // const { data, error, status } = await googleProviderTokensService(
-  //   req.query.code,
-  // );
-  // res.status(status).send({ data, error });
 }
 
 export async function googleProviderGetMailsController(req, res) {

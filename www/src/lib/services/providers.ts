@@ -11,9 +11,12 @@ export async function fetchGoogleProviderOauthURL() {
   return result as APIResponse<string>;
 }
 
-export async function fetchGoogleProviderOauthCredentials(code: string) {
+export async function fetchGoogleProviderOauthCredentials(
+  code: string,
+  businessId: string,
+) {
   const response = await fetch(
-    `${API_BASE_URL}/providers/auth/google/tokens?code=${code}`,
+    `${API_BASE_URL}/providers/auth/google/tokens?code=${code}&businessId=${businessId}`,
     {
       headers: {
         Authorization: Cookies.get(COOKIE_KEYS.token),

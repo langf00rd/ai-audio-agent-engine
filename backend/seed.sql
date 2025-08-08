@@ -95,7 +95,12 @@ ALTER TABLE users
 ADD COLUMN google_gmail_provider_connected BOOLEAN DEFAULT FALSE,
 ADD COLUMN google_gmail_provider_connected_at TIMESTAMPTZ;
 
+ALTER TABLE auth_tokens
+ADD COLUMN business_id BIGINT REFERENCES businesses(id) ON DELETE CASCADE;
 
+ALTER TABLE users
+DROP COLUMN google_gmail_provider_connected,
+DROP COLUMN google_gmail_provider_connected_at;
 
 -- GRANT SELECT, INSERT, UPDATE, DELETE ON TABLE users TO <user>;
 -- GRANT SELECT, INSERT, UPDATE, DELETE ON TABLE auth_tokens TO <user>;

@@ -27,7 +27,7 @@ export async function googleProviderService(scope) {
   }
 }
 
-export async function googleProviderTokensService(code, userId) {
+export async function googleProviderTokensService(code, businessId, userId) {
   try {
     const { tokens } = await oAuth2Client.getToken(code);
 
@@ -37,16 +37,17 @@ export async function googleProviderTokensService(code, userId) {
       expires_at: new Date(tokens.expiry_date).toISOString(),
       user_id: userId,
       provider: "GOOGLE_GMAIL",
+      business_id: businessId,
     });
 
     // update user google gmail provider connection status in DB
-    await pool.query(
-      `UPDATE users
-       SET google_gmail_provider_connected = TRUE,
-           google_gmail_provider_connected_at = NOW()
-       WHERE id = $1`,
-      [userId],
-    );
+    // await pool.query(
+    //   `UPDATE users
+    //    SET google_gmail_provider_connected = TRUE,
+    //        google_gmail_provider_connected_at = NOW()
+    //    WHERE id = $1`,
+    //   [userId],
+    // );
 
     return {
       status,
