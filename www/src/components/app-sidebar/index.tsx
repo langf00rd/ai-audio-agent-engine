@@ -46,14 +46,13 @@ const items = [
     icon: Settings2,
   },
   {
-    title: "Customers",
-    url: ROUTES.app.customers,
+    title: "Contacts",
+    url: ROUTES.app.contacts,
     icon: Users2,
-    disabled: true,
   },
   {
     title: "Inbox",
-    url: ROUTES.app.customers,
+    url: ROUTES.app.inbox,
     icon: Mail,
     disabled: true,
   },

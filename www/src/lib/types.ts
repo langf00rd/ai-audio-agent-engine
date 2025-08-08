@@ -163,3 +163,22 @@ export interface AuthToken {
   updated_at: null | Date;
   business_id: string;
 }
+
+export interface Contact {
+  id: string;
+  business_id: string;
+  first_name: string;
+  last_name: string;
+  notes: null | string;
+  created_at: Date;
+  updated_at: null;
+  contact_methods: ContactMethod[];
+}
+
+interface ContactMethod {
+  id: string;
+  type: "PHONE";
+  value: string;
+  created_at: Date | Date;
+  updated_at: null;
+}

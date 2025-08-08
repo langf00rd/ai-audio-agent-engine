@@ -75,7 +75,7 @@ export function DataTable<TData, TValue>({
                 className="h-14 cursor-pointer border-b border-neutral-200/50"
               >
                 {row.getVisibleCells().map((cell) => (
-                  <TableCell key={cell.id}>
+                  <TableCell key={cell.id} className="capitalize">
                     {flexRender(cell.column.columnDef.cell, cell.getContext())}
                   </TableCell>
                 ))}

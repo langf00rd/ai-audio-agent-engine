@@ -10,7 +10,7 @@ export const ROUTES = {
       create: "/app/agents/create",
     },
     settings: "/app/settings",
-    customers: "#",
+    contacts: "/app/contacts",
     actions: "#",
     inbox: "#",
   },
@@ -34,7 +34,6 @@ export enum COOKIE_KEYS {
   user = "user",
   business = "business",
   currentBusiness = "current_business",
-  hasConnectedGoogleGmail = "connected_google_gmail",
 }
 export const AUDIO_INPUT_SILENCE_THRESHOLD_DURATION = 2000;
 export const DAYS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
