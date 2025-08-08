@@ -9,4 +9,4 @@ export const providersRouter = express.Router();
 
 providersRouter.get("/auth/google", googleProviderController);
 providersRouter.get("/auth/google/tokens", googleProviderTokensController);
-providersRouter.get("/auth/google/mail", googleProviderGetMailsController);
+providersRouter.get("/google/mail", googleProviderGetMailsController);

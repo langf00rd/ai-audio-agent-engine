@@ -61,10 +61,10 @@ export async function googleProviderTokensService(code, businessId, userId) {
   }
 }
 
-export async function googleProviderGetMailsService(userId) {
+export async function googleProviderGetMailsService(businessId) {
   try {
     const { data, error, status } = await getAuthTokenService({
-      user_id: userId,
+      business_id: businessId,
     });
 
     if (error) {
@@ -74,14 +74,11 @@ export async function googleProviderGetMailsService(userId) {
       };
     }
 
-    const accessToken = decrypt(data.access_token);
-    const refreshToken = decrypt(data.refresh_token);
-
     // create a new temporal oauth2 client with user credentials
     const _oAuth2Client = oAuth2Client;
     _oAuth2Client.setCredentials({
-      access_token: accessToken,
-      refresh_token: refreshToken,
+      access_token: data.access_token,
+      refresh_token: data.refresh_token,
     });
 
     const gmail = google.gmail({ version: "v1", auth: _oAuth2Client });

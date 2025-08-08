@@ -31,6 +31,8 @@ export async function googleProviderGetMailsController(req, res) {
   if (!authToken) res.status(401).send({ error: "unauthorized" });
   const userId = decodeJWT(authToken).userId;
   if (!userId) res.status(401).send({ error: "unauthorized" });
-  const { data, error, status } = await googleProviderGetMailsService(userId);
+  const { data, error, status } = await googleProviderGetMailsService(
+    req.query.business_id,
+  );
   res.status(status).send({ data, error });
 }
