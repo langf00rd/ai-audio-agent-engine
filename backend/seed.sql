@@ -102,6 +102,29 @@ ALTER TABLE users
 DROP COLUMN google_gmail_provider_connected,
 DROP COLUMN google_gmail_provider_connected_at;
 
+-- CONTACT BASIC INFO (name, business id, etc)
+CREATE TABLE contacts (
+    id SERIAL PRIMARY KEY,
+    business_id INT REFERENCES businesses(id) ON DELETE CASCADE,
+    first_name TEXT NOT NULL,
+    last_name TEXT,
+    notes TEXT,
+    created_at TIMESTAMP DEFAULT NOW(),
+    updated_at TIMESTAMPTZ
+);
+
+-- CONTACT COMMS METHOD (actual communication methods)
+CREATE TABLE contact_methods (
+    id SERIAL PRIMARY KEY,
+    contact_id INT REFERENCES contacts(id) ON DELETE CASCADE,
+    type TEXT NOT NULL,
+    value TEXT NOT NULL,
+    created_at TIMESTAMP DEFAULT NOW(),
+    updated_at TIMESTAMPTZ
+);
+
+-- GRANT SELECT, INSERT, UPDATE, DELETE ON TABLE contacts TO <user>;
+-- GRANT SELECT, INSERT, UPDATE, DELETE ON TABLE contact_methods TO <user>;
 -- GRANT SELECT, INSERT, UPDATE, DELETE ON TABLE users TO <user>;
 -- GRANT SELECT, INSERT, UPDATE, DELETE ON TABLE auth_tokens TO <user>;
 -- GRANT SELECT, INSERT, UPDATE, DELETE ON TABLE businesses TO <user>;
@@ -111,6 +134,8 @@ DROP COLUMN google_gmail_provider_connected_at;
 -- GRANT SELECT, INSERT, UPDATE, DELETE ON TABLE conversations TO <user>;
 -- GRANT SELECT, INSERT, UPDATE, DELETE ON TABLE analyzed_conversations TO <user>;
 -- GRANT USAGE, SELECT ON SEQUENCE businesses_id_seq TO <user>;
+-- GRANT USAGE, SELECT ON SEQUENCE contacts_id_seq TO <user>;
+-- GRANT USAGE, SELECT ON SEQUENCE contact_methods_id_seq TO <user>;
 -- GRANT USAGE, SELECT ON SEQUENCE auth_tokens_id_seq TO <user>;
 -- GRANT USAGE, SELECT ON SEQUENCE users_id_seq TO <user>;
 -- GRANT USAGE, SELECT ON SEQUENCE agents_id_seq TO <user>;
