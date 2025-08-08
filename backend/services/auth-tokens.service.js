@@ -1,10 +1,24 @@
 import { pool } from "../config/pg.js";
+import { decrypt } from "../utils/security.js";
 
 export async function createAuthTokenService(payload) {
-  const { user_id, access_token, refresh_token, provider, expires_at } =
-    payload;
-  const query = `INSERT INTO auth_tokens (user_id,access_token,refresh_token,provider,expires_at) VALUES ($1,$2,$3,$4,$5);`;
-  const values = [user_id, access_token, refresh_token, provider, expires_at];
+  const {
+    user_id,
+    access_token,
+    refresh_token,
+    provider,
+    expires_at,
+    business_id,
+  } = payload;
+  const query = `INSERT INTO auth_tokens (user_id,access_token,refresh_token,provider,expires_at,business_id) VALUES ($1,$2,$3,$4,$5,$6);`;
+  const values = [
+    user_id,
+    access_token,
+    refresh_token,
+    provider,
+    expires_at,
+    business_id,
+  ];
   try {
     const result = await pool.query(query, values);
     return {
@@ -34,8 +48,18 @@ export async function getAuthTokenService(queryObj) {
       query += ` WHERE ${whereClauses.join(" AND ")}`;
     }
     const result = await pool.query(query, values);
+    const _data = result.rows[0];
+
+    if (!_data) {
+      return { status: 404, error: "no tokens found" };
+    }
+
     return {
-      data: result.rows[0],
+      data: {
+        ..._data,
+        access_token: decrypt(_data.access_token),
+        refresh_token: decrypt(_data.refresh_token),
+      },
       status: 200,
     };
   } catch (error) {

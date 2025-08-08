@@ -1,8 +1,7 @@
 "use client";
 
 import EmptyState from "@/components/empty-state";
-import GmailIcon from "@/components/images/gmail.svg";
-import SettingItem from "@/components/setting-item";
+import ConnectionsSettingsTabView from "@/components/tab-views/settings/connections";
 import { H1 } from "@/components/typography";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -18,10 +17,11 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
 import useBusiness from "@/hooks/use-business";
 import { BUSINESS_FORM_STEPS, COOKIE_KEYS } from "@/lib/constants";
+import { fetchAuthTokens } from "@/lib/services/auth-tokens";
 import { useProviders } from "@/lib/services/mutations/providers";
-import { Business, User } from "@/lib/types";
+import { APIResponse, AuthToken, Business, User } from "@/lib/types";
 import { getCookie } from "@/lib/utils";
-import Image from "next/image";
+import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
 
 const TABS = ["Your account", "Connections", "Business"];
@@ -32,6 +32,12 @@ export default function SettingsPage() {
 
   const currentBusiness = getCookie<Business>(COOKIE_KEYS.currentBusiness, {
     parse: true,
+  });
+
+  const { data: authTokens, isFetching } = useQuery<APIResponse<AuthToken>>({
+    queryKey: ["auth-tokens", currentBusiness?.id],
+    queryFn: () => fetchAuthTokens(String(currentBusiness?.id)),
+    enabled: !!currentBusiness?.id,
   });
 
   const user = getCookie<User>(COOKIE_KEYS.user, {
@@ -96,11 +102,20 @@ export default function SettingsPage() {
           <EmptyState title="Coming soon..." />
         </TabsContent>
         <TabsContent value={TABS[1]}>
-          <SettingItem
+          <ConnectionsSettingsTabView />
+          {/*<SettingItem
             title="Allow Agents to Follow Up Automatically"
             description="Grants your agents permission to initiate follow-ups with customers using their provided contact details."
           >
-            {user?.google_gmail_provider_connected ? (
+            <Button
+              variant="outline"
+              isLoading={getGoogleProviderKeys.isPending}
+              onClick={() => getGoogleProviderKeys.mutate()}
+            >
+              <Image src={GmailIcon} alt="gmail icon" width={18} height={18} />
+              Connect
+            </Button>*/}
+          {/*{user?.google_gmail_provider_connected ? (
               <Button variant="outline" disabled>
                 <Image
                   src={GmailIcon}
@@ -124,8 +139,8 @@ export default function SettingsPage() {
                 />
                 Connect
               </Button>
-            )}
-          </SettingItem>
+            )}*/}
+          {/*</SettingItem>*/}
         </TabsContent>
         <TabsContent value={TABS[2]} className="max-w-[500px]">
           <form
