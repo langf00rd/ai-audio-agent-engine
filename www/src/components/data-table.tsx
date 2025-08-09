@@ -72,7 +72,7 @@ export function DataTable<TData, TValue>({
                 key={row.id}
                 data-state={row.getIsSelected() && "selected"}
                 onClick={() => onRowClick?.(row.original)}
-                className="h-14 cursor-pointer border-b border-neutral-200/50"
+                className="min-h-14 cursor-pointer border-b border-neutral-200/50"
               >
                 {row.getVisibleCells().map((cell) => (
                   <TableCell key={cell.id} className="capitalize">

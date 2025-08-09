@@ -120,7 +120,7 @@ function ConversationAnalytics(props: { sessionId: string }) {
         </div>
         <div className="space-y-1">
           <p className="text-neutral-500">Phone</p>
-          <p>{data?.data.customer?.email || "--"}</p>
+          <p>{data?.data.customer?.phone || "--"}</p>
         </div>
         <div className="space-y-1">
           <p className="text-neutral-500">Location</p>

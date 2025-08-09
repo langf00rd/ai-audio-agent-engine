@@ -6,7 +6,15 @@ import {
   formatMessages,
 } from "../utils/prompts.js";
 import { analyzeConversationSchema } from "../utils/schema.js";
-import { updateSessionService } from "./sessions.service.js";
+import {
+  getSessionsService,
+  updateSessionService,
+} from "./sessions.service.js";
+import { getAgentByIDService } from "./agent.service.js";
+import {
+  addContactMethodService,
+  createContactService,
+} from "./contact.service.js";
 
 export async function createConversationService(payload) {
   const { session_id, agent_id, user_input, llm_response } = payload;
@@ -121,17 +129,17 @@ export async function analyzeConversationsService(sessionId) {
       };
     }
 
-    const analyzedConversations = await getAnalyzedConversationsService({
-      session_id: sessionId,
-    });
+    // const analyzedConversations = await getAnalyzedConversationsService({
+    //   session_id: sessionId,
+    // });
 
-    if (analyzedConversations.data) {
-      return {
-        status: 404,
-        error: "conversation already analyzed",
-        data: analyzedConversations.data,
-      };
-    }
+    // if (analyzedConversations.data) {
+    //   return {
+    //     status: 404,
+    //     error: "conversation already analyzed",
+    //     data: analyzedConversations.data,
+    //   };
+    // }
 
     const { object } = await generateObject({
       model: chatModel,
@@ -151,6 +159,88 @@ export async function analyzeConversationsService(sessionId) {
     });
 
     if (response.error) return response;
+
+    const {
+      data: session,
+      error: sessionError,
+      status: sessionStatus,
+    } = await getSessionsService({
+      id: sessionId,
+    });
+
+    if (sessionError) {
+      return {
+        error: sessionError,
+        status: sessionStatus,
+      };
+    }
+
+    const {
+      data: agent,
+      error: agentError,
+      status: agentStatus,
+    } = await getAgentByIDService(session[0].agent_id);
+
+    if (agentError) {
+      return {
+        error: agentError,
+        status: agentStatus,
+      };
+    }
+
+    const { phone, email, name } = response.data.customer || {};
+
+    // try get first and last names
+    let first_name = "";
+    let last_name = "";
+    if (name) {
+      const parts = name.trim().split(/\s+/);
+      if (parts.length === 1) {
+        first_name = parts[0];
+      } else if (parts.length === 2) {
+        [first_name, last_name] = parts;
+      } else {
+        first_name = parts[0];
+        last_name = parts.slice(1).join(" ");
+      }
+    }
+
+    const business_id = agent.business_id;
+
+    // pick primary method (first priority: email, then phone)
+    let primaryType, primaryValue;
+    if (email) {
+      primaryType = "EMAIL";
+      primaryValue = email;
+    } else if (phone) {
+      primaryType = "PHONE";
+      primaryValue = phone;
+    }
+
+    if (primaryType) {
+      const contactRes = await createContactService({
+        business_id,
+        first_name,
+        last_name,
+        type: primaryType,
+        value: primaryValue,
+      });
+
+      if (contactRes.error) return contactRes;
+
+      const contact = contactRes.data;
+
+      // add second method if exists
+      if (primaryType === "EMAIL" && phone) {
+        await addContactMethodService(contact.id, "PHONE", phone);
+      } else if (primaryType === "PHONE" && email) {
+        await addContactMethodService(contact.id, "EMAIL", email);
+      }
+    }
+
+    // if (!primaryType) {
+    //   return { error: "No contact method provided", status: 400 };
+    // }
 
     return {
       data: object,

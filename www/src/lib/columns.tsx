@@ -44,7 +44,7 @@ export const contactColumns: ColumnDef<Contact>[] = [
     id: "name",
     header: "Full Name",
     cell: ({ row }) => {
-      const fullName = `${row.original.first_name} ${row.original.last_name}`;
+      const fullName = `${row.original.first_name} ${row.original.last_name || ""}`;
       return (
         <div className="flex items-center gap-2">
           <Avatar>
@@ -62,7 +62,7 @@ export const contactColumns: ColumnDef<Contact>[] = [
       const methods = row.original.contact_methods;
       if (!methods || methods.length === 0) return "--";
       return (
-        <div className="flex flex-col gap-1">
+        <div className="flex flex-wrap gap-2">
           {methods.map((m) => (
             <Badge key={m.id} variant="outline" className="w-fit">
               {m.type}: {m.value}

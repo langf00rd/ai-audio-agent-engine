@@ -177,7 +177,7 @@ export interface Contact {
 
 interface ContactMethod {
   id: string;
-  type: "PHONE";
+  type: "PHONE" | "EMAIL";
   value: string;
   created_at: Date | Date;
   updated_at: null;

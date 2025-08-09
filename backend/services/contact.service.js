@@ -43,7 +43,8 @@ export async function createContactService(payload) {
 }
 
 export async function getContactsService(businessId) {
-  const query = `
+  try {
+    const query = `
     SELECT
         c.id AS id,
         c.business_id,
@@ -70,11 +71,31 @@ export async function getContactsService(businessId) {
     GROUP BY c.id
     ORDER BY c.created_at DESC;
   `;
+    const values = [businessId];
+    const result = await pool.query(query, values);
+    return {
+      data: result.rows,
+      status: 200,
+    };
+  } catch (err) {
+    return { error: err.message, status: 500 };
+  }
+}
 
-  const values = [businessId];
-  const result = await pool.query(query, values);
-  return {
-    data: result.rows,
-    status: 200,
-  };
+export async function addContactMethodService(contact_id, type, value) {
+  try {
+    const methodQuery = `
+      INSERT INTO contact_methods (contact_id, type, value)
+      VALUES ($1, $2, $3)
+      RETURNING id, contact_id, type, value, created_at;
+    `;
+    const methodResult = await pool.query(methodQuery, [
+      contact_id,
+      type,
+      value,
+    ]);
+    return { data: methodResult.rows[0], status: 201 };
+  } catch (error) {
+    return { error: error.message, status: 500 };
+  }
 }
