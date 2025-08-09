@@ -65,7 +65,7 @@ export default function SessionDetailsPage() {
     },
   );
 
-  const tabs = analyzedConversationQuery.data?.data
+  const tabs = analyzedConversationQuery.data?.data.customer?.email
     ? ["Analytics", "Conversation", "Actions"]
     : ["Analytics", "Conversation"];
 
@@ -76,28 +76,13 @@ export default function SessionDetailsPage() {
       const contact = await fetchContactMethod(
         analyzedConversationQuery.data?.data.customer?.email || "",
       );
-
-      console.log("contact", contact);
-
-      /**
-       * 1. create customer segment (contact_segment_id) //
-       * 2. add contact to segment (contact_segment_id) //
-       * 3. create job (contact_segment_id, agent_id, business_id)
-       */
-
       const contactSegment = await createContactSegment(
         currentBusiness?.id as string,
         Date.now().toString(),
       );
-
-      console.log("contactSegment", contactSegment);
-
-      const segmentContact = await addContactToSegment(contactSegment.data.id, [
+      await addContactToSegment(contactSegment.data.id, [
         contact.data.contact_id,
       ]);
-
-      console.log("segmentContact", segmentContact);
-
       const job = await createJob({
         instruction: "follow-up on this conversation",
         business_id: currentBusiness?.id,
@@ -110,9 +95,6 @@ export default function SessionDetailsPage() {
           sessionId,
         },
       });
-
-      console.log("job", job);
-
       toast("job successfully created");
     } catch (err) {
       alert(err);
