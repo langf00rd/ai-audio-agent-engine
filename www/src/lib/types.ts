@@ -177,8 +177,12 @@ export interface Contact {
 
 interface ContactMethod {
   id: string;
-  type: "PHONE" | "EMAIL";
+  type: ContactMethodType;
   value: string;
   created_at: Date | Date;
   updated_at: null;
 }
+
+export type ContactMethodType = "PHONE" | "EMAIL";
+export type JobType = "EMAIL" | "PHONE_CALL" | "SMS";
+export type JobStatus = "SCHEDULED" | "RUNNING" | "COMPLETED" | "FAILED";

@@ -1,12 +1,10 @@
 import { google } from "googleapis";
 import { oAuth2Client } from "../config/google.js";
+import { encrypt } from "../utils/security.js";
 import {
   createAuthTokenService,
   getAuthTokenService,
 } from "./auth-tokens.service.js";
-import { compare, hash } from "bcrypt";
-import { pool } from "../config/pg.js";
-import { decrypt, encrypt } from "../utils/security.js";
 
 export async function googleProviderService(scope) {
   try {

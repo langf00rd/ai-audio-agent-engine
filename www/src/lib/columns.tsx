@@ -1,6 +1,7 @@
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { ColumnDef } from "@tanstack/react-table";
+import { Mail, Phone } from "lucide-react";
 import { Contact, Session } from "./types";
 import { getDurationString, getInitials, isoToReadableDate } from "./utils";
 
@@ -64,8 +65,8 @@ export const contactColumns: ColumnDef<Contact>[] = [
       return (
         <div className="flex flex-wrap gap-2">
           {methods.map((m) => (
-            <Badge key={m.id} variant="outline" className="w-fit">
-              {m.type}: {m.value}
+            <Badge key={m.id} variant="outline" className="w-fit py-1">
+              {m.type === "EMAIL" ? <Mail /> : <Phone />} {m.value}
             </Badge>
           ))}
         </div>

@@ -103,44 +103,6 @@ export default function SettingsPage() {
         </TabsContent>
         <TabsContent value={TABS[1]}>
           <ConnectionsSettingsTabView />
-          {/*<SettingItem
-            title="Allow Agents to Follow Up Automatically"
-            description="Grants your agents permission to initiate follow-ups with customers using their provided contact details."
-          >
-            <Button
-              variant="outline"
-              isLoading={getGoogleProviderKeys.isPending}
-              onClick={() => getGoogleProviderKeys.mutate()}
-            >
-              <Image src={GmailIcon} alt="gmail icon" width={18} height={18} />
-              Connect
-            </Button>*/}
-          {/*{user?.google_gmail_provider_connected ? (
-              <Button variant="outline" disabled>
-                <Image
-                  src={GmailIcon}
-                  alt="gmail icon"
-                  width={18}
-                  height={18}
-                />
-                Connected
-              </Button>
-            ) : (
-              <Button
-                variant="outline"
-                isLoading={getGoogleProviderKeys.isPending}
-                onClick={() => getGoogleProviderKeys.mutate()}
-              >
-                <Image
-                  src={GmailIcon}
-                  alt="gmail icon"
-                  width={18}
-                  height={18}
-                />
-                Connect
-              </Button>
-            )}*/}
-          {/*</SettingItem>*/}
         </TabsContent>
         <TabsContent value={TABS[2]} className="max-w-[500px]">
           <form

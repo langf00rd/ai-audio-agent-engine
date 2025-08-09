@@ -25,7 +25,7 @@ export default function CustomersPage() {
 
   return (
     <div className="space-y-8">
-      <H1>Customers</H1>
+      <H1>Contacts</H1>
       <div>
         {isFetching ? (
           <Loader />
