@@ -44,3 +44,50 @@ export async function createJobService(payload) {
     };
   }
 }
+
+export async function getJobService(payload) {
+  try {
+    const { business_id, id } = payload;
+
+    if (!business_id) {
+      return { error: "business_id is required", status: 400 };
+    }
+
+    let query;
+    let params;
+
+    if (id) {
+      query = `
+        SELECT j.*, cs.name AS contact_segment_name
+        FROM jobs j
+        LEFT JOIN contact_segments cs ON j.contact_segment_id = cs.id
+        WHERE j.id = $1 AND j.business_id = $2;
+      `;
+      params = [id, business_id];
+    } else {
+      query = `
+        SELECT j.*, cs.name AS contact_segment_name
+        FROM jobs j
+        LEFT JOIN contact_segments cs ON j.contact_segment_id = cs.id
+        WHERE j.business_id = $1;
+      `;
+      params = [business_id];
+    }
+
+    const result = await pool.query(query, params);
+
+    if (id && result.rows.length === 0) {
+      return { error: "Job not found", status: 404 };
+    }
+
+    return {
+      data: id ? result.rows[0] : result.rows,
+      status: 200,
+    };
+  } catch (error) {
+    return {
+      error: error.message,
+      status: 500,
+    };
+  }
+}
