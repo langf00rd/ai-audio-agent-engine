@@ -42,6 +42,117 @@ export async function createContactService(payload) {
   }
 }
 
+export async function addContactsToSegmentService(segmentId, contactIds) {
+  const values = contactIds.map((_, i) => `($1, $${i + 2})`).join(", ");
+  const params = [segmentId, ...contactIds];
+  const query = `
+    INSERT INTO contact_segment_members (contact_segment_id, contact_id)
+    VALUES ${values}
+    ON CONFLICT (contact_segment_id, contact_id) DO NOTHING
+    RETURNING *;
+  `;
+  try {
+    const result = await pool.query(query, params);
+    return {
+      data: result.rows,
+      status: 200,
+    };
+  } catch (error) {
+    return {
+      error: error.message,
+      status: 500,
+    };
+  }
+}
+
+export async function createContactSegmentService(payload) {
+  const { business_id, name } = payload;
+  const query = `INSERT INTO contact_segments (business_id,name,created_at,updated_at) VALUES ($1, $2, NOW(), NOW()) RETURNING *;`;
+  const values = [business_id, name];
+  try {
+    const result = await pool.query(query, values);
+    return {
+      data: result.rows[0],
+      status: 200,
+    };
+  } catch (error) {
+    return {
+      error: error.message,
+      status: 500,
+    };
+  }
+}
+
+export async function getContactSegmentService(payload) {
+  try {
+    const { id, business_id } = payload;
+    let segmentQuery;
+    let segmentParams;
+    if (id) {
+      segmentQuery = `SELECT * FROM contact_segments WHERE id = $1;`;
+      segmentParams = [id];
+    } else if (business_id) {
+      segmentQuery = `SELECT * FROM contact_segments WHERE business_id = $1;`;
+      segmentParams = [business_id];
+    } else {
+      return { error: "Must provide either id or business_id", status: 400 };
+    }
+    const segmentResult = await pool.query(segmentQuery, segmentParams);
+    if (segmentResult.rows.length === 0) {
+      return { error: "contact segment(s) not found", status: 404 };
+    }
+    if (id) {
+      const segment = segmentResult.rows[0];
+      const contactsQuery = `
+        SELECT c.*
+        FROM contacts c
+        JOIN contact_segment_members csm ON c.id = csm.contact_id
+        WHERE csm.contact_segment_id = $1;
+      `;
+      const contactsResult = await pool.query(contactsQuery, [id]);
+      const contacts = contactsResult.rows;
+      if (contacts.length === 0) {
+        return {
+          data: { ...segment, contacts: [] },
+          status: 200,
+        };
+      }
+      const contactIds = contacts.map((c) => c.id);
+      const methodsQuery = `
+        SELECT *
+        FROM contact_methods
+        WHERE contact_id = ANY($1)
+        ORDER BY contact_id;
+      `;
+      const methodsResult = await pool.query(methodsQuery, [contactIds]);
+      const methodsByContact = {};
+      methodsResult.rows.forEach((method) => {
+        if (!methodsByContact[method.contact_id]) {
+          methodsByContact[method.contact_id] = [];
+        }
+        methodsByContact[method.contact_id].push(method);
+      });
+      const contactsWithMethods = contacts.map((contact) => ({
+        ...contact,
+        contact_methods: methodsByContact[contact.id] || [],
+      }));
+      return {
+        data: { ...segment, contacts: contactsWithMethods },
+        status: 200,
+      };
+    }
+    return {
+      data: segmentResult.rows,
+      status: 200,
+    };
+  } catch (error) {
+    return {
+      error: error.message,
+      status: 500,
+    };
+  }
+}
+
 export async function getContactsService(businessId) {
   try {
     const query = `

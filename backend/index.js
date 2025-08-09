@@ -18,6 +18,7 @@ import { usersRouter } from "./routers/users.router.js";
 import { handleWebSocketConnection } from "./utils/ws.js";
 import { authTokensRouter } from "./routers/auth-tokens.router.js";
 import { contactsRouter } from "./routers/contacts.router.js";
+import { jobsRouter } from "./routers/jobs.router.js";
 
 const PORT = 8000;
 const app = express();
@@ -58,6 +59,7 @@ app.use("/api/analytics", analyticsRouter);
 app.use("/api/providers", providersRouter);
 app.use("/api/auth-tokens", authTokensRouter);
 app.use("/api/contacts", contactsRouter);
+app.use("/api/jobs", jobsRouter);
 
 app.get("/", (_, res) => res.send(`SERVER IS UP`));
 
