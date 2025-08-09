@@ -11,7 +11,7 @@ export const ROUTES = {
     },
     settings: "/app/settings",
     contacts: "/app/contacts",
-    actions: "#",
+    actions: "/app/actions",
     inbox: "#",
   },
   agent: {

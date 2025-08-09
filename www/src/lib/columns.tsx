@@ -2,8 +2,13 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { ColumnDef } from "@tanstack/react-table";
 import { Mail, Phone } from "lucide-react";
-import { Contact, Session } from "./types";
-import { getDurationString, getInitials, isoToReadableDate } from "./utils";
+import { Contact, Job, Session } from "./types";
+import {
+  formatJobInterval,
+  getDurationString,
+  getInitials,
+  isoToReadableDate,
+} from "./utils";
 
 export const sessionColumns: ColumnDef<Session>[] = [
   {
@@ -77,5 +82,57 @@ export const contactColumns: ColumnDef<Contact>[] = [
     accessorKey: "created_at",
     header: "Created At",
     cell: ({ getValue }) => isoToReadableDate(getValue() as Date),
+  },
+];
+
+export const jobsColumns: ColumnDef<Job>[] = [
+  // {
+  //   accessorKey: "id",
+  //   header: "Job ID",
+  //   cell: (info) => <code>{info.getValue()}</code>,
+  // },
+  // {
+  //   accessorKey: "instruction",
+  //   header: "Instruction",
+  //   cell: (info) => (
+  //     <div style={{ maxWidth: 250, whiteSpace: "normal" }}>
+  //       {info.getValue()}
+  //     </div>
+  //   ),
+  // },
+
+  {
+    accessorKey: "contact_segment_name",
+    header: "Contact Segment",
+    cell: (info) => info.getValue() || "None",
+  },
+  {
+    accessorKey: "type",
+    header: "Type",
+    cell: (info) => info.getValue(),
+  },
+  {
+    accessorKey: "interval",
+    header: "Interval",
+    cell: (info) => (
+      <p>Every {formatJobInterval(info.getValue() as Job["interval"])}</p>
+    ),
+  },
+  {
+    accessorKey: "created_at",
+    header: "Created At",
+    cell: (info) => isoToReadableDate(info.getValue() as Date),
+  },
+  {
+    accessorKey: "last_run_at",
+    header: "Last Run",
+    cell: (info) => isoToReadableDate(info.getValue() as Date),
+  },
+  {
+    accessorKey: "status",
+    header: "Status",
+    cell: (info) => {
+      return <Badge>{info.getValue() as string}</Badge>;
+    },
   },
 ];

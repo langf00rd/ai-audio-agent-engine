@@ -1,7 +1,9 @@
 import {
+  addContactMethodService,
   addContactsToSegmentService,
   createContactSegmentService,
   createContactService,
+  getContactMethodService,
   getContactSegmentService,
   getContactsService,
 } from "../services/contact.service.js";
@@ -18,6 +20,11 @@ export async function createContactSegmentController(req, res) {
 
 export async function getContactSegmentController(req, res) {
   const { data, error, status } = await getContactSegmentService(req.query);
+  res.status(status).send({ data, error });
+}
+
+export async function getContactMethodController(req, res) {
+  const { data, error, status } = await getContactMethodService(req.query);
   res.status(status).send({ data, error });
 }
 

@@ -9,7 +9,7 @@ export default function SettingItem(props: {
 }) {
   return (
     <div className="flex flex-col md:flex-row items-center justify-between gap-4">
-      <div className="flex-[1.5] space-y-1">
+      <div className="flex-[1.2] space-y-1">
         <h3 className="font-medium flex gap-2">
           {props.title}
           {props.isComingSoon && <Badge className="scale-[0.8]">SOON</Badge>}

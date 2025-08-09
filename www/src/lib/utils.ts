@@ -3,7 +3,7 @@ import Cookie from "js-cookie";
 import { toast } from "sonner";
 import { twMerge } from "tailwind-merge";
 import { COOKIE_KEYS } from "./constants";
-import { SessionConversation } from "./types";
+import { Job, SessionConversation } from "./types";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -168,4 +168,13 @@ export function getInitials(word: string) {
     return words[0][0].toUpperCase();
   }
   return (words[0][0] + words[words.length - 1][0]).toUpperCase();
+}
+
+export function formatJobInterval(interval: Job["interval"]) {
+  if (!interval) return "None";
+  const parts = [];
+  if (interval.months) parts.push(`${interval.months} months`);
+  if (interval.days) parts.push(`${interval.days} days`);
+  if (interval.hours) parts.push(`${interval.hours} hours`);
+  return parts.length > 0 ? parts.join(" ") : "None";
 }

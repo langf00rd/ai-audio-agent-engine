@@ -210,3 +210,27 @@ export async function addContactMethodService(contact_id, type, value) {
     return { error: error.message, status: 500 };
   }
 }
+
+export async function getContactMethodService(payload) {
+  try {
+    const { value } = payload;
+    const searchTerm = `%${value.trim()}%`;
+    const query = `
+      SELECT *
+      FROM contact_methods
+      WHERE value ILIKE $1
+      ORDER BY created_at DESC
+      LIMIT 100;
+    `;
+    const result = await pool.query(query, [searchTerm]);
+    return {
+      data: value ? result.rows[0] : result.rows,
+      status: 200,
+    };
+  } catch (error) {
+    return {
+      error: error.message,
+      status: 500,
+    };
+  }
+}

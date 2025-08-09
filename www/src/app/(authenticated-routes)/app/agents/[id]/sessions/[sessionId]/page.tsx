@@ -1,23 +1,54 @@
 "use client";
 
 import { SessionConversationsBreadCrumbs } from "@/components/breadcrumbs";
-import EmptyState from "@/components/empty-state";
 import Loader from "@/components/loader";
+import { JobIntervalSelect } from "@/components/selects/job-interval";
 import SettingItem from "@/components/setting-item";
-import { Badge } from "@/components/ui/badge";
+import ConversationAnalytics from "@/components/tab-views/sessions/conversation-analysis";
 import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { COOKIE_KEYS } from "@/lib/constants";
+import {
+  addContactToSegment,
+  createContactSegment,
+  fetchContactMethod,
+} from "@/lib/services/contacts";
 import {
   fetchAnalyzedConversation,
   fetchSessionConversations,
 } from "@/lib/services/conversations";
-import { useConversation } from "@/lib/services/mutations/conversation";
-import { AnalyzedConversation, APIResponse, Conversation } from "@/lib/types";
+import { createJob } from "@/lib/services/jobs";
+import {
+  AnalyzedConversation,
+  APIResponse,
+  Business,
+  Conversation,
+} from "@/lib/types";
+import { getCookie } from "@/lib/utils";
 import { useQuery } from "@tanstack/react-query";
 import { useParams } from "next/navigation";
+import { useState } from "react";
+import { toast } from "sonner";
 
 export default function SessionDetailsPage() {
   const { id, sessionId } = useParams();
+
+  const [interval, setInterval] = useState("");
+  const [creatingJob, setCreatingJob] = useState(false);
+
+  const currentBusiness = getCookie<Business>(COOKIE_KEYS.currentBusiness, {
+    parse: true,
+  });
+
   const { data: conversations, isFetching } = useQuery<
     APIResponse<Conversation[]>
   >({
@@ -25,6 +56,71 @@ export default function SessionDetailsPage() {
     queryFn: () => fetchSessionConversations(String(sessionId)),
     enabled: !!sessionId,
   });
+
+  const analyzedConversationQuery = useQuery<APIResponse<AnalyzedConversation>>(
+    {
+      queryKey: ["analyzed-conversation", sessionId],
+      queryFn: () => fetchAnalyzedConversation(String(sessionId)),
+      enabled: !!sessionId,
+    },
+  );
+
+  const tabs = analyzedConversationQuery.data?.data
+    ? ["Analytics", "Conversation", "Actions"]
+    : ["Analytics", "Conversation"];
+
+  async function handleStartJob() {
+    try {
+      setCreatingJob(true);
+
+      const contact = await fetchContactMethod(
+        analyzedConversationQuery.data?.data.customer?.email || "",
+      );
+
+      console.log("contact", contact);
+
+      /**
+       * 1. create customer segment (contact_segment_id) //
+       * 2. add contact to segment (contact_segment_id) //
+       * 3. create job (contact_segment_id, agent_id, business_id)
+       */
+
+      const contactSegment = await createContactSegment(
+        currentBusiness?.id as string,
+        Date.now().toString(),
+      );
+
+      console.log("contactSegment", contactSegment);
+
+      const segmentContact = await addContactToSegment(contactSegment.data.id, [
+        contact.data.contact_id,
+      ]);
+
+      console.log("segmentContact", segmentContact);
+
+      const job = await createJob({
+        instruction: "follow-up on this conversation",
+        business_id: currentBusiness?.id,
+        agent_id: id,
+        contact_segment_id: contactSegment.data.id,
+        type: "EMAIL",
+        interval,
+        start_dt: new Date().toISOString(),
+        context: {
+          sessionId,
+        },
+      });
+
+      console.log("job", job);
+
+      toast("job successfully created");
+    } catch (err) {
+      alert(err);
+    } finally {
+      setCreatingJob(false);
+    }
+  }
+
   return (
     <div className="space-y-8">
       <SessionConversationsBreadCrumbs id={String(id)} />
@@ -34,7 +130,7 @@ export default function SessionDetailsPage() {
         <>
           <Tabs defaultValue="Analytics">
             <TabsList>
-              {["Analytics", "Conversation", "Actions"].map((a) => (
+              {tabs.map((a) => (
                 <TabsTrigger key={a} value={a}>
                   {a}
                 </TabsTrigger>
@@ -59,106 +155,70 @@ export default function SessionDetailsPage() {
               </ul>
             </TabsContent>
             <TabsContent value="Analytics">
-              <ConversationAnalytics sessionId={String(sessionId)} />
+              <ConversationAnalytics
+                sessionId={sessionId as string}
+                query={analyzedConversationQuery}
+              />
             </TabsContent>
             <TabsContent value="Actions">
-              <SettingItem
-                title="Allow agent to follow-up with customer"
-                description="This will give the agent permission to communicate with the customer via their provided email address, using your email address"
-              >
-                <Button variant="outline">Give access</Button>
-              </SettingItem>
+              {analyzedConversationQuery.data?.data && (
+                <SettingItem
+                  title="Allow agent to follow-up with customer"
+                  description="This permission enables the agent to communicate directly with customers using their provided email addresses or phone numbers. Messages will be sent on your behalf, ensuring consistent outreach"
+                >
+                  <Dialog>
+                    <DialogTrigger asChild>
+                      <Button variant="outline">Allow</Button>
+                    </DialogTrigger>
+                    <DialogContent>
+                      <DialogHeader>
+                        <DialogTitle>Start Automated Follow-Up Job</DialogTitle>
+                        <DialogDescription>
+                          You’re about to launch a follow-up job that lets your
+                          agent communicate with the customer. Confirm to begin
+                          the automated follow-up
+                        </DialogDescription>
+                      </DialogHeader>
+                      <div className="space-y-1">
+                        <p>
+                          Email:{" "}
+                          <span className="opacity-50">
+                            {
+                              analyzedConversationQuery.data.data.customer
+                                ?.email
+                            }
+                          </span>
+                        </p>
+                        <p>
+                          Phone:{" "}
+                          <span className="opacity-50">
+                            {
+                              analyzedConversationQuery.data.data.customer
+                                ?.phone
+                            }
+                          </span>
+                        </p>
+                      </div>
+                      <span className="flex items-center gap-2">
+                        <p>Every</p>{" "}
+                        <JobIntervalSelect onChange={setInterval} />
+                      </span>
+                      <DialogFooter>
+                        <Button
+                          onClick={handleStartJob}
+                          isLoading={creatingJob}
+                        >
+                          Start job
+                        </Button>
+                      </DialogFooter>
+                    </DialogContent>
+                  </Dialog>
+                </SettingItem>
+              )}
             </TabsContent>
           </Tabs>
         </>
       )}
-    </div>
-  );
-}
-
-function ConversationAnalytics(props: { sessionId: string }) {
-  const { analyzeConversationMutation } = useConversation();
-
-  const { data, isFetching, error } = useQuery<
-    APIResponse<AnalyzedConversation>
-  >({
-    queryKey: ["analyzed-conversation", props.sessionId],
-    queryFn: () => fetchAnalyzedConversation(String(props.sessionId)),
-    enabled: !!props.sessionId,
-  });
-
-  if (isFetching) return <Loader />;
-
-  if (error) {
-    return (
-      <EmptyState
-        title="Huh, this conversation has not been analyzed yet"
-        isActionButtonDisabled={analyzeConversationMutation.isPending}
-        actionButtonLabel={
-          analyzeConversationMutation.isPending
-            ? "Analyzing..."
-            : "Analyze conversation"
-        }
-        onActionButtonClick={() =>
-          analyzeConversationMutation.mutate(props.sessionId)
-        }
-      />
-    );
-  }
-
-  return (
-    <div className="grid md:grid-cols-2 gap-8">
-      <div className="space-y-6">
-        <h2 className="font-semibold">Customer Information</h2>
-        <div className="space-y-1">
-          <p className="text-neutral-500">Name</p>
-          <p>{data?.data.customer?.name || "--"}</p>
-        </div>
-        <div className="space-y-1">
-          <p className="text-neutral-500">Email</p>
-          <p>{data?.data.customer?.email || "--"}</p>
-        </div>
-        <div className="space-y-1">
-          <p className="text-neutral-500">Phone</p>
-          <p>{data?.data.customer?.phone || "--"}</p>
-        </div>
-        <div className="space-y-1">
-          <p className="text-neutral-500">Location</p>
-          <p>{data?.data.customer?.location || "--"}</p>
-        </div>
-      </div>
-      <div className="space-y-6">
-        <h2 className="font-semibold">Interaction</h2>
-        <div className="space-y-1">
-          <p className="text-neutral-500">Intent</p>
-          <Badge>{data?.data.intent || "--"}</Badge>
-        </div>
-        <div className="space-y-1">
-          <p className="text-neutral-500">Summary</p>
-          <p>{data?.data.summary || "--"}</p>
-        </div>
-        <div className="space-y-1">
-          <p className="text-neutral-500">Lead Quality</p>
-          <Badge>{data?.data.lead_quality || "--"}</Badge>
-        </div>
-        <div className="space-y-1">
-          <p className="text-neutral-500">Next step</p>
-          <p>{data?.data.next_step}</p>
-        </div>
-      </div>
-      <div className="space-y-6">
-        <h2 className="font-semibold">Other Metadata</h2>
-        <ul className="space-y-6">
-          {Object.entries(data?.data?.metadata || {}).map(([key, value]) => (
-            <li key={key}>
-              <p className="text-neutral-500 capitalize">
-                {key.replaceAll("_", " ")}
-              </p>
-              <p className="capitalize">{String(value)}</p>
-            </li>
-          ))}
-        </ul>
-      </div>
     </div>
   );
 }

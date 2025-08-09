@@ -60,7 +60,6 @@ const items = [
     title: "Actions",
     url: ROUTES.app.actions,
     icon: Repeat2,
-    disabled: true,
   },
 ];
 

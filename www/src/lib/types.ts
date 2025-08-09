@@ -173,6 +173,7 @@ export interface Contact {
   created_at: Date;
   updated_at: null;
   contact_methods: ContactMethod[];
+  contact_id: string;
 }
 
 interface ContactMethod {
@@ -186,3 +187,34 @@ interface ContactMethod {
 export type ContactMethodType = "PHONE" | "EMAIL";
 export type JobType = "EMAIL" | "PHONE_CALL" | "SMS";
 export type JobStatus = "SCHEDULED" | "RUNNING" | "COMPLETED" | "FAILED";
+
+export interface Job {
+  id: string;
+  instruction: string;
+  context: Record<string, unknown>;
+  business_id: string;
+  agent_id: string;
+  contact_segment_id: string;
+  type: JobType;
+  status: JobStatus;
+  interval: {
+    months?: number;
+    days?: number;
+    hours?: number;
+    minutes?: number;
+    weeks?: number;
+  };
+  start_dt: Date;
+  last_run_at: Date | null;
+  created_at: Date;
+  updated_at: Date | null;
+  contact_segment_name: string;
+}
+
+export interface ContactSegment {
+  id: string;
+  business_id: string;
+  name: string;
+  created_at: Date;
+  updated_at: Date;
+}

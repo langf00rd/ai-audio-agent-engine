@@ -4,6 +4,7 @@ import {
   createContactController,
   createContactSegmentController,
   getContactController,
+  getContactMethodController,
   getContactSegmentController,
 } from "../controller/contacts.controller.js";
 
@@ -11,6 +12,7 @@ export const contactsRouter = express.Router();
 
 contactsRouter.post("/", createContactController);
 contactsRouter.get("/", getContactController);
+contactsRouter.get("/methods", getContactMethodController);
 contactsRouter.post("/segments", createContactSegmentController);
 contactsRouter.get("/segments", getContactSegmentController);
 contactsRouter.post("/segments/add", addContactsToSegmentController);
